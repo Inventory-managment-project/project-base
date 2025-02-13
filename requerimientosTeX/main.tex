@@ -1,0 +1,93 @@
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{ dsfont }
+\usepackage{adjustbox}
+\usepackage[shortlabels]{enumitem}
+\usepackage[margin=1in]{geometry}
+\usepackage{caption}
+\usepackage[nocheck]{fancyhdr}
+\usepackage[most]{tcolorbox}
+\usepackage{xcolor}
+\usepackage{biblatex}
+\usepackage{listings}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{pgffor}
+\usepackage{import}
+\usepackage{MnSymbol,wasysym}
+
+
+\renewcommand{\qedsymbol}{$\blacksquare$}
+
+\addto\captionsspanish{\renewcommand{\proofname}{\normalfont{\textbf{Solución}}}}
+
+\addbibresource{references.bib}
+
+\thispagestyle{fancy}
+\rhead{\includegraphics[scale=0.07]{images/Logo_FC.png}}
+\lhead{\includegraphics[scale=0.065]{images/Logo_FC.png}}
+\chead{\large\textbf{Gestión de Inventario y Punto de Venta} \\
+\textbf{Facultad de Ciencias - UNAM}\\
+\textsc{Ingeniería de Software}\\
+\textsc{Febrero 2025}\\
+\centering{Un sistema de software para administrar de manera\\ eficiente un comercio.}
+}
+\renewcommand{\headrulewidth}{1pt}
+\pagenumbering{gobble}
+\AtBeginDocument{\vspace*{4.2\baselineskip}}
+
+\definecolor{FireBlue}{rgb}{0,0, 54.5}
+\definecolor{Salmon}{rgb}{	80.8, 93.7, 100}
+
+\begin{document}
+
+\section{Contexto y Objetivo General}
+
+Este proyecto está diseñado para atender las necesidades de administración y operación relacionadas con la gestión de inventarios de tiendas como supermercados, abarrotes y mini mercados, proporcionando una solución integral que centraliza y automatiza procesos clave del negocio. La principal problemática que aborda es la falta de una herramienta unificada que gestione de manera eficiente tanto las ventas, en sus distintas modalidades, como el control de inventarios y el uso de estrategias comerciales basadas en el análisis de datos. La falta de integración entre estos procesos suele generar errores en el manejo de stock, pérdida de oportunidades de venta y dificultades en la toma de decisiones estratégicas.
+
+La propuesta se enfoca en ofrecer una plataforma con tres tipos de usuarios con distintas funciones dentro de un mismo negocio, estos son: puntos de venta, almacenes y administración. 
+
+\subsection{Puntos de Venta}
+
+Los puntos de venta, considerando que la tienda cuenta con uno o múltiples puntos de venta encargados del operador del punto de venta podrán ser habilitados por medio de sesiones por cada turno laboral que dará inicio después del proceso de apertura del punto de venta o inicializado del punto de venta el cual deberá ser aprobado por un jefe de piso o equivalente al superior inmediato del operador del punto de venta, quien será responsable también de verificar que los fondos registrados coinciden con el indicado en el proceso de apertura del punto de venta además de verificar que el usuario coincide operador del punto de venta que hará uso del punto de venta.
+
+Una vez finalizado con éxito el proceso de apertura del punto de venta el sistema estará listo para comenzar a registrar productos con ayuda del Lector de barras o introduciendo el código de manera manual, contará con las opciones necesarias para la cancelación en caso de abortar el proceso de venta el cual deberá ser aprobado por el jefe de piso o equivalente superior inmediato ya que por motivos de seguridad el proceso de venta no concluye hasta declarar la finalización o aborto de la misma, lo que supondrá (en el primer caso) que el total de la venta se encuentra ahora dentro del monto de efectivo contenido en el punto de venta o ha sido cobrado a través de algún medio aprobado por el negocio del cual los operadores del punto de venta y el negocio son responsables.
+
+Mientras el sistema se encuentre en servicio (contando con una sesión activa) se contará con las funcionalidades básicas como mostrar el cambio, etc. Además el cliente podrá proporcionar su número de teléfono (o correo) para recibir ofertas personalizadas (detalladas en el punto 1.3)
+
+El operador del punto de venta tendrá a su disposición una consulta rápida los productos en promoción o aquellos que formen parte de una estrategia de marketing con el fin de persuadir al cliente a adquirir dicho producto (en caso de que exista).
+
+El punto de venta contará con procesos de corte en el que se retirara una determinada cantidad de efectivo para evitar altas concentraciones por motivos de seguridad u organización, este monto será definido por el negocio y podrá ser editado en cualquier momento.
+
+El cierre del punto de venta deberá ser aprobado por el jefe de piso o superior inmediato responsable del operador del punto de venta, quien se hará responsable de verificar y retirar la cantidad del último corte más la del fondo del punto de venta y ,en caso de que aplique, de los demás métodos de pago. 
+
+Es importante aclarar que este Sistema de Gestión de Inventarios asegura que la cantidades exhibidas tanto en este punto (punto de venta) son respaldados y podrán ser siempre auditados para confirmar su calidad de verdaderos y consistentes con respecto al detalle del producto como precios y unidades declaradas por el operador del punto de venta como vendidas durante su sesión, por lo tanto, en caso de inconsistencias entre los montos dados por este sistema y los declarados por los operadores del punto de venta o jefes de piso serán responsabilidad de estos y en última instancia, del negocio.
+
+\subsection{Gestor de Inventario}
+
+El sistema está diseñado para considerar el inventario como un solo espacio físico, por lo que no se recomienda el uso de este sistema para inventarios con múltiples sedes aisladas físicamente. 
+
+Los operadores de inventario contarán con un proceso de inicio de sesión que solicitará sus credenciales de acceso por las cuales cada operador de inventario es responsable de asegurar la confidencialidad, dichos accesos estarán disponibles por el sistema únicamente durante las horas de su jornada laboral, que deberá de ser declarada por administradores.
+
+Una vez iniciada exitosamente la sesión el operador de inventarios contará con tareas asignadas según los requerimientos definidos por el Sistema de Gestión de Inventarios y Puntos de venta, los cuales podrán variar entre: conteos, reubicación, etiquetado, recibimientos programados, eliminación de productos (productos vencidos, etc.) o labores de inicialización (detalladas en la sección 1.3). Este sistema servirá para ingresar las cantidades resultantes de los conteos, acomodo del inventario según su disponibilidad y flujo de ventas, asistencia durante el etiquetado, verificación de las cantidades de productos recibidos o eliminadas.
+
+El operador de inventario podrá recibir tareas solicitadas automáticamente por el sistema una vez que los productos en piso de venta así lo requieran.
+
+Toda actividad realizada por el operador de inventario será almacenada y los resultados obtenidos de sus tareas alterarán las bases de datos que representan el estado físico del inventario. Por lo tanto el sistema es capaz de rastrear con precisión al operador de inventario responsable de la tarea anterior a un hallazgo de inconsistencia para la cual el Sistema de Gestión de Inventarios y Puntos de venta no es responsable.
+
+\subsection{Administradores}
+
+El Administrador principal o Dueño es el encargado de crear un negocio con los detalles necesarios como podría ser Nombre de la Empresa, RFC, Ubicación, Contactos (Teléfonos, Correo, etc.), además podrá añadir más Administradores aunque con menor nivel de privilegios sobre el negocio (Se limitan los permisos para: eliminar el negocio, alterar la información básica del mismo o añadir más administradores).
+Una vez creado un negocio de manera exitosa el administrador tiene la posibilidad de dar de alta colaboradores del tipo operadores de punto de venta y operadores de inventario (no se consideran demás tipos de empleados: de servicio, etc.), para lo cual le serán solicitados datos como Nombre, RFC, CURP, Medios de contacto, etc. De este modo se crearán nuevos usuarios los cuales deberán de ser verificados con ayuda de la información de contacto proporcionada a través de una invitación recibida para formar parte de la plantilla del negocio.
+El administrador podrá crear un inventario de dos maneras: solicitar tareas de inicialización de inventarios a los operadores de inventarios quienes se encargan básicamente de registrar la capacidad de almacenamiento por ubicación en el inventario (rack) o subir un archivo .csv que contenga el identificador de la posición en el inventario y la capacidad del mismo.
+
+El administrador podrá añadir productos a un inventario nuevo de dos maneras: solicitar un escaneo completo de productos en el inventario (tarea que será enviada a los operadores de inventario), en este caso se podrán asignar los detalles por producto tanto por el operador de inventario como por el o los administradores, o subir un archivo tipo .csv que contenga detalles de los productos como (identificador, descripción, cantidad, marca, precio, costo real, fecha de caducidad, etc.). En ambos casos es necesario la confirmación del Dueño o Administrador una vez finalizado el proceso. El o los administradores tienen en todo momento posibilidad de alterar cualquiera de los detalles del producto ya sea de manera individual o por grupos. (Será necesario declarar en base a la información introducida la cantidad de productos en piso de venta, es decir, disponible para el cliente, estos datos serán utilizados para generar las tareas de reubicación, que consistirá en trasladar productos del inventario al piso de venta).
+
+Una vez finalizados en conjunto los dos procesos anteriores (creación del inventario  reconocimiento del espacio físico y el primer abastecimiento de productos) todo queda en manos del Sistema de Gestión de Inventarios y Puntos de venta (excepto los puntos especificados anteriormente xd). El sistema mostrará de manera intuitiva a los administradores el desempeño del negocio de manera histórica, y permitiendo añadir filtros por categoría, producto, marca, proveedor, fechas de caducidad, precios, mayores generadores de ganancias, ubicación en inventario, etc. Adicionalmente podrá consultar datos históricos sobre las tareas realizadas por los colaboradores y editar y consultar detalles de usuarios, estado físico del inventario o detalles de productos. 
+
+En cuanto a acciones únicas de este sistema se espera que las primeras comunicaciones automatizadas y basadas en datos hacia los administradores sean de tipo alerta de productos por expirar para lo cual el sistema generará reducciones de precio e incluirá avisos en los puntos de venta para fomentar su venta, además se analizará el comportamiento de los usuarios para hallar oportunidades de venta y contactar a aquellos interesados específicamente en los productos ofertados.  Una vez se cuente con la suficiente información (datos históricos de ventas) se podrán realizar recomendaciones como: abastecimiento extra en temporadas donde se haya detectado un mayor consumo de cierto producto, disminución de reabastecimiento de productos con baja demanda (evitar sobre-stock), solicitudes de reabastecimiento en casos de poca existencia basados en su nivel de venta, avisos sobre reabastecimientos agendados, recomendaciones de reacomodo, reconocimiento de tendencias de venta (por marca, categoría, etc).
+
+\end{document}
