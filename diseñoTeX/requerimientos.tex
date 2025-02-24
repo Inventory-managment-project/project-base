@@ -18,6 +18,9 @@
 \usepackage{pgffor}
 \usepackage{import}
 \usepackage{MnSymbol,wasysym}
+\usepackage{graphicx}
+\usepackage{float}
+
 
 
 \renewcommand{\qedsymbol}{$\blacksquare$}
@@ -36,7 +39,7 @@
 \centering{Un sistema de software para administrar de manera\\ eficiente un comercio.}
 }
 \renewcommand{\headrulewidth}{1pt}
-\pagenumbering{gobble}
+%\pagenumbering{gobble}
 \AtBeginDocument{\vspace*{4.2\baselineskip}}
 
 \definecolor{FireBlue}{rgb}{0,0, 54.5}
@@ -44,10 +47,16 @@
 
 \begin{document}
 
-\subsection{Base de Datos}
+\tableofcontents
 
-\subsection{Backend}
+\section{Base de Datos}
 
-\subsection{Frontend}
+\section{Backend}
+
+\input{Subsections/BackEnd.tex}
+
+\section{Vistas}
+
+\input{Subsections/Vistas.tex}
 
 \end{document}
