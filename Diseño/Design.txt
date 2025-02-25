@@ -1,34 +1,48 @@
 # Módulos Principales
 
-## 1. Punto de venta:
+## Modulo General - Tienda
+- Registrar tienda
+- Crear usuario root
+- Inicializa base de datos
+
+## 1. Punto de venta: (se queda)
 Gestionar las ventas de productos.<br>
 Funciones: <br>
 
-- Procesamiento de las ventas (registro de las compras, generación de tickets).
-- Métodos de pago (Con tarjeta o efectivo).
+- Apertura y cierre.
+- Procesamiento de las ventas (registro de las compras, generación de tickets, metodo de pago, cancelaciones y devoluciones).
 - Aplicación de descuentos y promociones.
+- Búsqueda manual de productos.
+- Corte de caja.
+- Sesiones abiertas y cerradas de caja. - punto de venta
 
-**Interacción:** Terminal de venta intuitiva con historial de movimientos/transacciones.
+**Interacción:** Terminal de venta intuitiva con historial de movimientos/transacciones, seccion de promociones.
 
 ## 2. Control de inventario
 Monitorear y administrar el stock de puntos. <br>
 Funciones: <br>
 
 - Registro y actualización de productos.
-- Alertas de productos bajos en stock.
-- Alertas de productos próximos a expirar.
+- Clasificacion de productos.
 - Categorización y búsqueda de productos.
-- Integración con el módulo de pronósticos.
 
 **Interacción:** Panel de administración con reportes gráficos del inventario.
 
-## 3. Generación de reportes y análisis
+## 3. Generación de reportes
 Generar reportes detallados de ventas, inventario y rendimietno financiero.<br>
 Funciones: <br>
 
 - Reportes diarios, semanales y mensuales de ventas.
-- Análisis de productos más vendidos.
 - Exportación de reportes en PDF.
+- Seguimientos especificos (busquedas especificas de historicos)
+
+# Analisis - AI
+
+- Alertas de productos bajos en stock.
+- Alertas de productos próximos a expirar.
+- Analisis de productos
+- Pronosticos
+
 
 **Interacción:** Dashboard con gráficos y opciones de filtrado.
 
@@ -57,5 +71,5 @@ Permitir la personalización del sistema según las necesidades del negocio.<br>
 Funciones: <br>
 
 - Configuración de impuestos y moneda.
-- Personalización de interfaz y notificaciones.
+- Personalización de notificaciones.
 
