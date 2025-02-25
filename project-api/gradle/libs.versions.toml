@@ -1,0 +1,17 @@
+[versions]
+ktor = "3.1.0"
+logback-version = "1.4.14"
+kotlin = "2.1.10"
+
+
+[libraries]
+ktor-server-core = { module = "io.ktor:ktor-server-core" }
+ktor-server-core-jvm = { module = "io.ktor:ktor-server-core-jvm" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty" }
+ktor-server-config-yaml = { module = "io.ktor:ktor-server-config-yaml" }
+ktor-server-test-host = { module = "io.ktor:ktor-server-test-host" }
+kotlin-test-junit = {module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-version" }
+
+[plugins]
+ktor-plugin = { id = "io.ktor.plugin" , version.ref = "ktor" }
