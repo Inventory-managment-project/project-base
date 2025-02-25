@@ -7,7 +7,7 @@ services:
       .env
     volumes:
       - ./data:/var/lib/postgresql/data  # Persist data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Runs on first start
+      - ./DDL.sql:/docker-entrypoint-initdb.d/DDL.sql
     ports:
       - "5432:5432"
 
