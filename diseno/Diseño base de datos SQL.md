@@ -28,16 +28,23 @@ CREATE TABLE producto (
     codigoBarras VARCHAR(50) UNIQUE NOT NULL,
     nombre VARCHAR(255) NOT NULL,
     descripcion TEXT,
-    precio DECIMAL(10,2) NOT NULL,
-    precioMayoreo DECIMAL(10,2),
-    precioDescuento DECIMAL(10,2),
-    stock INT NOT NULL DEFAULT 0,
-    stockMinimo INT DEFAULT 0,
     categoriaId INT,
     proveedorId INT,
     creadoEn TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (categoriaId) REFERENCES categoria(id),
     FOREIGN KEY (proveedorId) REFERENCES proveedor(id)
+);
+
+CREATE TABLE inventario (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    productoId INT NOT NULL,
+    stock INT NOT NULL DEFAULT 0,
+    stockMinimo INT DEFAULT 0,
+    precio DECIMAL(10,2) NOT NULL,
+    precioMayoreo DECIMAL(10,2),
+    precioDescuento DECIMAL(10,2),
+    actualizadoEn TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (productoId) REFERENCES producto(id) ON DELETE CASCADE
 );
 ```
 
@@ -240,6 +247,19 @@ CREATE TABLE movimientoInventario (
     fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (productoId) REFERENCES producto(id),
     FOREIGN KEY (usuarioId) REFERENCES usuario(id)
+);
+```
+## Notificaciones
+```SQL
+CREATE TABLE notificacion (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    usuarioId INT NOT NULL, 
+    tipo ENUM('info', 'advertencia', 'error', 'confirmacion') NOT NULL,  
+    mensaje TEXT NOT NULL, 
+    leida BOOLEAN DEFAULT FALSE, 
+    creadoEn TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    actualizadoEn TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuarioId) REFERENCES usuario(id) ON DELETE CASCADE
 );
 ```
 
