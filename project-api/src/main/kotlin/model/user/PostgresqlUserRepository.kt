@@ -1,5 +1,8 @@
 package mx.unam.fciencias.ids.eq1.model.user
 
+import org.koin.core.annotation.Single
+
+@Single
 class PostgresqlUserRepository : UserRepository {
     override fun getById(id: Int): User? {
         TODO("Not yet implemented")

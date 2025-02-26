@@ -1,11 +1,8 @@
 package mx.unam.fciencias.ids.eq1.di
 
-import mx.unam.fciencias.ids.eq1.model.user.UserRepository
-import mx.unam.fciencias.ids.eq1.model.user.PostgresqlUserRepository
-import mx.unam.fciencias.ids.eq1.service.UserService
-import org.koin.dsl.module
+import org.koin.core.annotation.ComponentScan
+import org.koin.core.annotation.Module
 
-val userModule = module {
-    single<UserRepository> { PostgresqlUserRepository() }
-    single { UserService(get()) }
-}
+@Module
+@ComponentScan("mx.unam.fciencias.ids.eq1")
+class UserModule

@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor.plugin)
     alias(libs.plugins.kotlin.serialization.plugin)
+    alias(libs.plugins.ksp)
 }
 
 group = "mx.unam.fciencias.ids.eq1"
@@ -34,6 +35,8 @@ dependencies {
 
     implementation(libs.koin.ktor)
     implementation(libs.koin.logger.slf4j)
+    implementation(libs.koin.annotations)
+    ksp(libs.ksp.compiler)
 
     // Test Implementation
     testImplementation(libs.ktor.server.test.host)
