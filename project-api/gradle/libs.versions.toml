@@ -1,8 +1,12 @@
 [versions]
 ktor = "3.1.0"
+jvm = "2.1.10"
 logback-version = "1.4.14"
 kotlin = "2.1.10"
-
+dls-css = "1.0.0-pre.625"
+exposed-version = "0.59.0"
+serialization-version = "1.8.0"
+koin-version = "4.0.0"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core" }
@@ -12,7 +16,21 @@ ktor-server-config-yaml = { module = "io.ktor:ktor-server-config-yaml" }
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host" }
 kotlin-test-junit = {module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-version" }
-html-dsl = { module = "io.ktor:ktor-server-html-builder", version.ref = "ktor"}
+html-dsl = { module = "io.ktor:ktor-server-html-builder", version.ref = "ktor" }
+css-dsl = { module = "org.jetbrains.kotlin-wrappers:kotlin-css", version.ref = "dls-css" }
+exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed-version"}
+exposed-dao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exposed-version" }
+content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-server-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktor" }
+koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin-version" }
+koin-logger-slf4j = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koin-version" }
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin-version" }
+koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4", version.ref = "koin-version" }
+
+
 
 [plugins]
 ktor-plugin = { id = "io.ktor.plugin" , version.ref = "ktor" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-serialization-plugin = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

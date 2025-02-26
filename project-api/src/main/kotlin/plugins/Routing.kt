@@ -1,4 +1,4 @@
-package mx.unam.fciencias.ids.eq1
+package mx.unam.fciencias.ids.eq1.plugins
 
 import io.ktor.http.*
 import io.ktor.server.application.*
