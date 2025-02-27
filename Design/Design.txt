@@ -27,7 +27,7 @@
 \usepackage{geometry}
 \usepackage{tabularx}
 \usepackage{tcolorbox}
-
+\usepackage{pdfpages}
 
 
 
@@ -98,7 +98,7 @@ El DAO (Data Access Object) será el encargado de administrar todos los accesos 
 \subsection{Reportes}
 Los reportes generarán informes personalizados según los datos requeridos por el usuario, extrayendo y procesando la información relevante de la base de datos. Proporcionarán visibilidad sobre el desempeño histórico y actual de diversas áreas del negocio.\\
 
-
+\newpage
 
 
 
@@ -324,12 +324,130 @@ Los reportes generarán informes personalizados según los datos requeridos por 
 }
 \end{minipage}
 
-\newpage
+\clearpage
 \section{Diagrama Entidad-Relaci\'on}
 
+\subsection{Sistema de usuarios administradores de tiendas}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{assets/part1.png}
+\end{figure}
+
+\subsection{Registro de movimientos de inventario}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.45\textwidth]{assets/part2.png}
+\end{figure}
+
+\newpage
+
+\subsection{Punto de Venta o Caja Registradora}
+\begin{figure}[h]
+\centering
+\includegraphics[width=1.1\textwidth]{assets/part3.png}
+\end{figure}
+
+\newpage
+\subsection{Sistema de permisos modulares}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{assets/part4.png}
+\end{figure}
+
+\newpage
+\subsection{Registro de compras}
+\begin{figure}[h]
+\centering
+\includegraphics[width=1\textwidth]{assets/part5.png}
+\end{figure}
+
+
+\subsection{Asociación de clientes con las ventas}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{assets/part6.png}
+\end{figure}
+
+\newpage
+\subsection{Categorización de productos}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{assets/part7.png}
+\end{figure}
+\clearpage
+\includepdf[landscape=true]{assets/ER.pdf}
 
 \newpage
 \section{Planos de p\'aginas}
+
+\subsection{Ingreso}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{wireframe/Ingreso.png}
+\end{figure}
+
+\subsection{Registro}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{wireframe/Registro.png}
+\end{figure}
+
+\newpage
+\subsection{Centro de administraci\'on (Vista para superusuario)}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{wireframe/Centro Administrador.png}
+\end{figure}
+
+
+\subsection{Centro de administracion (Vista para usuario con restricci\'ones)}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{wireframe/Centro Ayudante.png}
+\end{figure}
+
+\newpage
+\subsection{Punto de venta}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{wireframe/Punto de Venta.png}
+\end{figure}
+
+\subsection{Inventario}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{wireframe/Inventario.png}
+\end{figure}
+
+\newpage
+\subsection{Clientes}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{wireframe/Clientes.png}
+\end{figure}
+
+
+\subsection{Descuentos}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{wireframe/Descuentos.png}
+\end{figure}
+
+\newpage
+
+\subsection{Reportes}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{wireframe/Reportes.png}
+\end{figure}
+
+
+\subsection{An\'alisis}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{wireframe/Analisis.png}
+\end{figure}
+
 
 
 
