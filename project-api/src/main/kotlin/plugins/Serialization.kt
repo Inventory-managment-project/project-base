@@ -7,14 +7,14 @@ import io.ktor.server.routing.*
 import io.ktor.server.response.*
 import mx.unam.fciencias.ids.eq1.service.UserService
 
-fun Application.configureSerialization(repository: UserService) {
+fun Application.configureUsers(service: UserService) {
     install(ContentNegotiation) {
         json()
     }
     routing {
         route("/users") {
             get {
-                val users = repository.getAllUser()
+                val users = service.getAllUser()
                 call.respond(users)
             }
         }

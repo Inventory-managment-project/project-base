@@ -3,7 +3,7 @@ package mx.unam.fciencias.ids.eq1
 import io.ktor.server.application.*
 import mx.unam.fciencias.ids.eq1.di.UserModule
 import mx.unam.fciencias.ids.eq1.plugins.configureRouting
-import mx.unam.fciencias.ids.eq1.plugins.configureSerialization
+import mx.unam.fciencias.ids.eq1.plugins.configureUsers
 import mx.unam.fciencias.ids.eq1.service.UserService
 import org.koin.ksp.generated.module
 import org.koin.ktor.ext.inject
@@ -24,6 +24,6 @@ fun Application.module() {
 
     val userService by inject<UserService>()
 
-    configureSerialization(userService)
+    configureUsers(userService)
     configureRouting()
 }

@@ -20,11 +20,11 @@ class PostgresqlUserRepository : UserRepository {
         TODO("Not yet implemented")
     }
 
-    override fun delete(id: Int) {
+    override fun delete(id: Int) : Boolean {
         TODO("Not yet implemented")
     }
 
-    override fun deleteAll() {
+    override fun deleteAll()  :Boolean {
         TODO("Not yet implemented")
     }
 
@@ -32,11 +32,11 @@ class PostgresqlUserRepository : UserRepository {
         TODO("Not yet implemented")
     }
 
-    override fun add(user: User) {
+    override fun add(user: User) : Boolean {
         TODO("Not yet implemented")
     }
 
-    override fun updateEmail(user: User, email: String) {
+    override fun updateEmail(userId: Int, email: String) : Boolean {
         TODO("Not yet implemented")
     }
 }

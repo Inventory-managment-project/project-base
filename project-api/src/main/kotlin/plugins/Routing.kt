@@ -13,7 +13,7 @@ fun Application.configureRouting() {
             call.respondHtml(HttpStatusCode.OK) {
                 head {
                     title {
-
+                        +"Working"
                     }
                 }
                 body {

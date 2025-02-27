@@ -6,13 +6,13 @@ interface UserRepository {
     fun getAll(): List<User>
     fun getFiltered(filter : (User) -> Boolean) : List<User>
 
-    fun delete(id: Int)
+    fun delete(id: Int) : Boolean
 
-    fun deleteAll()
+    fun deleteAll() : Boolean
 
     fun count(): Int
 
-    fun add(user: User)
+    fun add(user: User) : Boolean
 
-    fun updateEmail(user: User, email: String)
+    fun updateEmail(userId : Int, email: String) : Boolean
 }

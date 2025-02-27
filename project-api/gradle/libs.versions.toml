@@ -1,12 +1,14 @@
 [versions]
 ktor = "3.1.0"
-jvm = "2.1.10"
 logback-version = "1.4.14"
 kotlin = "2.1.10"
 dls-css = "1.0.0-pre.625"
 exposed-version = "0.59.0"
-serialization-version = "1.8.0"
 koin-version = "4.0.0"
+koin-annotations = "2.0.0"
+ksp-version = "2.1.10-1.0.30"
+dokka-version = "2.0.0"
+mockito = "5.4.0"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core" }
@@ -25,12 +27,16 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 ktor-server-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktor" }
 koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin-version" }
 koin-logger-slf4j = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koin-version" }
+koin-annotations= { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations"}
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin-version" }
-koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4", version.ref = "koin-version" }
-
-
+koin-test-junit5 = { module = "io.insert-koin:koin-test-junit5", version.ref = "koin-version" }
+ksp-compiler = {module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations"}
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito" }
 
 [plugins]
 ktor-plugin = { id = "io.ktor.plugin" , version.ref = "ktor" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization-plugin = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id ="com.google.devtools.ksp", version.ref = "ksp-version" }
+dokka = {id = "org.jetbrains.dokka", version.ref = "dokka-version"}

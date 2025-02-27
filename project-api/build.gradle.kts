@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.ktor.plugin)
     alias(libs.plugins.kotlin.serialization.plugin)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.dokka)
 }
 
 group = "mx.unam.fciencias.ids.eq1"
@@ -33,14 +34,33 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.content.negotiation)
 
+    // DI
     implementation(libs.koin.ktor)
     implementation(libs.koin.logger.slf4j)
     implementation(libs.koin.annotations)
     ksp(libs.ksp.compiler)
 
+
     // Test Implementation
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.koin.test)
-    testImplementation(libs.koin.test.junit4)
+    testImplementation(libs.koin.test.junit5)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
+}
+
+
+tasks.test {
+    useJUnitPlatform()
+
+    testLogging {
+        events("passed", "skipped", "failed")
+        showStandardStreams = true
+    }
+
+    // Set system properties for tests
+    // systemProperty("some.property", "value")
+
+    maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).takeIf { it > 0 } ?: 1
 }
