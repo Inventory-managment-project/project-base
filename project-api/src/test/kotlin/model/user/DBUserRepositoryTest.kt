@@ -1,8 +1,8 @@
 package model.user
 
 import kotlinx.coroutines.runBlocking
+import mx.unam.fciencias.ids.eq1.db.user.UserTable
 import mx.unam.fciencias.ids.eq1.model.user.DBUserRepository
-import mx.unam.fciencias.ids.eq1.db.UserTable
 import mx.unam.fciencias.ids.eq1.model.user.User
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils

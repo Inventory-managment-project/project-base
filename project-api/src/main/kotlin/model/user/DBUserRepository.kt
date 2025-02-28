@@ -1,8 +1,8 @@
 package mx.unam.fciencias.ids.eq1.model.user
 
 import mx.unam.fciencias.ids.eq1.db.user.UserDAO
-import mx.unam.fciencias.ids.eq1.db.UserTable
 import mx.unam.fciencias.ids.eq1.db.user.UserDAO.Companion.userDaoToModel
+import mx.unam.fciencias.ids.eq1.db.user.UserTable
 import mx.unam.fciencias.ids.eq1.db.utils.suspendTransaction
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction

@@ -1,7 +1,5 @@
-package mx.unam.fciencias.ids.eq1.db
+package mx.unam.fciencias.ids.eq1.db.user
 
-import mx.unam.fciencias.ids.eq1.db.user.UserDAO
-import mx.unam.fciencias.ids.eq1.model.user.User
 import org.jetbrains.exposed.dao.id.IntIdTable
 
 object UserTable : IntIdTable("user") {

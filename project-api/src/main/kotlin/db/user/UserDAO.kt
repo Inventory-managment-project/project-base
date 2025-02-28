@@ -1,6 +1,5 @@
 package mx.unam.fciencias.ids.eq1.db.user
 
-import mx.unam.fciencias.ids.eq1.db.UserTable
 import mx.unam.fciencias.ids.eq1.model.user.User
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
