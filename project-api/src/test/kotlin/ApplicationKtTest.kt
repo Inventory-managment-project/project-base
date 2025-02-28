@@ -8,14 +8,14 @@ import kotlin.test.assertEquals
 
 class ApplicationKtTest {
 
-  @Test
-  fun testRoot() = testApplication {
+    @Test
+    fun testRoot() = testApplication {
 
-   application {
-    module()
-   }
-   val response = client.get("/")
-   assertEquals(HttpStatusCode.OK, response.status)
-   assertEquals("Hello, Working!", response.bodyAsText())
-  }
+        application {
+            module()
+        }
+        val response = client.get("/")
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals("Hello, Working!", response.bodyAsText())
+    }
 }

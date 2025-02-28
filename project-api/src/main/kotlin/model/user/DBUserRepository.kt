@@ -40,7 +40,7 @@ class DBUserRepository(database: Database) : UserRepository {
             .map(::userDaoToModel)
     }
 
-    override suspend fun getFiltered(filter: (User) -> Boolean): List<User>  = suspendTransaction {
+    override suspend fun getFiltered(filter: (User) -> Boolean): List<User> = suspendTransaction {
         UserDAO
             .all()
             .map(::userDaoToModel)
@@ -72,7 +72,7 @@ class DBUserRepository(database: Database) : UserRepository {
         return@suspendTransaction true
     }
 
-    override suspend fun updateEmail(userId: Int, email: String): Boolean  = suspendTransaction {
+    override suspend fun updateEmail(userId: Int, email: String): Boolean = suspendTransaction {
         UserDAO[userId].email = email
         return@suspendTransaction true
     }

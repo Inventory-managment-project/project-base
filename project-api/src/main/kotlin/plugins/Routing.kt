@@ -26,7 +26,11 @@ fun Application.configureRouting() {
         get("/login") {
             call.respondHtml(HttpStatusCode.OK) {
                 body {
-                    form(action = "/login", encType = FormEncType.applicationXWwwFormUrlEncoded, method = FormMethod.post) {
+                    form(
+                        action = "/login",
+                        encType = FormEncType.applicationXWwwFormUrlEncoded,
+                        method = FormMethod.post
+                    ) {
                         p {
                             +"Username:"
                             textInput(name = "username")

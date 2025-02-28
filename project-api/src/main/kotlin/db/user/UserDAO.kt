@@ -5,7 +5,7 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 
-class UserDAO(id : EntityID<Int>) : IntEntity(id) {
+class UserDAO(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<UserDAO>(UserTable) {
         fun userDaoToModel(dao: UserDAO) = User(
             dao.id.value,
@@ -22,6 +22,5 @@ class UserDAO(id : EntityID<Int>) : IntEntity(id) {
     var password by UserTable.password
     var salt by UserTable.salt
     var createdAt by UserTable.createdAt
-
 
 }
