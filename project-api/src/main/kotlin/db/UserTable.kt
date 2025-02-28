@@ -17,9 +17,6 @@ object UserTable : IntIdTable("user") {
     val createdAt = varchar("createdat", 50)
 }
 
-suspend fun <T> suspendTransaction(block: Transaction.() -> T): T =
-    newSuspendedTransaction(Dispatchers.IO, statement = block)
-
 
 fun userDaoToModel(dao: UserDAO) = User(
     dao.id.value,
