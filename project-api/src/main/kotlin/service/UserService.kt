@@ -7,7 +7,7 @@ import org.koin.core.annotation.Single
 @Single
 class UserService(private val userRepository: UserRepository) {
 
-    fun getAllUser(): List<User> {
+    suspend fun getAllUser(): List<User> {
         return userRepository.getAll()
     }
 

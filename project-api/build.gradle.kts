@@ -33,6 +33,7 @@ dependencies {
     implementation(libs.exposed.dao)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.content.negotiation)
+    implementation(libs.postgresql)
 
     // DI
     implementation(libs.koin.ktor)
@@ -48,6 +49,7 @@ dependencies {
     testImplementation(libs.koin.test.junit5)
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.h2)
 }
 
 
@@ -64,3 +66,5 @@ tasks.test {
 
     maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).takeIf { it > 0 } ?: 1
 }
+
+ktor.docker.jreVersion = JavaVersion.VERSION_23
