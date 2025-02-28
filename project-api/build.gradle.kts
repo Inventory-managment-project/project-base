@@ -34,6 +34,7 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.content.negotiation)
     implementation(libs.postgresql)
+    implementation(libs.ktor.auth)
 
     // DI
     implementation(libs.koin.ktor)

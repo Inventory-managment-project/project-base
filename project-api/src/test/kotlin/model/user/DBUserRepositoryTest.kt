@@ -1,7 +1,7 @@
 package model.user
 
 import kotlinx.coroutines.runBlocking
-import mx.unam.fciencias.ids.eq1.model.user.PostgresqlUserRepository
+import mx.unam.fciencias.ids.eq1.model.user.DBUserRepository
 import mx.unam.fciencias.ids.eq1.db.UserTable
 import mx.unam.fciencias.ids.eq1.model.user.User
 import org.jetbrains.exposed.sql.Database
@@ -16,10 +16,10 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class PostgresqlUserRepositoryTest {
+class DBUserRepositoryTest {
 
  private lateinit var database: Database
- private lateinit var userRepository: PostgresqlUserRepository
+ private lateinit var userRepository: DBUserRepository
 
 
  @BeforeEach
@@ -33,7 +33,7 @@ class PostgresqlUserRepositoryTest {
    SchemaUtils.create(UserTable)
   }
 
-  userRepository = PostgresqlUserRepository(database)
+  userRepository = DBUserRepository(database)
  }
 
  @AfterEach
