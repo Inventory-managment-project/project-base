@@ -22,7 +22,6 @@ class PostgresqlUserRepositoryTest {
  private lateinit var userRepository: PostgresqlUserRepository
 
 
-
  @BeforeEach
  fun setUp() {
   database = Database.connect(

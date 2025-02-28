@@ -47,25 +47,21 @@ class PostgresqlUserRepository(private val database: Database) : UserRepository 
             .filter(filter)
     }
 
-    override suspend fun delete(id: Int): Boolean {
+    override suspend fun delete(id: Int): Boolean = suspendTransaction {
         UserDAO[id].delete()
-        return UserDAO.findById(id) != null
+        return@suspendTransaction UserDAO.findById(id) != null
     }
 
-    override suspend fun deleteAll(): Boolean {
+    override suspend fun deleteAll(): Boolean = suspendTransaction {
         UserDAO.table.deleteAll()
-        return UserDAO.count() == 0L
+        return@suspendTransaction UserDAO.count() == 0L
     }
 
-    override suspend fun count(): Long {
-        var i = 0L
-        transaction(database) {
-            i = UserTable.selectAll().count()
-        }
-        return i
+    override suspend fun count(): Long = suspendTransaction {
+        return@suspendTransaction UserDAO.table.selectAll().count()
     }
 
-    override suspend fun add(user: User): Boolean {
+    override suspend fun add(user: User): Boolean = suspendTransaction {
         UserDAO.new {
             name = user.name
             email = user.email
@@ -73,12 +69,12 @@ class PostgresqlUserRepository(private val database: Database) : UserRepository 
             salt = user.salt
             createdAt = user.createdAt
         }
-        return true
+        return@suspendTransaction true
     }
 
-    override suspend fun updateEmail(userId: Int, email: String): Boolean {
+    override suspend fun updateEmail(userId: Int, email: String): Boolean  = suspendTransaction {
         UserDAO[userId].email = email
-        return true
+        return@suspendTransaction true
     }
 }
 
