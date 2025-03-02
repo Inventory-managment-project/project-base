@@ -1,4 +1,4 @@
-package mx.unam.fciencias.ids.eq1.model.request
+package mx.unam.fciencias.ids.eq1.security.request
 
 import kotlinx.serialization.Serializable
 

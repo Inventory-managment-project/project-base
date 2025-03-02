@@ -13,7 +13,7 @@ class UserDAO(id: EntityID<Int>) : IntEntity(id) {
             dao.email,
             dao.password,
             dao.salt,
-            dao.createdAt
+            dao.createdAt.epochSecond
         )
     }
 

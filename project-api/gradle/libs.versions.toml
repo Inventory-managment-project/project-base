@@ -11,6 +11,7 @@ dokka-version = "2.0.0"
 mockito = "5.4.0"
 postgres = "42.7.2"
 h2-version = "2.1.214"
+apache-codec-version = "1.18.0"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core" }
@@ -24,20 +25,23 @@ html-dsl = { module = "io.ktor:ktor-server-html-builder", version.ref = "ktor" }
 css-dsl = { module = "org.jetbrains.kotlin-wrappers:kotlin-css", version.ref = "dls-css" }
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed-version"}
 exposed-dao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exposed-version" }
+exposed-time = { module = "org.jetbrains.exposed:exposed-java-time", version.ref = "exposed-version"}
 postgresql = {module = "org.postgresql:postgresql" , version.ref ="postgres" }
 h2 = { module = "com.h2database:h2", version.ref = "h2-version" }
 content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktor"}
+ktor-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt", version.ref = "ktor"}
 ktor-server-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktor" }
 koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin-version" }
 koin-logger-slf4j = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koin-version" }
 koin-annotations= { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations"}
-koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin-version" }
 koin-test-junit5 = { module = "io.insert-koin:koin-test-junit5", version.ref = "koin-version" }
+ktor-client-plugin-contentneg = {module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor"}
 ksp-compiler = {module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations"}
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito" }
+apache-commons-codec = { module = "commons-codec:commons-codec", version.ref = "apache-codec-version"}
 
 [plugins]
 ktor-plugin = { id = "io.ktor.plugin" , version.ref = "ktor" }

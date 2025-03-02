@@ -1,4 +1,6 @@
-package mx.unam.fciencias.ids.eq1.model.user
+package mx.unam.fciencias.ids.eq1.model.user.repository
+
+import mx.unam.fciencias.ids.eq1.model.user.User
 
 interface UserRepository {
     suspend fun getById(id: Int): User?
@@ -15,4 +17,5 @@ interface UserRepository {
     suspend fun add(user: User): Boolean
 
     suspend fun updateEmail(userId: Int, email: String): Boolean
+
 }

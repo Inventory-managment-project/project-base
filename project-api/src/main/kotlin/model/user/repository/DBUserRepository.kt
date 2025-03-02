@@ -1,9 +1,10 @@
-package mx.unam.fciencias.ids.eq1.model.user
+package mx.unam.fciencias.ids.eq1.model.user.repository
 
 import mx.unam.fciencias.ids.eq1.db.user.UserDAO
 import mx.unam.fciencias.ids.eq1.db.user.UserDAO.Companion.userDaoToModel
 import mx.unam.fciencias.ids.eq1.db.user.UserTable
 import mx.unam.fciencias.ids.eq1.db.utils.suspendTransaction
+import mx.unam.fciencias.ids.eq1.model.user.User
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.annotation.Single
@@ -65,9 +66,8 @@ class DBUserRepository(database: Database) : UserRepository {
         UserDAO.new {
             name = user.name
             email = user.email
-            password = user.password
+            password = user.hashedPassword
             salt = user.salt
-            createdAt = user.createdAt
         }
         return@suspendTransaction true
     }
@@ -76,5 +76,6 @@ class DBUserRepository(database: Database) : UserRepository {
         UserDAO[userId].email = email
         return@suspendTransaction true
     }
+
 }
 

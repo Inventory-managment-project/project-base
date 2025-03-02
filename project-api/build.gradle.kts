@@ -31,10 +31,14 @@ dependencies {
     implementation(libs.css.dsl)
     implementation(libs.exposed.jdbc)
     implementation(libs.exposed.dao)
+    implementation(libs.exposed.time)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.content.negotiation)
     implementation(libs.postgresql)
     implementation(libs.ktor.auth)
+    implementation(libs.ktor.client.plugin.contentneg)
+    implementation(libs.ktor.auth.jwt)
+    implementation(libs.apache.commons.codec)
 
     // DI
     implementation(libs.koin.ktor)
@@ -46,7 +50,6 @@ dependencies {
     // Test Implementation
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
-    testImplementation(libs.koin.test)
     testImplementation(libs.koin.test.junit5)
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
