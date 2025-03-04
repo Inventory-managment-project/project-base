@@ -53,12 +53,12 @@ fun Application.authenticationRouting(
                         user.email
                     )
                     val token = tokenProvider.getToken(tokenConfig, claim, email)
-                    call.respond(
-                        HttpStatusCode.OK, mapOf(
-                            "token" to token,
-                            "tokenType" to "Bearer",
-                        )
+                    call.response.cookies.append(
+                        name = "token",
+                        value = token,
+                        encoding =  CookieEncoding.BASE64_ENCODING
                     )
+                    call.respond(HttpStatusCode.OK, mapOf("token" to token))
                 } else {
                     call.respond(HttpStatusCode.Unauthorized, mapOf("message" to "Invalid credentials"))
                 }

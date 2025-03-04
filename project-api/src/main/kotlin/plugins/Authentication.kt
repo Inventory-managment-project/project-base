@@ -3,6 +3,7 @@ package mx.unam.fciencias.ids.eq1.plugins
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.http.*
+import io.ktor.http.auth.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
@@ -12,6 +13,14 @@ fun Application.configureAuthentication(secret: String) {
     install(Authentication) {
         jwt("auth-jwt") {
             realm = "User JWT Auth"
+            authHeader { call ->
+                val token = call.request.cookies["token", CookieEncoding.BASE64_ENCODING]
+                if(token.isNullOrBlank()) {
+                    return@authHeader null
+                } else {
+                    HttpAuthHeader.Single("Bearer", token)
+                }
+            }
             verifier(
                 JWT.require(Algorithm.HMAC256(secret))
                     .withIssuer("http://localhost:8080/")
