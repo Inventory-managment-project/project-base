@@ -7,7 +7,7 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.testing.*
 import mx.unam.fciencias.ids.eq1.model.user.CreateUserRequest
-import mx.unam.fciencias.ids.eq1.plugins.authenticationRouting
+import mx.unam.fciencias.ids.eq1.routes.authentication.authenticationRouting
 import mx.unam.fciencias.ids.eq1.security.tokens.TokenProvider
 import mx.unam.fciencias.ids.eq1.security.hashing.HashingService
 import mx.unam.fciencias.ids.eq1.security.hashing.SHA256HashingService

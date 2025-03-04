@@ -1,0 +1,13 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: my_postgres
+    restart: always
+    env_file:
+      .env
+    volumes:
+      - ../data:/var/lib/postgresql/data  # Move data directory up
+      - ../DDL.sql:/docker-entrypoint-initdb.d/DDL.sql
+    ports:
+      - "5432:5432"
+
