@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 350px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #3367d6;
+        }
+        .error-message {
+            color: #d93025;
+            margin-top: 15px;
+            display: none;
+        }
+        .register-link {
+            margin-top: 20px;
+        }
+        a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .dashboard {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="login-container">
+    <h1>Login</h1>
+    <div id="error-message" class="error-message"></div>
+    <form id="login-form">
+        <div class="form-group">
+            <label for="username">Email</label>
+            <input type="email" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+    <div class="register-link">
+        Don't have an account? <a href="register.html">Register</a>
+    </div>
+</div>
+
+<div class="container dashboard" id="dashboard-container">
+    <h1>Welcome to Dashboard</h1>
+    <p id="dashboard-message">Authenticating...</p>
+    <button id="logout-button">Logout</button>
+</div>
+
+<script>
+    // Check if we already have a token
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if token exists in local storage
+        const token = localStorage.getItem('token');
+        if (token) {
+            // Redirect to user page if already logged in
+            window.location.href = '/user.html';
+        }
+    });
+
+    // Handle login form submission
+    document.getElementById('login-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // Get form values
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        // Disable the submit button to prevent multiple requests
+        const submitButton = this.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        submitButton.textContent = 'Logging in...';
+
+        // Clear previous error messages
+        const errorMessage = document.getElementById('error-message');
+        errorMessage.style.display = 'none';
+
+        // Send login request
+        fetch('/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        })
+            .then(response => {
+                // Check if the response is OK (status 200-299)
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Authentication failed');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Login successful
+
+                // Store the token in local storage
+                localStorage.setItem('token', data.token);
+
+                // Show success message briefly
+                submitButton.textContent = 'Success!';
+
+                // Redirect to user page
+                setTimeout(() => {
+                    window.location.href = '/user.html';
+                }, 500);
+            })
+            .catch(error => {
+                // Display error message
+                errorMessage.textContent = error.message || 'Invalid email or password. Please try again.';
+                errorMessage.style.display = 'block';
+
+                // Re-enable the submit button
+                submitButton.disabled = false;
+                submitButton.textContent = 'Login';
+            });
+    });
+
+    // Handle logout
+    document.getElementById('logout-button').addEventListener('click', function() {
+        // Remove token from local storage
+        localStorage.removeItem('token');
+
+        // Redirect to login page
+        window.location.href = '/login.html';
+    });
+</script>
+
+</body>
+</html>
