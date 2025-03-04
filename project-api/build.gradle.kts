@@ -39,6 +39,8 @@ dependencies {
     implementation(libs.ktor.client.plugin.contentneg)
     implementation(libs.ktor.auth.jwt)
     implementation(libs.apache.commons.codec)
+    implementation(libs.ktor.call.logging)
+    implementation(libs.ktor.cors)
 
     // DI
     implementation(libs.koin.ktor)

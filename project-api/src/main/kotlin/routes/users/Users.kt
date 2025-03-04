@@ -1,4 +1,4 @@
-package mx.unam.fciencias.ids.eq1.routes
+package mx.unam.fciencias.ids.eq1.routes.users
 
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -17,7 +17,7 @@ fun Application.configureUsers(service: UserService) {
     routing {
         authenticate("auth-jwt") {
             route("/user") {
-                get {
+                post {
                     val email = call.principal<JWTPrincipal>()?.payload?.getClaim("email")?.asString()
                     if (email != null) {
                         val user = service.getUserByEmail(email)

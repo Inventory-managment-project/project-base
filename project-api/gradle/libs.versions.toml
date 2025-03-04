@@ -38,6 +38,8 @@ koin-logger-slf4j = { module = "io.insert-koin:koin-logger-slf4j", version.ref =
 koin-annotations= { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations"}
 koin-test-junit5 = { module = "io.insert-koin:koin-test-junit5", version.ref = "koin-version" }
 ktor-client-plugin-contentneg = {module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor"}
+ktor-call-logging = { module = "io.ktor:ktor-server-call-logging", version.ref = "ktor"}
+ktor-cors = { module = "io.ktor:ktor-server-cors", version.ref = "ktor"}
 ksp-compiler = {module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations"}
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito" }
