@@ -45,7 +45,7 @@ fun Application.configureUsers(service: UserService) {
                     val email = call.principal<JWTPrincipal>()?.payload?.getClaim("email")?.asString()
                     if (email != null) {
                         val user = service.getUserByEmail(email)
-                        call.respond(user ?: "Not Found")
+                        call.respond(user?.copy(id = -1) ?: "Not Found")
                     }
                 }
             }

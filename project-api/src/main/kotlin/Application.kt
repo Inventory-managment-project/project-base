@@ -3,7 +3,9 @@ package mx.unam.fciencias.ids.eq1
 import io.ktor.server.application.*
 import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.request.*
+import mx.unam.fciencias.ids.eq1.di.AppModule
 import mx.unam.fciencias.ids.eq1.di.DatabaseModule
+import mx.unam.fciencias.ids.eq1.di.SecurityModule
 import mx.unam.fciencias.ids.eq1.di.UserModule
 import mx.unam.fciencias.ids.eq1.plugins.configureAuthentication
 import mx.unam.fciencias.ids.eq1.plugins.configureSerialization
@@ -29,6 +31,8 @@ fun Application.module() {
         modules(
             UserModule().module,
             DatabaseModule().module,
+            SecurityModule().module,
+            AppModule(environment).module
         )
     }
 
