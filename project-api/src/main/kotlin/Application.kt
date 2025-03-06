@@ -52,7 +52,7 @@ fun Application.module() {
     val tokenProvider by inject<TokenProvider>()
     val hashingService by inject<HashingService>()
 
-    configureAuthentication("secret")
+    configureAuthentication(environment)
     authenticationRouting(hashingService, userService, tokenProvider)
     configureUsers(userService)
     configureSerialization()

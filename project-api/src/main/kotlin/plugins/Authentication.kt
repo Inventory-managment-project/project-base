@@ -9,7 +9,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 
-fun Application.configureAuthentication(secret: String) {
+fun Application.configureAuthentication(environment: ApplicationEnvironment) {
     install(Authentication) {
         jwt("auth-jwt") {
             realm = "User JWT Auth"
@@ -22,9 +22,9 @@ fun Application.configureAuthentication(secret: String) {
                 }
             }
             verifier(
-                JWT.require(Algorithm.HMAC256(secret))
-                    .withIssuer("http://localhost:8080/")
-                    .withAudience("users")
+                JWT.require(Algorithm.HMAC256(environment.config.property("jwt.secret").getString()))
+                    .withIssuer(environment.config.property("jwt.issuer").getString())
+                    .withAudience(environment.config.property("jwt.audience").getString())
                     .build()
             )
             validate { credential ->
