@@ -15,7 +15,6 @@ class SHA256HashingServiceTest {
 
  @Test
  fun `verify salted hash returns true for correct value and hash`() {
-
   val value = "password"
   val saltedHash = SaltedHash(
    hash = "37c00033b5eac206b30a4514092f1d087a86643ccd1fad8bbdb237f01c74eab6",
@@ -24,23 +23,19 @@ class SHA256HashingServiceTest {
 
   val result = hashingService.verifySaltedHash(value, saltedHash)
 
-  // Then
   assertTrue(result)
  }
 
  @Test
  fun `verify salted hash returns false for incorrect value`() {
-  // Given
   val wrongValue = "wrongPassword"
   val saltedHash = SaltedHash(
    hash = "37c00033b5eac206b30a4514092f1d087a86643ccd1fad8bbdb237f01c74eab6",
    salt = "chop"
   )
 
-  // When
   val result = hashingService.verifySaltedHash(wrongValue, saltedHash)
 
-  // Then
   assertFalse(result)
  }
 
@@ -53,10 +48,8 @@ class SHA256HashingServiceTest {
    salt = "deadbeef"
   )
 
-  // When
   val result = hashingService.verifySaltedHash(value, saltedHash)
 
-  // Then
   assertFalse(result)
  }
 
