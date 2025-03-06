@@ -6,8 +6,8 @@ services:
     env_file:
       .env
     volumes:
-      - ./data:/var/lib/postgresql/data  # Persist data
-      - ./DDL.sql:/docker-entrypoint-initdb.d/DDL.sql
+      - ../data:/var/lib/postgresql/data  # Move data directory up
+      - ../DDL.sql:/docker-entrypoint-initdb.d/DDL.sql
     ports:
       - "5432:5432"
 
