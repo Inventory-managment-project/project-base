@@ -6,7 +6,7 @@ import { Button } from "@heroui/button";
 import { EyeClosedIcon, EyeIcon } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { user } from "@heroui/theme";
+import { motion } from "framer-motion";
 
 const Register = () => {
   const router = useRouter();
@@ -18,6 +18,7 @@ const Register = () => {
   const [errorEmail, setErrorEmail] = useState("");
   const [errorPassword, setErrorPassword] = useState("");
   const [errorPasswordConfirm, setErrorPasswordConfirm] = useState("");
+  const [status, setStatus] = useState(0);
 
   const handleRegister = () => {
     setErrorEmail("");
@@ -60,11 +61,13 @@ const Register = () => {
       const data = await response.json();
       if (response.ok) {
         console.log(data);
-        router.push("/panel");
+        setStatus(1);
       } else {
         console.error(data);
+        setStatus(2);
       }
     } catch (error) {
+      setStatus(2);
       console.error("Error:", error);
     }
   };
@@ -75,6 +78,7 @@ const Register = () => {
   }
 
   return (
+    <motion.div layout style={{ height: "fit-content" }}>
     <Card
       isBlurred
       className="card border-none bg-background/60 dark:bg-default-100/50 w-[400px]"
@@ -88,6 +92,8 @@ const Register = () => {
         </div>
       </CardHeader>
       <Divider />
+      {!status && (
+      <div>
       <CardBody className="flex items-center">
       <Input
           type="text"
@@ -151,7 +157,28 @@ const Register = () => {
           Registrarse
         </Button>
       </CardFooter>
+      </div>
+      )}
+      {status == 1 && (
+        <CardBody  className="flex items-center">
+          <div className="inline-block max-w-xl text-center justify-center">
+            <span className="">Usuario registrado con&nbsp;</span>
+            <span className="text-green-600">éxito.&nbsp;</span>
+            <span className="">Ya puede iniciar sesión.&nbsp;</span>
+          </div>
+        </CardBody>
+      )}
+      {status == 2 && (
+        <CardBody  className="flex items-center">
+          <div className="inline-block max-w-xl text-center justify-center">
+            <span className="">Ha ocurrido un&nbsp;</span>
+            <span className="text-red-600">error.&nbsp;</span>
+            <span className="">Intente de nuevo más tarde.&nbsp;</span>
+          </div>
+        </CardBody>
+      )}
     </Card>
+    </motion.div>
   );
 }
 
