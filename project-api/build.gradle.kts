@@ -72,5 +72,3 @@ tasks.test {
 
     maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).takeIf { it > 0 } ?: 1
 }
-
-ktor.docker.jreVersion = JavaVersion.VERSION_23

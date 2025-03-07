@@ -9,8 +9,8 @@ class DatabaseModule {
             Database.connect(
                 url = System.getenv("DATABASE_URL") ?: "jdbc:postgresql://localhost:5432/postgres",
                 driver = "org.postgresql.Driver",
-                user = System.getenv("DATABASE_USER") ?: "admin",
-                password = System.getenv("DATABASE_PASSWORD") ?: "password"
+                user = System.getenv("DATABASE_USER") ?: "postgres",
+                password = System.getenv("DATABASE_PASSWORD") ?: "postgres"
             )
         }
     }
