@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #__next, main {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+
+
+
+
+.containerPanel {
+  display: flex;
+  width: 100vw;
+  height: 93vh;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 15%;
+  height: 100%;
+  border-right: 1px solid #e0e0e0;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-visible {
+  transform: translateX(0);
+}
+
+.sidebar-hidden {
+  transform: translateX(-170%);
+}
+
+.content {
+  width: 85%;
+  height: 100%;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#reader {
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+
+.toggle-btn {
+  display: none;
+  position: absolute;
+  top: 60px;
+  left: 0px;
+  padding: 6px 8px;
+  background-color: #000000;
+  border: 1px solid #fff !important;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 101;
+  transform: transform 0.3s ease;
+}
+
+@media (max-width: 1280px) {
+  .sidebar {
+    position: absolute;
+    width: 200px;
+    backdrop-filter: blur(10px);
+    z-index: 100;
+  }
+
+  .toggle-btn {
+    display: block;
+  }
+
+  .content {
+    width: 100%;
+  }
+}
+
+html.dark .sidebar {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+html.light .sidebar {
+  background-color: rgba(255, 255, 255, 0.8);
+}

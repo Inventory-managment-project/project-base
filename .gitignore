@@ -1,3 +1,5 @@
-.idea
-.gradle
-
+**/.idea
+**/.gradle
+data
+**/.vscode
+**/.DS_Store

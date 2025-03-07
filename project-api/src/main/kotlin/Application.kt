@@ -1,6 +1,8 @@
 package mx.unam.fciencias.ids.eq1
 
 import io.ktor.server.application.*
+import io.ktor.server.plugins.cors.routing.*
+import io.ktor.http.*
 import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.request.*
 import mx.unam.fciencias.ids.eq1.di.AppModule
@@ -46,6 +48,15 @@ fun Application.module() {
             val authHeader = call.request.headers["Authorization"] ?: "No Auth Header"
             "Status: $status, HTTP method: $httpMethod, User agent: $userAgent, Auth: $authHeader "
         }
+    }
+
+    install(CORS) {
+        anyHost() // O restringe a dominios específicos con host("tu-dominio.com")
+        allowCredentials = true
+        allowHeader(HttpHeaders.ContentType)
+        allowHeader(HttpHeaders.Authorization)
+        allowMethod(HttpMethod.Options) // Importante para CORS preflight
+        allowMethod(HttpMethod.Post) // Si usas POST
     }
 
     val userService by inject<UserService>()

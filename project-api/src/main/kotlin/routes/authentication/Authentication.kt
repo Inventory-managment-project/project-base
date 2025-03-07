@@ -11,6 +11,7 @@ import mx.unam.fciencias.ids.eq1.model.user.User
 import mx.unam.fciencias.ids.eq1.security.hashing.HashingService
 import mx.unam.fciencias.ids.eq1.security.hashing.SaltedHash
 import mx.unam.fciencias.ids.eq1.security.request.AuthRequest
+import mx.unam.fciencias.ids.eq1.security.request.ValidateRequest
 import mx.unam.fciencias.ids.eq1.security.token.TokenClaim
 import mx.unam.fciencias.ids.eq1.security.token.TokenConfig
 import mx.unam.fciencias.ids.eq1.security.tokens.TokenProvider
@@ -81,6 +82,19 @@ fun Application.authenticationRouting(
                 } else {
                     call.respond(HttpStatusCode.Conflict, mapOf("message" to "Error"))
                 }
+            }
+        }
+        route("validate") {
+            post {
+                val request = call.receive<ValidateRequest>()
+                val token = request.token
+
+                if (token.isNullOrBlank()) {
+                    call.respond(HttpStatusCode.Unauthorized, mapOf("message" to "No token provided"))
+                    return@post
+                }
+
+                call.respond(HttpStatusCode.OK, mapOf("message" to "Token is valid"));
             }
         }
     }
