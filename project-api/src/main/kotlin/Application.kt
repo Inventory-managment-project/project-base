@@ -51,12 +51,12 @@ fun Application.module() {
     }
 
     install(CORS) {
-        anyHost() // O restringe a dominios específicos con host("tu-dominio.com")
+        anyHost() 
         allowCredentials = true
         allowHeader(HttpHeaders.ContentType)
         allowHeader(HttpHeaders.Authorization)
-        allowMethod(HttpMethod.Options) // Importante para CORS preflight
-        allowMethod(HttpMethod.Post) // Si usas POST
+        allowMethod(HttpMethod.Options) 
+        allowMethod(HttpMethod.Post) 
     }
 
     val userService by inject<UserService>()

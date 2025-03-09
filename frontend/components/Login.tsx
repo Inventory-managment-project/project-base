@@ -6,6 +6,7 @@ import { Button } from "@heroui/button";
 import { EyeClosedIcon, EyeIcon } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 const Login = () => {
   const router = useRouter();
@@ -13,6 +14,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [errorEmail, setErrorEmail] = useState("");
   const [errorPassword, setErrorPassword] = useState("");
+  const [status, setStatus] = useState(0);
 
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
@@ -56,6 +58,7 @@ const Login = () => {
       }
     } catch (error) {
       console.error("Error:", error);
+      setStatus(2);
     }
   };
 
@@ -65,6 +68,7 @@ const Login = () => {
   }
 
   return (
+    <motion.div layout style={{ height: "fit-content" }}>
     <Card
       isBlurred
       className="card border-none bg-background/60 dark:bg-default-100/50 w-[400px]"
@@ -78,6 +82,8 @@ const Login = () => {
         </div>
       </CardHeader>
       <Divider />
+      {!status && (
+      <div>
       <CardBody className="flex items-center">
         <Input
           isClearable
@@ -127,7 +133,18 @@ const Login = () => {
           Iniciar Sesión
         </Button>
       </CardFooter>
+      </div>)}
+      {status == 2 && (
+        <CardBody  className="flex items-center">
+          <div className="inline-block max-w-xl text-center justify-center">
+            <span className="">Ha ocurrido un&nbsp;</span>
+            <span className="text-red-600">error.&nbsp;</span>
+            <span className="">Intente de nuevo más tarde.&nbsp;</span>
+          </div>
+        </CardBody>
+      )}
     </Card>
+    </motion.div>
   );
 }
 
