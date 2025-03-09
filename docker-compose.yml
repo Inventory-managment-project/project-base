@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   db:
     image: postgres:latest
@@ -9,23 +11,45 @@ services:
       timeout: 5s
       retries: 5
     env_file:
-      .env
+      - .env
     volumes:
       - ./data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - app_network
 
   api:
     container_name: ktor_api
     environment:
-        DATABASE_URL : "jdbc:postgresql://db:5432/postgres"
+      DATABASE_URL: "jdbc:postgresql://db:5432/postgres"
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - ./project-api:/app
     restart: unless-stopped
+    networks:
+      - app_network
+
+  nextjs:
+    container_name: heroui
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - app_network
+    volumes:
+      - ./frontend:/app
+
+networks:
+  app_network:
+    driver: bridge
+
