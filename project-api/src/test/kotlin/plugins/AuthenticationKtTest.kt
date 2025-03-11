@@ -4,17 +4,23 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
+import io.ktor.server.config.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.testing.*
 import mx.unam.fciencias.ids.eq1.model.user.CreateUserRequest
+import mx.unam.fciencias.ids.eq1.plugins.configureAuthentication
 import mx.unam.fciencias.ids.eq1.routes.authentication.authenticationRouting
 import mx.unam.fciencias.ids.eq1.security.tokens.TokenProvider
 import mx.unam.fciencias.ids.eq1.security.hashing.HashingService
 import mx.unam.fciencias.ids.eq1.security.hashing.SHA256HashingService
 import mx.unam.fciencias.ids.eq1.service.users.UserService
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
 import org.mockito.Mockito.*
 import org.mockito.kotlin.any
 
@@ -23,6 +29,9 @@ class AuthenticationKtTest {
     private lateinit var hashingService: HashingService
     private lateinit var userService: UserService
     private lateinit var tokenProvider: TokenProvider
+    private lateinit var environment: ApplicationEnvironment
+
+
 
 
     @BeforeEach
@@ -30,6 +39,36 @@ class AuthenticationKtTest {
         hashingService = SHA256HashingService()
         userService = mock(UserService::class.java)
         tokenProvider = mock(TokenProvider::class.java)
+        environment = mock(ApplicationEnvironment::class.java)
+
+        val config = mock(ApplicationConfig::class.java)
+        val jwtIssuerProperty = mock(ApplicationConfigValue::class.java)
+        val jwtAudienceProperty = mock(ApplicationConfigValue::class.java)
+        val jwtSecretProperty = mock(ApplicationConfigValue::class.java)
+
+        `when`(environment.config).thenReturn(config)
+        `when`(config.property("jwt.issuer")).thenReturn(jwtIssuerProperty)
+        `when`(config.property("jwt.audience")).thenReturn(jwtAudienceProperty)
+        `when`(config.property("jwt.secret")).thenReturn(jwtSecretProperty)
+        `when`(jwtIssuerProperty.getString()).thenReturn("test-issuer")
+        `when`(jwtAudienceProperty.getString()).thenReturn("test-audience")
+        `when`(jwtSecretProperty.getString()).thenReturn("test-secret")
+
+        startKoin {
+            modules(
+                module {
+                    single { hashingService }
+                    single { userService }
+                    single { tokenProvider }
+                    single { environment }
+                }
+            )
+        }
+    }
+
+    @AfterEach
+    fun tearDown() {
+        stopKoin()
     }
 
     @Test
@@ -45,12 +84,8 @@ class AuthenticationKtTest {
             install(ContentNegotiation) {
                 json()
             }
-            authenticationRouting(
-                hashingService,
-                userService,
-                tokenProvider,
-                environment
-            )
+            configureAuthentication()
+            authenticationRouting()
         }
 
         val client = createClient {

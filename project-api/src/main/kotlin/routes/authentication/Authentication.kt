@@ -15,14 +15,16 @@ import mx.unam.fciencias.ids.eq1.security.token.TokenClaim
 import mx.unam.fciencias.ids.eq1.security.token.TokenConfig
 import mx.unam.fciencias.ids.eq1.security.tokens.TokenProvider
 import mx.unam.fciencias.ids.eq1.service.users.UserService
+import org.koin.ktor.ext.inject
 import java.time.Instant
 
-fun Application.authenticationRouting(
-    hashingService: HashingService,
-    userService: UserService,
-    tokenProvider: TokenProvider,
-    environment: ApplicationEnvironment
-) {
+fun Application.authenticationRouting() {
+
+    val hashingService by inject<HashingService>()
+    val userService by inject<UserService>()
+    val tokenProvider by inject<TokenProvider>()
+    val environment by inject<ApplicationEnvironment>()
+
     routing {
         route("login") {
             post {
@@ -81,7 +83,7 @@ fun Application.authenticationRouting(
         authenticate("auth-jwt") {
             route("validate") {
                 post {
-                    call.respond(HttpStatusCode.OK, mapOf("message" to "Token is valid"));
+                    call.respond(HttpStatusCode.OK, mapOf("message" to "Token is valid"))
                 }
             }
         }

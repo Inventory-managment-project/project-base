@@ -8,8 +8,10 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
+import org.koin.ktor.ext.inject
 
-fun Application.configureAuthentication(environment: ApplicationEnvironment) {
+fun Application.configureAuthentication() {
+    val environment by inject<ApplicationEnvironment>()
     install(Authentication) {
         jwt("auth-jwt") {
             realm = "User JWT Auth"
