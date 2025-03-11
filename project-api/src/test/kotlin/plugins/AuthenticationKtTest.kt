@@ -48,7 +48,8 @@ class AuthenticationKtTest {
             authenticationRouting(
                 hashingService,
                 userService,
-                tokenProvider
+                tokenProvider,
+                environment
             )
         }
 

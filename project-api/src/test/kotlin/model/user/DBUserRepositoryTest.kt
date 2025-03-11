@@ -48,7 +48,6 @@ class DBUserRepositoryTest {
     fun `test add and retrieve user`() {
         runBlocking {
             val newUser = User(
-                id = 0, // Will be assigned by DB
                 name = "Test User",
                 email = "test@example.com",
                 hashedPassword = "hashedpassword",

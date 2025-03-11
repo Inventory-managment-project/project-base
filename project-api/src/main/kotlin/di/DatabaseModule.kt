@@ -1,5 +1,7 @@
 package mx.unam.fciencias.ids.eq1.di
 
+import mx.unam.fciencias.ids.eq1.db.StoreInventoryDatabaseManager
+import mx.unam.fciencias.ids.eq1.db.SQLStoreInventoryDatabaseManager
 import org.jetbrains.exposed.sql.Database
 import org.koin.dsl.module
 
@@ -13,5 +15,15 @@ class DatabaseModule {
                 password = System.getenv("DATABASE_PASSWORD") ?: "postgres"
             )
         }
+        single {
+            SQLStoreInventoryDatabaseManager(
+                baseConnectionUrl = System.getenv("DATABASE_URL") ?: "jdbc:postgresql://localhost:5432/",
+                driver = "org.postgresql.Driver",
+                dbUser = System.getenv("DATABASE_USER") ?: "postgres",
+                dbPassword = System.getenv("DATABASE_PASSWORD") ?: "postgres",
+                storeRepository = get()
+            )
+        }
+        single<StoreInventoryDatabaseManager> { get<SQLStoreInventoryDatabaseManager>() }
     }
 }

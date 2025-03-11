@@ -5,16 +5,16 @@ import io.ktor.server.plugins.cors.routing.*
 import io.ktor.http.*
 import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.request.*
-import mx.unam.fciencias.ids.eq1.di.AppModule
-import mx.unam.fciencias.ids.eq1.di.DatabaseModule
-import mx.unam.fciencias.ids.eq1.di.SecurityModule
-import mx.unam.fciencias.ids.eq1.di.UserModule
+import mx.unam.fciencias.ids.eq1.db.StoreInventoryDatabaseManager
+import mx.unam.fciencias.ids.eq1.di.*
 import mx.unam.fciencias.ids.eq1.plugins.configureAuthentication
 import mx.unam.fciencias.ids.eq1.plugins.configureSerialization
 import mx.unam.fciencias.ids.eq1.routes.authentication.authenticationRouting
+import mx.unam.fciencias.ids.eq1.routes.store.createStores
 import mx.unam.fciencias.ids.eq1.routes.users.configureUsers
 import mx.unam.fciencias.ids.eq1.security.tokens.TokenProvider
 import mx.unam.fciencias.ids.eq1.security.hashing.HashingService
+import mx.unam.fciencias.ids.eq1.service.store.StoreService
 import mx.unam.fciencias.ids.eq1.service.users.UserService
 import org.koin.ksp.generated.module
 import org.koin.ktor.ext.inject
@@ -32,9 +32,10 @@ fun Application.module() {
         slf4jLogger()
         modules(
             UserModule().module,
+            StoreModule().module,
             DatabaseModule().module,
             SecurityModule().module,
-            AppModule(environment).module
+            AppModule(environment).module,
         )
     }
 
@@ -62,9 +63,12 @@ fun Application.module() {
     val userService by inject<UserService>()
     val tokenProvider by inject<TokenProvider>()
     val hashingService by inject<HashingService>()
+    val storeService by inject<StoreService>()
+    val storeInventoryDatabaseManager by inject<StoreInventoryDatabaseManager>()
 
     configureAuthentication(environment)
-    authenticationRouting(hashingService, userService, tokenProvider)
+    authenticationRouting(hashingService, userService, tokenProvider, environment)
     configureUsers(userService)
+    createStores(storeInventoryDatabaseManager, storeService, userService)
     configureSerialization()
 }

@@ -35,7 +35,7 @@ fun Application.configureAuthentication(environment: ApplicationEnvironment) {
                 }
             }
             challenge { _, _ ->
-                call.respond(HttpStatusCode.Unauthorized, "Token is not valid or has expired")
+                call.respond(HttpStatusCode.Unauthorized)
             }
         }
     }
