@@ -13,7 +13,6 @@ import mx.unam.fciencias.ids.eq1.service.users.UserService
 fun Application.configureUsers(service: UserService) {
     routing {
         authenticate("auth-jwt") {
-
             route("/viewMyUser") {
                 get {
                     val email = call.principal<JWTPrincipal>()?.payload?.getClaim("email")?.asString()
@@ -45,7 +44,7 @@ fun Application.configureUsers(service: UserService) {
                     val email = call.principal<JWTPrincipal>()?.payload?.getClaim("email")?.asString()
                     if (email != null) {
                         val user = service.getUserByEmail(email)
-                        call.respond(user?.copy(id = -1) ?: "Not Found")
+                        call.respond(user ?: "Not Found")
                     }
                 }
             }
