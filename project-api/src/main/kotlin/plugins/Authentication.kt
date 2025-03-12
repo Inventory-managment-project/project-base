@@ -10,8 +10,15 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 import org.koin.ktor.ext.inject
 
-fun Application.configureAuthentication() {
-    val environment by inject<ApplicationEnvironment>()
+/**
+ * Configures JWT-based authentication for the application.
+ * This function installs an authentication mechanism that uses JWT tokens
+ * for securing endpoints and verifying user identities. The JWT token is
+ * expected to be passed as a cookie named "token".
+ *
+ * @param environment The application's environment, used to fetch configuration values.
+ */
+fun Application.configureAuthentication(environment: ApplicationEnvironment) {
     install(Authentication) {
         jwt("auth-jwt") {
             realm = "User JWT Auth"
