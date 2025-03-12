@@ -7,7 +7,7 @@ import io.ktor.server.testing.*
 import kotlinx.serialization.json.Json
 import mx.unam.fciencias.ids.eq1.model.user.User
 import mx.unam.fciencias.ids.eq1.model.user.repository.UserRepository
-import mx.unam.fciencias.ids.eq1.routes.users.configureUsers
+import mx.unam.fciencias.ids.eq1.routes.users.users
 import mx.unam.fciencias.ids.eq1.service.users.DBUserService
 import mx.unam.fciencias.ids.eq1.service.users.UserService
 import org.junit.jupiter.api.AfterEach
@@ -55,7 +55,7 @@ class  UsersKtTest : KoinTest {
   `when`(mockUserRepository.getAll()).thenReturn(mockUsers)
 
   application {
-   configureUsers(userService)
+   users()
   }
 
   val response = client.get("/users")
@@ -79,7 +79,7 @@ class  UsersKtTest : KoinTest {
   `when`(mockUserRepository.getAll()).thenReturn(emptyList())
 
   application {
-   configureUsers(userService)
+   users()
   }
 
   val response = client.get("/users")

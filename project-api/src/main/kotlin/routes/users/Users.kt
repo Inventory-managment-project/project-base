@@ -9,8 +9,12 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.html.*
 import mx.unam.fciencias.ids.eq1.service.users.UserService
+import org.koin.ktor.ext.inject
 
-fun Application.configureUsers(service: UserService) {
+fun Application.users() {
+
+    val userService by inject<UserService>()
+
     routing {
         authenticate("auth-jwt") {
             route("/viewMyUser") {
@@ -19,7 +23,7 @@ fun Application.configureUsers(service: UserService) {
                     if (email == null) {
                         call.respond(HttpStatusCode.BadRequest)
                     }
-                    val user = service.getUserByEmail(email!!)
+                    val user = userService.getUserByEmail(email!!)
                     if (user != null) {
                         call.respondHtml {
                             head {
@@ -43,25 +47,8 @@ fun Application.configureUsers(service: UserService) {
                 post {
                     val email = call.principal<JWTPrincipal>()?.payload?.getClaim("email")?.asString()
                     if (email != null) {
-                        val user = service.getUserByEmail(email)
+                        val user = userService.getUserByEmail(email)
                         call.respond(user ?: "Not Found")
-                    }
-                }
-            }
-            route("/hello") {
-                get {
-                    val name = call.principal<UserIdPrincipal>()
-                    call.respondHtml(HttpStatusCode.OK) {
-                        head {
-                            title {
-                                +"Working"
-                            }
-                        }
-                        body {
-                            h1 {
-                                +"Hello, $name!"
-                            }
-                        }
                     }
                 }
             }

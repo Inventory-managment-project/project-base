@@ -9,7 +9,9 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.annotation.Single
 
-
+/**
+ * Database-backed implementation of [UserRepository] using Exposed.
+ */
 @Single
 class DBUserRepository(database: Database) : UserRepository {
 
@@ -76,6 +78,4 @@ class DBUserRepository(database: Database) : UserRepository {
         UserDAO[userId].email = email
         return@suspendTransaction true
     }
-
 }
-
