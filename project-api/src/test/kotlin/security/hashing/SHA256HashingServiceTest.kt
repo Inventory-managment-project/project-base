@@ -1,5 +1,7 @@
-package mx.unam.fciencias.ids.eq1.security.hashing
+package security.hashing
 
+import mx.unam.fciencias.ids.eq1.security.hashing.SHA256HashingService
+import mx.unam.fciencias.ids.eq1.security.hashing.SaltedHash
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
