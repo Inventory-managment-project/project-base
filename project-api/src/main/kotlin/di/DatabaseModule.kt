@@ -21,7 +21,6 @@ class DatabaseModule {
                 driver = "org.postgresql.Driver",
                 dbUser = System.getenv("DATABASE_USER") ?: "postgres",
                 dbPassword = System.getenv("DATABASE_PASSWORD") ?: "postgres",
-                storeRepository = get()
             )
         }
         single<StoreInventoryDatabaseManager> { get<SQLStoreInventoryDatabaseManager>() }

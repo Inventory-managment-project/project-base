@@ -5,6 +5,6 @@ import mx.unam.fciencias.ids.eq1.model.user.User
 import org.jetbrains.exposed.sql.Database
 
 interface StoreInventoryDatabaseManager {
-    fun getStoreDatabase(storeId: String): Database
-    suspend fun createStoreDatabase(createStoreRequest: CreateStoreRequest, user: User): Database
+    fun getStoreDatabase(storeId: Int): Database
+    suspend fun createStoreDatabase(storeId : Int): Database
 }
