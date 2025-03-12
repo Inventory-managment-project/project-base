@@ -8,7 +8,6 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
-import org.koin.ktor.ext.inject
 
 /**
  * Configures JWT-based authentication for the application.

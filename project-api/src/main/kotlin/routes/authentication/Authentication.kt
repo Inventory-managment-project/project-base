@@ -13,19 +13,31 @@ import mx.unam.fciencias.ids.eq1.security.hashing.SaltedHash
 import mx.unam.fciencias.ids.eq1.security.request.AuthRequest
 import mx.unam.fciencias.ids.eq1.security.token.TokenClaim
 import mx.unam.fciencias.ids.eq1.security.token.TokenConfig
-import mx.unam.fciencias.ids.eq1.security.tokens.TokenProvider
+import mx.unam.fciencias.ids.eq1.security.tokenProvider.TokenProvider
 import mx.unam.fciencias.ids.eq1.service.users.UserService
 import org.koin.ktor.ext.inject
 import java.time.Instant
 
-fun Application.authenticationRouting() {
+/**
+ * Defines authentication-related routes for user login, registration, and token validation.
+ *
+ * Requires the following injected dependencies:
+ * - [HashingService] for password hashing and verification.
+ * - [UserService] for user-related operations.
+ * - [TokenProvider] for generating JWT tokens.
+ * - [ApplicationEnvironment] for accessing environment configurations.
+ */
+fun Application.authenticationRouting(environment: ApplicationEnvironment) {
 
     val hashingService by inject<HashingService>()
     val userService by inject<UserService>()
     val tokenProvider by inject<TokenProvider>()
-    val environment by inject<ApplicationEnvironment>()
 
     routing {
+        /**
+         * Handles user login requests.
+         * Verifies user credentials and responds with a JWT token if successful.
+         */
         route("login") {
             post {
                 val request = call.receive<AuthRequest>()
@@ -62,6 +74,11 @@ fun Application.authenticationRouting() {
                 }
             }
         }
+
+        /**
+         * Handles user registration requests.
+         * Creates a new user with a securely hashed password.
+         */
         route("register") {
             post {
                 val newUser = call.receive<CreateUserRequest>()
@@ -80,6 +97,10 @@ fun Application.authenticationRouting() {
                 }
             }
         }
+
+        /**
+         * Validates a JWT token to confirm its authenticity.
+         */
         authenticate("auth-jwt") {
             route("validate") {
                 post {
