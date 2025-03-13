@@ -13,7 +13,9 @@ import org.koin.core.annotation.Single
  * Database-backed implementation of [UserRepository] using Exposed.
  */
 @Single
-class DBUserRepository(database: Database) : UserRepository {
+class DBUserRepository(
+    private val database: Database
+) : UserRepository {
 
     init {
         transaction(database) {
@@ -21,7 +23,7 @@ class DBUserRepository(database: Database) : UserRepository {
         }
     }
 
-    override suspend fun getById(id: Int): User? = suspendTransaction {
+    override suspend fun getById(id: Int): User? =suspendTransaction(database) {
         UserDAO
             .find { UserTable.id eq id }
             .limit(1)
@@ -29,7 +31,7 @@ class DBUserRepository(database: Database) : UserRepository {
             .firstOrNull()
     }
 
-    override suspend fun getByName(name: String): User? = suspendTransaction {
+    override suspend fun getByName(name: String): User? = suspendTransaction(database) {
         UserDAO
             .find { UserTable.name eq name }
             .limit(1)
@@ -37,34 +39,34 @@ class DBUserRepository(database: Database) : UserRepository {
             .firstOrNull()
     }
 
-    override suspend fun getAll(): List<User> = suspendTransaction {
+    override suspend fun getAll(): List<User> =suspendTransaction(database) {
         UserDAO
             .all()
             .map(::userDaoToModel)
     }
 
-    override suspend fun getFiltered(filter: (User) -> Boolean): List<User> = suspendTransaction {
+    override suspend fun getFiltered(filter: (User) -> Boolean): List<User> =suspendTransaction(database) {
         UserDAO
             .all()
             .map(::userDaoToModel)
             .filter(filter)
     }
 
-    override suspend fun delete(id: Int): Boolean = suspendTransaction {
+    override suspend fun delete(id: Int): Boolean = suspendTransaction(database) {
         UserDAO[id].delete()
         return@suspendTransaction UserDAO.findById(id) != null
     }
 
-    override suspend fun deleteAll(): Boolean = suspendTransaction {
+    override suspend fun deleteAll(): Boolean = suspendTransaction(database) {
         UserDAO.table.deleteAll()
         return@suspendTransaction UserDAO.count() == 0L
     }
 
-    override suspend fun count(): Long = suspendTransaction {
+    override suspend fun count(): Long = suspendTransaction(database) {
         return@suspendTransaction UserDAO.table.selectAll().count()
     }
 
-    override suspend fun add(user: User): Boolean = suspendTransaction {
+    override suspend fun add(user: User): Boolean = suspendTransaction(database) {
         UserDAO.new {
             name = user.name
             email = user.email
@@ -74,7 +76,7 @@ class DBUserRepository(database: Database) : UserRepository {
         return@suspendTransaction true
     }
 
-    override suspend fun updateEmail(userId: Int, email: String): Boolean = suspendTransaction {
+    override suspend fun updateEmail(userId: Int, email: String): Boolean =suspendTransaction(database) {
         UserDAO[userId].email = email
         return@suspendTransaction true
     }

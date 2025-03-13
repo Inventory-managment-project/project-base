@@ -17,7 +17,7 @@ class DatabaseModule {
         }
         single {
             SQLStoreInventoryDatabaseManager(
-                baseConnectionUrl = System.getenv("DATABASE_URL") ?: "jdbc:postgresql://localhost:5432/",
+                baseConnectionUrl = System.getenv("DATABASE_URL") ?: "jdbc:postgresql://localhost:5432",
                 driver = "org.postgresql.Driver",
                 dbUser = System.getenv("DATABASE_USER") ?: "postgres",
                 dbPassword = System.getenv("DATABASE_PASSWORD") ?: "postgres",

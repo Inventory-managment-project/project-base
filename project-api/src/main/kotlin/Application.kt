@@ -5,11 +5,13 @@ import io.ktor.server.plugins.cors.routing.*
 import io.ktor.http.*
 import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.request.*
+import io.ktor.server.routing.*
 import mx.unam.fciencias.ids.eq1.di.*
 import mx.unam.fciencias.ids.eq1.plugins.configureAuthentication
 import mx.unam.fciencias.ids.eq1.plugins.configureSerialization
 import mx.unam.fciencias.ids.eq1.routes.authentication.authenticationRouting
 import mx.unam.fciencias.ids.eq1.routes.store.createStores
+import mx.unam.fciencias.ids.eq1.routes.store.storeRoutes
 import mx.unam.fciencias.ids.eq1.routes.users.users
 import org.koin.ksp.generated.module
 import org.koin.ktor.plugin.Koin
@@ -30,6 +32,7 @@ fun Application.module() {
             DatabaseModule().module,
             SecurityModule().module,
             AppModule(environment).module,
+            ProductModule().module,
         )
     }
 
@@ -63,4 +66,7 @@ fun Application.module() {
     authenticationRouting(environment)
     users()
     createStores()
+    routing {
+        storeRoutes()
+    }
 }

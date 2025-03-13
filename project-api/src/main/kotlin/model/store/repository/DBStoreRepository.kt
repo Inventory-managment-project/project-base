@@ -15,7 +15,8 @@ import mx.unam.fciencias.ids.eq1.model.user.User
 import org.jetbrains.exposed.dao.id.EntityID
 
 @Single
-class DBStoreRepository(database: Database) : StoreRepository {
+class DBStoreRepository(
+    private val database: Database) : StoreRepository {
 
     init {
         transaction(database) {
@@ -23,7 +24,7 @@ class DBStoreRepository(database: Database) : StoreRepository {
         }
     }
 
-    override suspend fun getById(id: Int): Store? = suspendTransaction {
+    override suspend fun getById(id: Int): Store? = suspendTransaction(database) {
         StoreDAO
             .find { StoreTable.id eq id }
             .limit(1)
@@ -31,19 +32,19 @@ class DBStoreRepository(database: Database) : StoreRepository {
             .firstOrNull()
     }
 
-    override suspend fun getByOwnerId(ownerId: Int): List<Store> = suspendTransaction {
+    override suspend fun getByOwnerId(ownerId: Int): List<Store> =suspendTransaction(database){
         StoreDAO
             .find { StoreTable.owner eq ownerId }
             .map(::storeDaoToModel)
     }
 
-    override suspend fun getAll(): List<Store> = suspendTransaction {
+    override suspend fun getAll(): List<Store> = suspendTransaction(database) {
         StoreDAO
             .all()
             .map(::storeDaoToModel)
     }
 
-    override suspend fun add(store: CreateStoreRequest, ownerUser : User): Int = suspendTransaction {
+    override suspend fun add(store: CreateStoreRequest, ownerUser : User): Int = suspendTransaction(database) {
         val storeDao = StoreDAO.new {
             name = store.name
             address = store.address
@@ -52,7 +53,7 @@ class DBStoreRepository(database: Database) : StoreRepository {
         storeDao.id.value
     }
 
-    override suspend fun delete(id: Int): Boolean = suspendTransaction {
+    override suspend fun delete(id: Int): Boolean = suspendTransaction(database) {
         StoreDAO[id].delete()
         StoreDAO.findById(id) == null
     }

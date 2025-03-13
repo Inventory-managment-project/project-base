@@ -24,7 +24,7 @@ class SQLStoreInventoryDatabaseManager(
     override suspend fun createStoreDatabase(storeId: Int): Database {
         val databaseName = "store_$storeId"
 
-        getConnection("${baseConnectionUrl}postgres", dbUser, dbPassword).use { connection ->
+        getConnection("${baseConnectionUrl}/postgres", dbUser, dbPassword).use { connection ->
             connection.createStatement().execute("CREATE DATABASE $databaseName")
         }
 

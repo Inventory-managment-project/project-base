@@ -2,8 +2,10 @@ package mx.unam.fciencias.ids.eq1.service.store
 
 import mx.unam.fciencias.ids.eq1.db.SQLStoreInventoryDatabaseManager
 import mx.unam.fciencias.ids.eq1.model.store.CreateStoreRequest
+import mx.unam.fciencias.ids.eq1.model.store.Store
 import mx.unam.fciencias.ids.eq1.model.store.repository.StoreRepository
 import mx.unam.fciencias.ids.eq1.model.user.User
+import org.jetbrains.exposed.sql.Database
 import org.koin.core.annotation.Single
 
 /**
@@ -23,5 +25,20 @@ class DBStoreService(
             storeDatabaseManager.createStoreDatabase(newStoreId)
             return true
         } catch (e: Exception) { return false }
+    }
+    override suspend fun getStoresByOwner(ownerId: Int): List<Store> {
+        return storeRepository.getByOwnerId(ownerId)
+    }
+
+    override suspend fun getStoreById(id: Int): Store? {
+        return storeRepository.getById(id)
+    }
+
+    override suspend fun deleteStore(id: Int): Boolean {
+        return storeRepository.delete(id)
+    }
+
+    override suspend fun getStoreDatabase(id: Int): Database {
+        return storeDatabaseManager.getStoreDatabase(id)
     }
 }
