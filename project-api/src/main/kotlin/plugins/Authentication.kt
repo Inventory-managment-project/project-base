@@ -23,7 +23,14 @@ fun Application.configureAuthentication(environment: ApplicationEnvironment) {
             realm = "User JWT Auth"
             authHeader { call ->
                 val token = call.request.cookies["token", CookieEncoding.BASE64_ENCODING]
+                val authHeader = call.request.headers["Authorization"]
                 if(token.isNullOrBlank()) {
+                    if (authHeader != null) {
+                        if (authHeader.startsWith("Bearer ")) {
+                            val headerToken = authHeader.substring("Bearer ".length)
+                            return@authHeader HttpAuthHeader.Single("Bearer", headerToken)
+                        }
+                    }
                     return@authHeader null
                 } else {
                     HttpAuthHeader.Single("Bearer", token)
