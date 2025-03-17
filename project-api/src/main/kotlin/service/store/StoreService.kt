@@ -3,7 +3,6 @@ package mx.unam.fciencias.ids.eq1.service.store
 import mx.unam.fciencias.ids.eq1.model.store.CreateStoreRequest
 import mx.unam.fciencias.ids.eq1.model.store.Store
 import mx.unam.fciencias.ids.eq1.model.user.User
-import org.jetbrains.exposed.sql.Database
 
 /**
  * Service interface for handling store-related operations.

@@ -63,7 +63,7 @@ class DBStoreRepository(private val database: Database) : StoreRepository {
     }
 
     override suspend fun update(id: Int, store: UpdateStoreRequest): Boolean = suspendTransaction(database) {
-        val storeToUpdate = StoreDAO
+        StoreDAO
             .find { StoreTable.id eq id }
             .singleOrNull()
             .apply {

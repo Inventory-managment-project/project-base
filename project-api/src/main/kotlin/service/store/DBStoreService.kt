@@ -4,7 +4,6 @@ import mx.unam.fciencias.ids.eq1.model.store.CreateStoreRequest
 import mx.unam.fciencias.ids.eq1.model.store.Store
 import mx.unam.fciencias.ids.eq1.model.store.repository.StoreRepository
 import mx.unam.fciencias.ids.eq1.model.user.User
-import org.jetbrains.exposed.sql.Database
 import org.koin.core.annotation.Single
 
 /**
