@@ -17,14 +17,7 @@ cd project-base
 docker compose up -d
 ```
 
-### 3. Inicializar el contenedor del Frontend
-
-```bash
-cd frontend
-docker compose up -d
-```
-
-### 4. Acceder a la página [principal](http://localhost:3000/)
+### 3. Acceder a la página [principal](http://localhost:3000/)
 
 ## Finalizar los contenedores
 
