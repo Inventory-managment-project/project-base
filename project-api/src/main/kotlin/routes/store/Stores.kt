@@ -77,8 +77,8 @@ fun Application.storeRoutes() {
                         val storeId = call.parameters["storeId"]?.toIntOrNull()
                             ?: return@post call.respond(HttpStatusCode.BadRequest, "Store ID is required")
 
-                        val productService by call.application.inject<ProductService> { parametersOf(storeId) }
                         val product = call.receive<Product>()
+                        val productService by call.application.inject<ProductService> { parametersOf(storeId) }
                         val productId = productService.addProduct(product)
                         call.respond(HttpStatusCode.Created, mapOf("id" to productId))
                     }

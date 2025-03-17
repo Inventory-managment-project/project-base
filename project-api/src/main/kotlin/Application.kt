@@ -30,9 +30,7 @@ fun Application.module() {
             UserModule().module,
             StoreModule().module,
             DatabaseModule().module,
-            SecurityModule().module,
             AppModule(environment).module,
-            ProductModule().module,
         )
     }
 
@@ -56,7 +54,6 @@ fun Application.module() {
         allowMethod(HttpMethod.Options) 
         allowMethod(HttpMethod.Post) 
     }
-
 
     //Plugins
     configureAuthentication(environment)

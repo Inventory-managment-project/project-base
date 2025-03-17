@@ -150,9 +150,10 @@ class DBUserRepositoryTest {
             val allUsers = userRepository.getAll()
             assertEquals(2, allUsers.size, "Should have 2 users initially")
 
-            val userIdToDelete = allUsers.first { it.name == "To Delete" }.id
+            val userIdToDelete = allUsers.first { it.name == "To Delete" }
+            println(userIdToDelete.id)
 
-            val deleteResult = userRepository.delete(userIdToDelete)
+            val deleteResult = userRepository.delete(userIdToDelete.id)
             assertTrue(deleteResult, "Delete should succeed")
 
             assertEquals(1, userRepository.count(), "Should have 1 user after deletion")

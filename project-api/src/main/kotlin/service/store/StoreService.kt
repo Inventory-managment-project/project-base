@@ -24,6 +24,4 @@ interface StoreService {
     suspend fun getStoreById(id: Int): Store?
 
     suspend fun deleteStore(id: Int): Boolean
-
-    suspend fun getStoreDatabase(id: Int): Database
 }

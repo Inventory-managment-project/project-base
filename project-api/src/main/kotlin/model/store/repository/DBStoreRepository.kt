@@ -9,14 +9,15 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.annotation.Single
 import mx.unam.fciencias.ids.eq1.db.store.StoreDAO
 import mx.unam.fciencias.ids.eq1.db.store.StoreDAO.Companion.storeDaoToModel
+import mx.unam.fciencias.ids.eq1.db.user.UserDAO
 import mx.unam.fciencias.ids.eq1.db.user.UserTable
 import mx.unam.fciencias.ids.eq1.model.store.CreateStoreRequest
+import mx.unam.fciencias.ids.eq1.model.store.UpdateStoreRequest
 import mx.unam.fciencias.ids.eq1.model.user.User
 import org.jetbrains.exposed.dao.id.EntityID
 
 @Single
-class DBStoreRepository(
-    private val database: Database) : StoreRepository {
+class DBStoreRepository(private val database: Database) : StoreRepository {
 
     init {
         transaction(database) {
@@ -32,7 +33,7 @@ class DBStoreRepository(
             .firstOrNull()
     }
 
-    override suspend fun getByOwnerId(ownerId: Int): List<Store> =suspendTransaction(database){
+    override suspend fun getByOwnerId(ownerId: Int): List<Store> = suspendTransaction(database) {
         StoreDAO
             .find { StoreTable.owner eq ownerId }
             .map(::storeDaoToModel)
@@ -44,7 +45,10 @@ class DBStoreRepository(
             .map(::storeDaoToModel)
     }
 
-    override suspend fun add(store: CreateStoreRequest, ownerUser : User): Int = suspendTransaction(database) {
+    override suspend fun add(store: CreateStoreRequest, ownerUser: User): Int = suspendTransaction(database) {
+        if (UserDAO.findById(ownerUser.id) == null) {
+            return@suspendTransaction -1
+        }
         val storeDao = StoreDAO.new {
             name = store.name
             address = store.address
@@ -56,5 +60,18 @@ class DBStoreRepository(
     override suspend fun delete(id: Int): Boolean = suspendTransaction(database) {
         StoreDAO[id].delete()
         StoreDAO.findById(id) == null
+    }
+
+    override suspend fun update(id: Int, store: UpdateStoreRequest): Boolean = suspendTransaction(database) {
+        val storeToUpdate = StoreDAO
+            .find { StoreTable.id eq id }
+            .singleOrNull()
+            .apply {
+                if (this == null) { return@suspendTransaction false }
+                if(store.newName != null) { this.name = store.newName }
+                if(store.newAddress != null) { this.address = store.newAddress }
+            }
+        return@suspendTransaction true
+
     }
 }

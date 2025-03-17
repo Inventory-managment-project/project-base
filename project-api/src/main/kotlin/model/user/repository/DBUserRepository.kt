@@ -1,5 +1,6 @@
 package mx.unam.fciencias.ids.eq1.model.user.repository
 
+import kotlinx.css.tr
 import mx.unam.fciencias.ids.eq1.db.user.UserDAO
 import mx.unam.fciencias.ids.eq1.db.user.UserDAO.Companion.userDaoToModel
 import mx.unam.fciencias.ids.eq1.db.user.UserTable
@@ -53,13 +54,22 @@ class DBUserRepository(
     }
 
     override suspend fun delete(id: Int): Boolean = suspendTransaction(database) {
-        UserDAO[id].delete()
-        return@suspendTransaction UserDAO.findById(id) != null
+        val userToDelete = UserDAO.findById(id)
+        if (userToDelete != null) {
+            userToDelete.delete()
+            return@suspendTransaction true
+        } else {
+            return@suspendTransaction false
+        }
+
     }
 
     override suspend fun deleteAll(): Boolean = suspendTransaction(database) {
-        UserDAO.table.deleteAll()
-        return@suspendTransaction UserDAO.count() == 0L
+        if (UserDAO.all().count() > 0) {
+            UserDAO.table.deleteAll()
+            return@suspendTransaction UserDAO.count() == 0L
+        } else return@suspendTransaction false
+
     }
 
     override suspend fun count(): Long = suspendTransaction(database) {
