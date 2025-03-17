@@ -1,6 +1,5 @@
 package mx.unam.fciencias.ids.eq1.model.user.repository
 
-import kotlinx.css.tr
 import mx.unam.fciencias.ids.eq1.db.user.UserDAO
 import mx.unam.fciencias.ids.eq1.db.user.UserDAO.Companion.userDaoToModel
 import mx.unam.fciencias.ids.eq1.db.user.UserTable
@@ -87,7 +86,12 @@ class DBUserRepository(
     }
 
     override suspend fun updateEmail(userId: Int, email: String): Boolean =suspendTransaction(database) {
-        UserDAO[userId].email = email
-        return@suspendTransaction true
+        val updatedUser = UserDAO.findById(userId)
+        if (updatedUser != null) {
+            updatedUser.email = email
+            return@suspendTransaction true
+        } else {
+            return@suspendTransaction false
+        }
     }
 }

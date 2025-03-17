@@ -15,6 +15,7 @@ import mx.unam.fciencias.ids.eq1.security.token.TokenClaim
 import mx.unam.fciencias.ids.eq1.security.token.TokenConfig
 import mx.unam.fciencias.ids.eq1.security.tokenProvider.TokenProvider
 import mx.unam.fciencias.ids.eq1.service.users.UserService
+import mx.unam.fciencias.ids.eq1.utils.emailRegex
 import org.koin.ktor.ext.inject
 import java.time.Instant
 
@@ -90,11 +91,13 @@ fun Application.authenticationRouting(environment: ApplicationEnvironment) {
                     salt = saltedHash.salt,
                     createdAt = Instant.now().epochSecond,
                 )
-                if (userService.addUser(user)) {
-                    call.respond(HttpStatusCode.Created, mapOf("message" to "User created"))
-                } else {
-                    call.respond(HttpStatusCode.Conflict, mapOf("message" to "Error"))
-                }
+                if (emailRegex.matcher(newUser.email).matches()) {
+                    if (userService.addUser(user)) {
+                        call.respond(HttpStatusCode.Created, mapOf("message" to "User created"))
+                    } else {
+                        call.respond(HttpStatusCode.Conflict, mapOf("message" to "Error"))
+                    }
+                } else call.respond(HttpStatusCode.Conflict, mapOf("message" to "Error"))
             }
         }
 

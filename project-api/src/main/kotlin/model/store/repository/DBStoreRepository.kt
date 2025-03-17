@@ -49,17 +49,26 @@ class DBStoreRepository(private val database: Database) : StoreRepository {
         if (UserDAO.findById(ownerUser.id) == null) {
             return@suspendTransaction -1
         }
-        val storeDao = StoreDAO.new {
-            name = store.name
-            address = store.address
-            owner = EntityID(ownerUser.id, UserTable)
-        }
-        storeDao.id.value
+        try {
+            val storeDao = StoreDAO.new {
+                name = store.name
+                address = store.address
+                owner = EntityID(ownerUser.id, UserTable)
+            }
+            storeDao.id.value
+        } catch ( e : Exception) { return@suspendTransaction -1 }
+
     }
 
     override suspend fun delete(id: Int): Boolean = suspendTransaction(database) {
-        StoreDAO[id].delete()
-        StoreDAO.findById(id) == null
+        StoreDAO
+            .find { StoreTable.id eq id }
+            .singleOrNull()
+            .apply {
+                if(this == null) return@suspendTransaction false
+                this.delete()
+            }
+        return@suspendTransaction true
     }
 
     override suspend fun update(id: Int, store: UpdateStoreRequest): Boolean = suspendTransaction(database) {

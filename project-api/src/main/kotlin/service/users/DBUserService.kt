@@ -2,6 +2,7 @@ package mx.unam.fciencias.ids.eq1.service.users
 
 import mx.unam.fciencias.ids.eq1.model.user.User
 import mx.unam.fciencias.ids.eq1.model.user.repository.UserRepository
+import mx.unam.fciencias.ids.eq1.utils.emailRegex
 import org.koin.core.annotation.Single
 
 /**
@@ -26,7 +27,10 @@ class DBUserService(private val userRepository: UserRepository) : UserService {
      * @return `true` if the user was added successfully, `false` otherwise.
      */
     override suspend fun addUser(user: User): Boolean {
-        return userRepository.add(user)
+        return if(emailRegex.matcher(user.email).matches()) {
+            userRepository.add(user)
+        } else false
+
     }
 
     /**
