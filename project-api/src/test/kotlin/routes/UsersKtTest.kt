@@ -1,94 +1,167 @@
 package routes
 
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.cookies.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.application.*
+import io.ktor.server.config.*
+import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.testing.*
-import kotlinx.serialization.json.Json
+import io.ktor.util.*
+import io.ktor.utils.io.*
+import mx.unam.fciencias.ids.eq1.db.user.UserTable
+import mx.unam.fciencias.ids.eq1.model.user.CreateUserRequest
 import mx.unam.fciencias.ids.eq1.model.user.User
+import mx.unam.fciencias.ids.eq1.model.user.repository.DBUserRepository
 import mx.unam.fciencias.ids.eq1.model.user.repository.UserRepository
+import mx.unam.fciencias.ids.eq1.plugins.configureAuthentication
+import mx.unam.fciencias.ids.eq1.routes.authentication.authenticationRouting
 import mx.unam.fciencias.ids.eq1.routes.users.users
+import mx.unam.fciencias.ids.eq1.security.hashing.HashingService
+import mx.unam.fciencias.ids.eq1.security.hashing.SHA256HashingService
+import mx.unam.fciencias.ids.eq1.security.request.AuthRequest
+import mx.unam.fciencias.ids.eq1.security.tokenProvider.JWTokenProvider
+import mx.unam.fciencias.ids.eq1.security.tokenProvider.TokenProvider
 import mx.unam.fciencias.ids.eq1.service.users.DBUserService
 import mx.unam.fciencias.ids.eq1.service.users.UserService
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.test.KoinTest
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.`when`
-import java.time.Instant
+import kotlin.test.assertFails
+import kotlin.test.assertNotEquals
 
-class  UsersKtTest : KoinTest {
+class UsersKtTest : KoinTest {
 
- private lateinit var mockUserRepository: UserRepository
- private lateinit var userService: UserService
 
- @BeforeEach
- fun setUp() {
-  mockUserRepository = mock(UserRepository::class.java)
-  userService = DBUserService(mockUserRepository)
+    private lateinit var userService: UserService
+    private lateinit var database: Database
+    private lateinit var userRepository: DBUserRepository
 
-  startKoin {
-   modules(module {
-    single { mockUserRepository }
-    single { userService }
-   })
-  }
- }
 
- @AfterEach
- fun tearDown() {
-  stopKoin()
- }
+    @BeforeEach
+    fun setUp() {
+        database = Database.connect(
+            url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1",
+            driver = "org.h2.Driver"
+        )
 
- @Test
- fun testGetAllUsers() = testApplication {
-  val mockUsers = listOf(
-   User(1, "John Doe", "john@example.com", "password123", "", Instant.now().epochSecond),
-   User(2, "Jane Smith", "jane@example.com", "password456", "", Instant.now().epochSecond)
-  )
+        transaction(database) {
+            SchemaUtils.create(UserTable)
+        }
 
-  `when`(mockUserRepository.getAll()).thenReturn(mockUsers)
+        userRepository = DBUserRepository(database)
+        userService = DBUserService(userRepository)
 
-  application {
-   users()
-  }
+        startKoin {
+            modules(
+                module {
+                    single {
+                        createTestEnvironment {
+                            config = MapApplicationConfig(
+                                "jwt.secret" to "secret",
+                                "jwt.issuer" to "http://localhost:8080",
+                                "jwt.audience" to "http://localhost:8080/login",
+                                "jwt.realm" to "jwt.realm",
+                            )
+                        }
+                    }
+                    single { SHA256HashingService() } bind HashingService::class
+                    single { userRepository } bind UserRepository::class
+                    single { userService } bind UserService::class
+                    single { JWTokenProvider(get()) } bind TokenProvider::class
+                }
+            )
+        }
+    }
 
-  val response = client.get("/users")
+    @AfterEach
+    fun tearDown() {
+        stopKoin()
+    }
 
-  assertEquals(HttpStatusCode.OK, response.status)
+    @Test
+    fun testGetOwnUser() = testApplication {
+        environment {
+            config = MapApplicationConfig(
+                "jwt.secret" to "secret",
+                "jwt.issuer" to "http://localhost:8080",
+                "jwt.audience" to "http://localhost:8080/login",
+                "jwt.realm" to "jwt.realm",
+            )
+        }
 
-  val responseBody = response.bodyAsText()
-  val users = Json.decodeFromString<List<User>>(responseBody)
+        application {
+            install(ContentNegotiation) {
+                json()
+            }
+            configureAuthentication(environment)
+            authenticationRouting(environment)
+            users()
+        }
 
-  assertEquals(2, users.size)
-  assertEquals(1, users[0].id)
-  assertEquals("John Doe", users[0].name)
-  assertEquals("john@example.com", users[0].email)
-  assertEquals(2, users[1].id)
-  assertEquals("Jane Smith", users[1].name)
-  assertEquals("jane@example.com", users[1].email)
- }
 
- @Test
- fun testGetAllUsersEmpty() = testApplication {
-  `when`(mockUserRepository.getAll()).thenReturn(emptyList())
+        val client = createClient {
+            install(io.ktor.client.plugins.contentnegotiation.ContentNegotiation) {
+                json()
+            }
+            install(HttpCookies) {
+            }
+        }
 
-  application {
-   users()
-  }
+        var response = client.post("/user")
+        assertNotEquals(HttpStatusCode.OK, response.status)
 
-  val response = client.get("/users")
+        val name = "testUser"
+        val email = "test@test.com"
+        val password = "test"
+        val createdUser = CreateUserRequest(name, email, password)
+        response = client.post("/register") {
+            contentType(ContentType.Application.Json)
+            setBody(createdUser)
+        }
+        assertEquals(HttpStatusCode.Created, response.status)
 
-  assertEquals(HttpStatusCode.OK, response.status)
+        val badLoginRequest = AuthRequest(email, password + "bad")
+        response = client.post("/login") {
+            contentType(ContentType.Application.Json)
+            setBody(badLoginRequest)
+        }
+        assertEquals(HttpStatusCode.Unauthorized, response.status)
 
-  val responseBody = response.bodyAsText()
-  val users = Json.decodeFromString<List<User>>(responseBody)
+        val logInRequest = AuthRequest(email, password)
+        response = client.post("/login") {
+            contentType(ContentType.Application.Json)
+            setBody(logInRequest)
+        }
+        assertEquals(HttpStatusCode.OK, response.status)
 
-  assertEquals(0, users.size)
- }
+        val token = response.call.body<Map<String,String>>().getOrElse("token") {
+            return@getOrElse assertFails("No Auth Token found") {}
+        }.toString()
+        println(token)
+
+        response = client.post("/user") {
+            bearerAuth(token)
+        }
+        assertEquals(HttpStatusCode.OK, response.status)
+        val userResponse = response.body<User>()
+        assertEquals("testUser", userResponse.name)
+        assertEquals("test@test.com", userResponse.email)
+    }
 }
