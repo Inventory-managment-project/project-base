@@ -1,5 +1,5 @@
 import { Listbox, ListboxItem, ListboxSection } from "@heroui/listbox";
-import { Origami, UserSearch, ChartBar, FileStack, Mail, Settings, Power, ChevronRight, ChevronLeft } from "lucide-react";
+import { Package, UserSearch, ChartBar, FileStack, Mail, Settings, Power, ChevronRight, ChevronLeft, Home, ReceiptText } from "lucide-react";
 import React from "react";
 import { IconWrapper } from "@/components/misc/IconWrapper";
 import { Icon } from "@/components/misc/Icon";
@@ -8,6 +8,7 @@ import { title, subtitle } from "@/components/misc/primitives";
 import { Button } from "@heroui/button";
 import Logout from "./menu/Logout";
 import Setting from "./menu/Settings";
+import Products from "./menu/Products";
 
 interface SideMenuProps {
   setContent: (content: JSX.Element) => void;
@@ -15,7 +16,7 @@ interface SideMenuProps {
 
 const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
   const [selectedKey, setSelectedKey] = React.useState<Set<string>>(
-    new Set(["stats"]),
+    new Set(["products"]),
   );
   const [sidebarVisible, setSidebarVisible] = React.useState(true);
 
@@ -30,6 +31,11 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
 
   React.useEffect(() => {
     switch (selectedValue) {
+      case "products":
+        setContent(
+          <Products />
+        );
+        break;
       case "settings":
         setContent(
           <Setting />
@@ -66,7 +72,31 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
               setSelectedKey(newSelectedKey);
             }}
           >
+            <ListboxSection showDivider>
+              <ListboxItem
+                key="home"
+                endContent={<ChevronRight />}
+                startContent={
+                  <IconWrapper className="bg-pink-500/10 text-pink-500">
+                    <Home />
+                  </IconWrapper>
+                }
+              >
+                Inicio
+              </ListboxItem>
+            </ListboxSection>
             <ListboxSection title="User Management" showDivider>
+              <ListboxItem
+                key="pdv"
+                endContent={<ChevronRight />}
+                startContent={
+                  <IconWrapper className="bg-warning/10 text-warning">
+                    <ReceiptText />
+                  </IconWrapper>
+                }
+              >
+                Punto de Venta
+              </ListboxItem>
               <ListboxItem
                 key="stats"
                 endContent={<ChevronRight />}
@@ -79,22 +109,11 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
                 Analytics
               </ListboxItem>
               <ListboxItem
-                key="pdv"
-                endContent={<ChevronRight />}
-                startContent={
-                  <IconWrapper className="bg-warning/10 text-warning">
-                    <Origami />
-                  </IconWrapper>
-                }
-              >
-                Punto de Venta
-              </ListboxItem>
-              <ListboxItem
                 key="products"
                 endContent={<ChevronRight />}
                 startContent={
                   <IconWrapper className="bg-success/10 text-success">
-                    <UserSearch />
+                    <Package />
                   </IconWrapper>
                 }
               >
