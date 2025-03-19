@@ -486,6 +486,7 @@ const Products = () => {
       topContentPlacement="outside"
       onSelectionChange={(keys : SharedSelection) => setSelectedKeys(keys === "all" ? "all" : new Set(keys as Set<string>))}
       onSortChange={setSortDescriptor}
+      onRowAction={() => {}}
     >
       <TableHeader columns={headerColumns}>
         {(column: typeof columns[number]) => (
