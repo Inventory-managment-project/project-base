@@ -5,8 +5,8 @@ import {
   NavbarItem,
 } from "@heroui/navbar";
 
-import { ThemeSwitch } from "@/components/theme-switch";
-import { Logo } from "@/components/icons";
+import { ThemeSwitch } from "@/components/misc/theme-switch";
+import { Logo } from "@/components/misc/icons";
 import { Button } from "@heroui/button";
 import NextLink from "next/link";
 

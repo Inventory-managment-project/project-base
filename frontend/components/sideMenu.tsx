@@ -1,11 +1,10 @@
 import { Listbox, ListboxItem, ListboxSection } from "@heroui/listbox";
 import { Origami, UserSearch, ChartBar, FileStack, Mail, Settings, Power, ChevronRight, ChevronLeft } from "lucide-react";
 import React from "react";
-import PanelLayout from "@/layouts/panel";
-import { IconWrapper } from "@/components/IconWrapper";
-import { Icon } from "@/components/Icon";
-import { ThemeSwitch } from "@/components/theme-switch";
-import { title, subtitle } from "@/components/primitives";
+import { IconWrapper } from "@/components/misc/IconWrapper";
+import { Icon } from "@/components/misc/Icon";
+import { ThemeSwitch } from "@/components/misc/theme-switch";
+import { title, subtitle } from "@/components/misc/primitives";
 import { Button } from "@heroui/button";
 
 interface SideMenuProps {

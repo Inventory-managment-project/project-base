@@ -3,7 +3,6 @@ import type { AppProps } from "next/app";
 import { HeroUIProvider } from "@heroui/system";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
 
 import { fontSans, fontMono } from "@/config/fonts";
 import "@/styles/globals.css";

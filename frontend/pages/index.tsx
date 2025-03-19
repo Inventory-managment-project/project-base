@@ -4,8 +4,8 @@ import { Code } from "@heroui/code";
 import { button as buttonStyles } from "@heroui/theme";
 
 import { siteConfig } from "@/config/site";
-import { title, subtitle } from "@/components/primitives";
-import { GithubIcon } from "@/components/icons";
+import { title, subtitle } from "@/components/misc/primitives";
+import { GithubIcon } from "@/components/misc/icons";
 import LandingLayout from "@/layouts/landing";
 
 export default function IndexPage() {

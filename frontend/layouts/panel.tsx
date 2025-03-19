@@ -1,7 +1,4 @@
-import { Link } from "@heroui/link";
-
 import { Head } from "./head";
-
 import { Navbar } from "@/components/navbarPanel";
 
 export default function PanelLayout({
