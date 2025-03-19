@@ -1,5 +1,5 @@
 import { Head } from "./head";
-import { Navbar } from "@/components/navbarPanel";
+import { Navbar } from "@/components/navbars/navbarPanel";
 
 export default function PanelLayout({
   children,

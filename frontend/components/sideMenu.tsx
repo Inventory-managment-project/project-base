@@ -6,6 +6,8 @@ import { Icon } from "@/components/misc/Icon";
 import { ThemeSwitch } from "@/components/misc/theme-switch";
 import { title, subtitle } from "@/components/misc/primitives";
 import { Button } from "@heroui/button";
+import Logout from "./menu/Logout";
+import Setting from "./menu/Settings";
 
 interface SideMenuProps {
   setContent: (content: JSX.Element) => void;
@@ -30,24 +32,12 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
     switch (selectedValue) {
       case "settings":
         setContent(
-          <div className="flex flex-col w-[50%] max-md:w-[85%] h-full gap-4 justify-start items-center">
-            <h1 className={title()}>Configuración</h1>
-            <div className="flex flex-row justify-between w-full">
-              <p className={subtitle()}>Visualización:</p>
-              <ThemeSwitch />
-            </div>
-          </div>
+          <Setting />
         );
         break;
       case "logout":
       setContent(
-        <div className="flex flex-col w-[50%] gap-4 justify-start items-center">
-          <h1 className={title()}>Cerrar Sesión</h1>
-          <div className="flex flex-row justify-between w-full">
-            <p className={subtitle()}>¿Estás seguro que quieres cerrar sesión?</p>
-            <Button color="danger">Confirmar</Button>
-          </div>
-        </div>
+        <Logout />
       );
       break;
       default:
