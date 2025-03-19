@@ -18,7 +18,6 @@ import {
 import { useState, useMemo, useCallback } from "react";
 import { SearchIcon, ChevronDownIcon, PlusIcon, PencilIcon, Trash2Icon } from "lucide-react";
 import { SharedSelection } from "@heroui/system";
-import { Key } from "@react-types/shared";
 
 export const columns = [
   {name: "ID", uid: "id", sortable: true},
@@ -481,7 +480,7 @@ const Products = () => {
       bottomContent={bottomContent}
       bottomContentPlacement="outside"
       classNames={{
-        wrapper: "max-h-[382px]",
+        wrapper: "max-h-[445px] min-h-[445px]",
       }}
       selectedKeys={selectedKeys}
       selectionMode="multiple"

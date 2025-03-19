@@ -18,7 +18,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
   const [selectedKey, setSelectedKey] = React.useState<Set<string>>(
     new Set(["products"]),
   );
-  const [sidebarVisible, setSidebarVisible] = React.useState(true);
+  const [sidebarVisible, setSidebarVisible] = React.useState(false);
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
