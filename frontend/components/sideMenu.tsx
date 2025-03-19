@@ -1,11 +1,8 @@
 import { Listbox, ListboxItem, ListboxSection } from "@heroui/listbox";
-import { Package, UserSearch, ChartBar, FileStack, Mail, Settings, Power, ChevronRight, ChevronLeft, Home, ReceiptText } from "lucide-react";
+import { Package, ChartBar, FileStack, Mail, Settings, ChevronRight, Home, ReceiptText } from "lucide-react";
 import React from "react";
 import { IconWrapper } from "@/components/misc/IconWrapper";
 import { Icon } from "@/components/misc/Icon";
-import { ThemeSwitch } from "@/components/misc/theme-switch";
-import { title, subtitle } from "@/components/misc/primitives";
-import { Button } from "@heroui/button";
 import Logout from "./menu/Logout";
 import Setting from "./menu/Settings";
 import Products from "./menu/Products";

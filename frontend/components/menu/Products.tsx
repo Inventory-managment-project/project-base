@@ -5,16 +5,13 @@ import {
   TableColumn,
   TableBody,
   TableRow,
-  TableCell,
-  Input,
-  Button,
-  DropdownTrigger,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
-  Pagination,
-  Tooltip,
-} from "@heroui/react";
+  TableCell
+} from "@heroui/table";
+import { Button } from "@heroui/button";
+import { Tooltip } from "@heroui/tooltip";
+import { Input } from "@heroui/input";
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/dropdown";
+import { Pagination } from "@heroui/pagination";
 import { useState, useMemo, useCallback } from "react";
 import { SearchIcon, ChevronDownIcon, PlusIcon, PencilIcon, Trash2Icon } from "lucide-react";
 import { SharedSelection } from "@heroui/system";
