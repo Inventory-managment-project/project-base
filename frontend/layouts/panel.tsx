@@ -13,7 +13,7 @@ export default function PanelLayout({
     <div className="relative flex flex-col h-screen">
       <Head />
       <Navbar />
-      <main className="container mx-auto w-full h-full flex-grow">
+      <main className="mx-auto w-full h-full flex-grow">
         {children}
       </main>
     </div>
