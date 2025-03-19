@@ -17,6 +17,8 @@ import {
 } from "@heroui/react";
 import { useState, useMemo, useCallback } from "react";
 import { SearchIcon, ChevronDownIcon, PlusIcon, PencilIcon, Trash2Icon } from "lucide-react";
+import { SharedSelection } from "@heroui/system";
+import { Key } from "@react-types/shared";
 
 export const columns = [
   {name: "ID", uid: "id", sortable: true},
@@ -255,6 +257,13 @@ export type Product = {
   [key: string]: any;
 };
 
+export type SortDirection = "ascending" | "descending";
+
+export type SortDescriptor = {
+  column: string | number;
+  direction: SortDirection;
+};
+
 export function capitalize(s : string) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
 }
@@ -263,10 +272,10 @@ const INITIAL_VISIBLE_COLUMNS = ["barcode", "name", "price", "stock", "actions"]
 
 const Products = () => {
   const [filterValue, setFilterValue] = useState("");
-  const [selectedKeys, setSelectedKeys] = useState<Set<[]>|string>(new Set([]));
-  const [visibleColumns, setVisibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
+  const [selectedKeys, setSelectedKeys] = useState<Set<string> | "all">(new Set<string>());
+  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(new Set(INITIAL_VISIBLE_COLUMNS));
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [sortDescriptor, setSortDescriptor] = useState({
+  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
     column: "name",
     direction: "ascending",
   });
@@ -392,7 +401,13 @@ const Products = () => {
                 closeOnSelect={false}
                 selectedKeys={visibleColumns}
                 selectionMode="multiple"
-                onSelectionChange={setVisibleColumns}
+                onSelectionChange={(keys: SharedSelection) => {
+                  if (keys === "all") {
+                    setVisibleColumns(new Set(columns.map(column => column.uid)));
+                  } else {
+                    setVisibleColumns(new Set(keys as Set<string>));
+                  }
+                }}
               >
                 {columns.map((column) => (
                   <DropdownItem key={column.uid} className="capitalize">
@@ -473,9 +488,8 @@ const Products = () => {
       sortDescriptor={sortDescriptor}
       topContent={topContent}
       topContentPlacement="outside"
-      onSelectionChange={setSelectedKeys}
+      onSelectionChange={(keys : SharedSelection) => setSelectedKeys(keys === "all" ? "all" : new Set(keys as Set<string>))}
       onSortChange={setSortDescriptor}
-      onRowAction={() => {}}
     >
       <TableHeader columns={headerColumns}>
         {(column: typeof columns[number]) => (
