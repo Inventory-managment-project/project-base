@@ -2,7 +2,7 @@ import { Link } from "@heroui/link";
 
 import { Head } from "./head";
 
-import { Navbar } from "@/components/navbarLanding";
+import { Navbar } from "@/components/navbars/navbarLanding";
 
 export default function LandingLayout({
   children,

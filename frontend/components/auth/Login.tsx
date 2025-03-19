@@ -1,4 +1,4 @@
-import { Logo } from "@/components/icons";
+import { Logo } from "@/components/misc/icons";
 import { Divider } from "@heroui/divider";
 import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
 import { Input } from "@heroui/input";
