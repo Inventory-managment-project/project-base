@@ -94,4 +94,20 @@ class DBUserRepository(
             return@suspendTransaction false
         }
     }
+
+    override suspend fun getByEmail(email: String): User? {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updatePassword(userId: Int, hashedPassword: String, salt: String): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun existsById(id: Int): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun existsByEmail(email: String): Boolean {
+        TODO("Not yet implemented")
+    }
 }

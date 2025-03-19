@@ -83,4 +83,20 @@ class DBStoreRepository(private val database: Database) : StoreRepository {
         return@suspendTransaction true
 
     }
+
+    override suspend fun getByName(name: String): Store? {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getByAddress(address: String): List<Store> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun existsById(id: Int): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun existsByName(name: String): Boolean {
+        TODO("Not yet implemented")
+    }
 }

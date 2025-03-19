@@ -241,10 +241,7 @@ class DBStoreRepositoryTest : KoinTest {
 
     @Test
     fun testDeleteStoreWithRelatedEntities() {
-        TODO()
         runBlocking {
-
-            // First add a store
             val storeWithProducts = CreateStoreRequest( "Store With Products", "Has products")
             storeRepository.add(storeWithProducts, testOwner)
 
