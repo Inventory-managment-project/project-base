@@ -51,4 +51,24 @@ interface UserRepository {
      * Updates a user's email by their ID.
      */
     suspend fun updateEmail(userId: Int, email: String): Boolean
+
+    /**
+     * Retrieves a user by their email.
+     */
+    suspend fun getByEmail(email: String): User?
+
+    /**
+     * Updates a user's password by their ID.
+     */
+    suspend fun updatePassword(userId: Int, hashedPassword: String, salt: String): Boolean
+
+    /**
+     * Checks if a user exists by ID.
+     */
+    suspend fun existsById(id: Int): Boolean
+
+    /**
+     * Checks if a user exists by email.
+     */
+    suspend fun existsByEmail(email: String): Boolean
 }

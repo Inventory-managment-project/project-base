@@ -12,4 +12,8 @@ interface StoreRepository {
     suspend fun add(store: CreateStoreRequest, ownerUser: User): Int
     suspend fun delete(id: Int): Boolean
     suspend fun update(id: Int, store: UpdateStoreRequest): Boolean
+    suspend fun getByName(name: String): Store?
+    suspend fun getByAddress(address: String): List<Store>
+    suspend fun existsById(id: Int): Boolean
+    suspend fun existsByName(name: String): Boolean
 }
