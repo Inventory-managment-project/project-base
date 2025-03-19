@@ -8,7 +8,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 class ProductDAO(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<ProductDAO>(ProductTable) {
         fun productDaoToModel(dao: ProductDAO) = Product(
-            dao.id.value,
+            dao.productId,
             dao.name,
             dao.description ?: "",
             dao.price,
@@ -17,7 +17,8 @@ class ProductDAO(id: EntityID<Int>) : IntEntity(id) {
             dao.retailPrice,
             dao.createdAt.epochSecond,
             dao.stock,
-            dao.minAllowStock
+            dao.minAllowStock,
+            dao.storeId.value
         )
     }
     var name by ProductTable.name
@@ -29,4 +30,6 @@ class ProductDAO(id: EntityID<Int>) : IntEntity(id) {
     var createdAt by ProductTable.createdAt
     var stock by ProductTable.stock
     var minAllowStock by ProductTable.minAllowStock
+    var storeId by ProductTable.storeId
+    var productId by ProductTable.productId
 }

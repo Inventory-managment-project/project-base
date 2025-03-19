@@ -71,4 +71,5 @@ tasks.test {
     // systemProperty("some.property", "value")
 
     maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).takeIf { it > 0 } ?: 1
+    jvmArgs = listOf("-Xshare:off")
 }

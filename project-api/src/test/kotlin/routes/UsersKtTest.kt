@@ -1,20 +1,14 @@
 package routes
 
-import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.plugins.*
 import io.ktor.client.plugins.cookies.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.testing.*
-import io.ktor.util.*
-import io.ktor.utils.io.*
 import mx.unam.fciencias.ids.eq1.db.user.UserTable
 import mx.unam.fciencias.ids.eq1.model.user.CreateUserRequest
 import mx.unam.fciencias.ids.eq1.model.user.User
@@ -35,7 +29,6 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.koin.core.context.startKoin
@@ -154,7 +147,6 @@ class UsersKtTest : KoinTest {
         val token = response.call.body<Map<String,String>>().getOrElse("token") {
             return@getOrElse assertFails("No Auth Token found") {}
         }.toString()
-        println(token)
 
         response = client.post("/user") {
             bearerAuth(token)
