@@ -103,7 +103,7 @@ class DBProductRepositoryTest {
     @Test
     fun `test add and retrieve product`() = runBlocking {
         val product = Product(
-            0,
+            1,
             "Sample Product",
             "Description",
             BigDecimal.valueOf(15.0),
@@ -111,7 +111,7 @@ class DBProductRepositoryTest {
             BigDecimal.valueOf(15.0),
             BigDecimal.valueOf(15.0),
             0L,
-            1,
+            100,
             0,
             1
         )
@@ -154,7 +154,7 @@ class DBProductRepositoryTest {
     @Test
     fun `test update product`() = runBlocking {
         val product = Product(
-            0,
+            1,
             "Old Name",
             "Old Description",
             BigDecimal.valueOf(15.0),
@@ -172,7 +172,7 @@ class DBProductRepositoryTest {
         val updateResult = productRepository.update(updatedProduct)
         assertTrue(updateResult, "Update should succeed")
 
-        val retrievedProduct = productRepository.getById(1)
+        val retrievedProduct = productRepository.getById(product.id)
         assertNotNull(retrievedProduct)
         assertEquals("Updated Name", retrievedProduct.name)
         assertEquals(40, retrievedProduct.stock)
@@ -206,7 +206,7 @@ class DBProductRepositoryTest {
     fun `test deleteAll products`() = runBlocking {
         productRepository.add(
             Product(
-                0,
+                1,
                 "Product 1",
                 "Desc 1",
                 BigDecimal.valueOf(15.0),
@@ -221,7 +221,7 @@ class DBProductRepositoryTest {
         )
         productRepository.add(
             Product(
-                0,
+                2,
                 "Product 2",
                 "Desc 2",
                 BigDecimal.valueOf(15.0),
