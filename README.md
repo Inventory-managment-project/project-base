@@ -11,44 +11,36 @@ git clone https://github.com/Inventory-managment-project/project-base.git
 cd project-base
 ```
 
-### 2. Inicializar el contenedor del Backend + Postgres (Base de datos)
+### 2. Inicializar los contenedores del Backend (Ktor) + DB (Postgres) + Frontend (Next.js)
 
 ```bash
 docker compose up -d
 ```
 
-### 3. Inicializar el contenedor del Frontend
+### 2.1. Si ya se corrieron los contenedores al menos una vez, se recomienda utilizar este en su lugar.
 
 ```bash
-cd frontend
-docker compose up -d
+docker compose up --no-recreate --build -d
 ```
 
-### 4. Acceder a la página [principal](http://localhost:3000/)
+### 3. Acceder a la página [principal](http://localhost:3000/)
 
 ## Finalizar los contenedores
 
-### 1. Para finalizar la ejecución del Backend + Postgres: Ir a la carpeta raíz
+### 1. Para finalizar la ejecución de los contenedores: Ir a la carpeta raíz
 
 ```bash
 cd project-base
-docker compose down
+docker compose stop
 ```
 
-### 2. Finalizar la ejecución del frontend
-
-```bash
-cd frontend
-docker compose down
-```
-
-### 3. Verificar que ya no se encuentren activos los contenedores
+### 2. Verificar que ya no se encuentren activos los contenedores
 
 ```bash
 docker ps
 ```
 
-### 4. De ser así, finalizar manualmente
+### 3. De ser así, finalizar manualmente
 
 ```bash
 docker stop <nombre_del_contenedor>

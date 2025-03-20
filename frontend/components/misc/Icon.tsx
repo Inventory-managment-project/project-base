@@ -8,7 +8,6 @@ interface IconProps extends LucideProps {
 }
 
 export const Icon = ({ name, ...props }: IconProps) => {
-  //const [LucideIcon, setLucideIcon] = useState<null | React.ComponentType<LucideProps> | ((props: LucideProps) => JSX.Element)>(null);
   const [LucideIcon, setLucideIcon] = useState<ForwardRefExoticComponent<
     Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
   > | null>(null);
