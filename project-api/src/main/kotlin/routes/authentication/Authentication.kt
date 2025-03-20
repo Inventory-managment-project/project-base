@@ -41,10 +41,11 @@ fun Application.authenticationRouting(
                 }
                 val saltedHash = SaltedHash(user.hashedPassword, user.salt)
                 if (hashingService.verifySaltedHash(request.password, saltedHash)) {
+                    val expires = 60000L  * 1000L// in ms
                     val tokenConfig = TokenConfig(
                         "http://localhost:8080/",
                         "users",
-                        60000L,
+                        expires,
                         "secret"
                     )
                     val claim = TokenClaim(
@@ -60,6 +61,7 @@ fun Application.authenticationRouting(
                         name = "token",
                         value = token,
                         encoding =  CookieEncoding.BASE64_ENCODING,
+                        expires = GMTDate() + expires
                     )
                     call.respond(HttpStatusCode.OK, mapOf("token" to token))
                 } else {
