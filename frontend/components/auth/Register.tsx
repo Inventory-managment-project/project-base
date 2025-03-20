@@ -1,15 +1,12 @@
-import { Logo } from "@/components/icons";
+import { Logo } from "@/components/misc/icons";
 import { Divider } from "@heroui/divider";
 import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
-import { EyeClosedIcon, EyeIcon } from "lucide-react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
 const Register = () => {
-  const router = useRouter();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

@@ -48,7 +48,6 @@ class DBUserRepositoryTest {
     fun `test add and retrieve user`() {
         runBlocking {
             val newUser = User(
-                id = 0, // Will be assigned by DB
                 name = "Test User",
                 email = "test@example.com",
                 hashedPassword = "hashedpassword",
@@ -151,9 +150,9 @@ class DBUserRepositoryTest {
             val allUsers = userRepository.getAll()
             assertEquals(2, allUsers.size, "Should have 2 users initially")
 
-            val userIdToDelete = allUsers.first { it.name == "To Delete" }.id
+            val userIdToDelete = allUsers.first { it.name == "To Delete" }
 
-            val deleteResult = userRepository.delete(userIdToDelete)
+            val deleteResult = userRepository.delete(userIdToDelete.id)
             assertTrue(deleteResult, "Delete should succeed")
 
             assertEquals(1, userRepository.count(), "Should have 1 user after deletion")

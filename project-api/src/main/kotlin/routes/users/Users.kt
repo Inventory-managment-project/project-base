@@ -6,8 +6,12 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import mx.unam.fciencias.ids.eq1.service.users.UserService
+import org.koin.ktor.ext.inject
 
-fun Application.configureUsers(service: UserService) {
+fun Application.users() {
+
+    val userService by inject<UserService>()
+
     routing {
         authenticate("auth-jwt") {
             route("/user") {

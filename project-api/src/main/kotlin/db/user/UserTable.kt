@@ -5,7 +5,7 @@ import org.jetbrains.exposed.sql.javatime.*
 
 object UserTable : IntIdTable("user") {
     val name = varchar("name", 255)
-    val email = varchar("email", 255)
+    val email = varchar("email", 255).uniqueIndex()
     val password = varchar("hashpasswordsalted", 255)
     val salt = varchar("salt", 128)
     val createdAt = timestamp("createdat").defaultExpression(CurrentTimestamp)

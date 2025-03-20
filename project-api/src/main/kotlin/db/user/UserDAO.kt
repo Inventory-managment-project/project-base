@@ -22,5 +22,4 @@ class UserDAO(id: EntityID<Int>) : IntEntity(id) {
     var password by UserTable.password
     var salt by UserTable.salt
     var createdAt by UserTable.createdAt
-
 }
