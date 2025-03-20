@@ -52,10 +52,11 @@ fun Application.authenticationRouting(environment: ApplicationEnvironment) {
                 }
                 val saltedHash = SaltedHash(user.hashedPassword, user.salt)
                 if (hashingService.verifySaltedHash(request.password, saltedHash)) {
+                    val expireS = 60000L
                     val tokenConfig = TokenConfig(
                         environment.config.property("jwt.issuer").getString(),
                         environment.config.property("jwt.audience").getString(),
-                        60000L,
+                        expireS,
                         environment.config.property("jwt.secret").getString()
                     )
                     val claim = TokenClaim(
@@ -70,7 +71,9 @@ fun Application.authenticationRouting(environment: ApplicationEnvironment) {
                     call.response.cookies.append(
                         name = "token",
                         value = token,
-                        encoding = CookieEncoding.BASE64_ENCODING
+                        encoding = CookieEncoding.BASE64_ENCODING,
+                        expires = GMTDate() + (expireS * 1000L)
+
                     )
                     call.respond(HttpStatusCode.OK, mapOf("token" to token))
                 } else {
