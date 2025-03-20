@@ -16,22 +16,33 @@ import mx.unam.fciencias.ids.eq1.security.hashing.SaltedHash
 import mx.unam.fciencias.ids.eq1.security.request.AuthRequest
 import mx.unam.fciencias.ids.eq1.security.token.TokenClaim
 import mx.unam.fciencias.ids.eq1.security.token.TokenConfig
-import mx.unam.fciencias.ids.eq1.security.tokens.TokenProvider
+import mx.unam.fciencias.ids.eq1.security.tokenProvider.TokenProvider
 import mx.unam.fciencias.ids.eq1.service.users.UserService
+import mx.unam.fciencias.ids.eq1.utils.emailRegex
+import org.koin.ktor.ext.inject
 import java.time.Instant
 
-fun Application.authenticationRouting(
-    hashingService: HashingService,
-    userService: UserService,
-    tokenProvider: TokenProvider
-) {
-    routing {
-        staticResources("/", "")
-        route("login") {
-            get {
-                call.respondRedirect("/login.html")
-            }
+/**
+ * Defines authentication-related routes for user login, registration, and token validation.
+ *
+ * Requires the following injected dependencies:
+ * - [HashingService] for password hashing and verification.
+ * - [UserService] for user-related operations.
+ * - [TokenProvider] for generating JWT tokens.
+ * - [ApplicationEnvironment] for accessing environment configurations.
+ */
+fun Application.authenticationRouting(environment: ApplicationEnvironment) {
 
+    val hashingService by inject<HashingService>()
+    val userService by inject<UserService>()
+    val tokenProvider by inject<TokenProvider>()
+
+    routing {
+        /**
+         * Handles user login requests.
+         * Verifies user credentials and responds with a JWT token if successful.
+         */
+        route("login") {
             post {
                 val request = call.receive<AuthRequest>()
                 val user = userService.getUserByEmail(request.username)
@@ -41,12 +52,11 @@ fun Application.authenticationRouting(
                 }
                 val saltedHash = SaltedHash(user.hashedPassword, user.salt)
                 if (hashingService.verifySaltedHash(request.password, saltedHash)) {
-                    val expires = 60000L  * 1000L// in ms
                     val tokenConfig = TokenConfig(
-                        "http://localhost:8080/",
-                        "users",
-                        expires,
-                        "secret"
+                        environment.config.property("jwt.issuer").getString(),
+                        environment.config.property("jwt.audience").getString(),
+                        60000L,
+                        environment.config.property("jwt.secret").getString()
                     )
                     val claim = TokenClaim(
                         "user",
@@ -60,8 +70,7 @@ fun Application.authenticationRouting(
                     call.response.cookies.append(
                         name = "token",
                         value = token,
-                        encoding =  CookieEncoding.BASE64_ENCODING,
-                        expires = GMTDate() + expires
+                        encoding = CookieEncoding.BASE64_ENCODING
                     )
                     call.respond(HttpStatusCode.OK, mapOf("token" to token))
                 } else {
@@ -69,25 +78,34 @@ fun Application.authenticationRouting(
                 }
             }
         }
+
+        /**
+         * Handles user registration requests.
+         * Creates a new user with a securely hashed password.
+         */
         route("register") {
             post {
                 val newUser = call.receive<CreateUserRequest>()
                 val saltedHash = hashingService.generateSaltedHash(newUser.password)
                 val user = User(
-                    id = 0,
                     name = newUser.name,
                     email = newUser.email,
                     hashedPassword = saltedHash.hash,
                     salt = saltedHash.salt,
                     createdAt = Instant.now().epochSecond,
                 )
-                if (userService.addUser(user)) {
-                    call.respond(HttpStatusCode.Created, mapOf("message" to "User created"))
-                } else {
-                    call.respond(HttpStatusCode.Conflict, mapOf("message" to "Error"))
-                }
+                if (emailRegex.matcher(newUser.email).matches()) {
+                    if (userService.addUser(user)) {
+                        call.respond(HttpStatusCode.Created, mapOf("message" to "User created"))
+                    } else {
+                        call.respond(HttpStatusCode.Conflict, mapOf("message" to "Error"))
+                    }
+                } else call.respond(HttpStatusCode.Conflict, mapOf("message" to "Error"))
             }
         }
+        /**
+         * Validates a JWT token to confirm its authenticity.
+         */
         authenticate("auth-jwt") {
             route("validate") {
                 post {
@@ -101,11 +119,9 @@ fun Application.authenticationRouting(
                         value = "",
                         expires = GMTDate.START
                     )
-                    call.principal<JWTPrincipal>()
                     call.respond(HttpStatusCode.OK, mapOf("message" to "Logged out"))
                 }
             }
         }
-
     }
 }

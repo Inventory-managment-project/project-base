@@ -9,13 +9,28 @@ import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 
+/**
+ * Configures JWT-based authentication for the application.
+ * This function installs an authentication mechanism that uses JWT tokens
+ * for securing endpoints and verifying user identities. The JWT token is
+ * expected to be passed as a cookie named "token".
+ *
+ * @param environment The application's environment, used to fetch configuration values.
+ */
 fun Application.configureAuthentication(environment: ApplicationEnvironment) {
     install(Authentication) {
         jwt("auth-jwt") {
             realm = "User JWT Auth"
             authHeader { call ->
                 val token = call.request.cookies["token", CookieEncoding.BASE64_ENCODING]
+                val authHeader = call.request.headers["Authorization"]
                 if(token.isNullOrBlank()) {
+                    if (authHeader != null) {
+                        if (authHeader.startsWith("Bearer ")) {
+                            val headerToken = authHeader.substring("Bearer ".length)
+                            return@authHeader HttpAuthHeader.Single("Bearer", headerToken)
+                        }
+                    }
                     return@authHeader null
                 } else {
                     HttpAuthHeader.Single("Bearer", token)
@@ -35,7 +50,7 @@ fun Application.configureAuthentication(environment: ApplicationEnvironment) {
                 }
             }
             challenge { _, _ ->
-                call.respond(HttpStatusCode.Unauthorized, "Token is not valid or has expired")
+                call.respond(HttpStatusCode.Unauthorized)
             }
         }
     }

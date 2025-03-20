@@ -5,6 +5,9 @@ import org.apache.commons.codec.digest.DigestUtils
 import org.koin.core.annotation.Single
 import java.security.SecureRandom
 
+/**
+ * Provides SHA-256 hashing functionality with salted hashes.
+ */
 @Single
 class SHA256HashingService : HashingService {
     override fun generateSaltedHash(value: String, saltLength: Int): SaltedHash {
