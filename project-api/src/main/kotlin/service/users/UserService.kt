@@ -9,4 +9,5 @@ interface UserService {
     suspend fun getAllUser(): List<User>
     suspend fun addUser(user: User): Boolean
     suspend fun getUserByEmail(email: String): User?
+    suspend fun isOwner(user : String, storeId : Int ): Boolean
 }
