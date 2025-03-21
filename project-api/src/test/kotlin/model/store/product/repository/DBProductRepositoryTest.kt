@@ -74,7 +74,7 @@ class DBProductRepositoryTest {
 
         userRepository = DBUserRepository(database)
         storeRepository = DBStoreRepository(database)
-        productRepository = DBProductRepository(database, storeId = 1)
+        productRepository = DBProductRepository(database, storeID = 1)
 
         runBlocking {
             users.forEach { userRepository.add(it) }

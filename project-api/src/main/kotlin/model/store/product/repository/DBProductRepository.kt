@@ -9,6 +9,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.annotation.Factory
 
@@ -16,7 +17,7 @@ import org.koin.core.annotation.Factory
 @Factory
 class DBProductRepository(
     private val database: Database,
-    private val storeId: Int
+    private val storeID: Int
 ) : ProductRepository {
 
     init {
@@ -34,13 +35,14 @@ class DBProductRepository(
 
     override suspend fun getAll(): List<Product> = suspendTransaction(database) {
         ProductDAO
-            .find { ProductTable.storeId eq storeId }
+            .find { ProductTable.storeId eq storeID }
             .map(::productDaoToModel)
     }
 
     override suspend fun add(product: Product): Int = suspendTransaction(database) {
         val productDao = ProductDAO.new {
-            productId = product.id
+            productId = (ProductDAO.find { ProductTable.storeId eq storeID }
+                .maxOfOrNull { it.productId } ?: 0) + 1
             name = product.name
             description = product.description
             price = product.price
@@ -48,27 +50,26 @@ class DBProductRepository(
             wholesalePrice = product.wholesalePrice
             retailPrice = product.retailPrice
             minAllowStock = product.minAllowStock
-            this.storeId = EntityID(this@DBProductRepository.storeId, ProductTable)
+            this.storeId = EntityID(this@DBProductRepository.storeID, ProductTable)
         }
-        productDao.id.value
+        productDao.productId
     }
 
     override suspend fun update(product: Product): Boolean = suspendTransaction(database) {
-        val productDao = ProductDAO
-            .find { (ProductTable.id eq product.id) and (ProductTable.storeId eq storeId) }
-            .firstOrNull() ?: return@suspendTransaction false
-
-        productDao.name = product.name
-        productDao.description = product.description
-        productDao.price = product.price
-        productDao.stock = product.stock
-
+        val prodId = ProductDAO.find { (ProductTable.storeId eq storeID) and (ProductTable.productId eq product.id) }
+            .firstOrNull()?.id ?: return@suspendTransaction false
+        ProductDAO.findByIdAndUpdate(prodId.value) {
+            it.name = product.name
+            it.description = product.description
+            it.price = product.price
+            it.stock = product.stock
+        }
         true
     }
 
     override suspend fun delete(id: Int): Boolean = suspendTransaction(database) {
         val productDao = ProductDAO
-            .find { (ProductTable.id eq id) and (ProductTable.storeId eq storeId) }
+            .find { (ProductTable.id eq id) and (ProductTable.storeId eq storeID) }
             .firstOrNull() ?: return@suspendTransaction false
 
         productDao.delete()
@@ -77,7 +78,7 @@ class DBProductRepository(
 
     override suspend fun deleteAll(): Boolean = suspendTransaction(database) {
         ProductDAO
-            .find { ProductTable.storeId eq storeId }
+            .find { ProductTable.storeId eq storeID }
             .forEach { it.delete() }
         true
     }
