@@ -70,7 +70,14 @@ export default function AddProductsModal({ onProductAdded }: { onProductAdded: (
       id: Math.floor(Math.random() * 1000) + 1, 
       createdAt: Date.now(),
       storeId: storeId,
-      ...formData as Omit<Product, "id">
+      name: formData.name || "",
+      description: formData.description || "",
+      price: formData.price || 0,
+      barcode: formData.barcode || "",
+      wholesalePrice: formData.wholesalePrice || 0,
+      retailPrice: formData.retailPrice || 0,
+      stock: formData.stock || 0,
+      minAllowStock: formData.minAllowStock || 0
     };
     console.log("New Product:", newProduct);
     postProduct(newProduct);

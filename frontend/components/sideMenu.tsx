@@ -7,24 +7,26 @@ import Setting from "./menu/Settings";
 import Products from "./menu/Products/Products";
 import POS from "./menu/POS/POS"
 import Stores from "./menu/Stores/Stores";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useLayoutEffect } from "react";
 
 interface SideMenuProps {
   setContent: (content: JSX.Element) => void;
 }
 
 const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
-  const [selectedKey, setSelectedKey] = useState<Set<string>>(new Set(["home"]));
+  const [selectedKey, setSelectedKey] = useState<Set<string>>(
+    new Set(typeof window !== "undefined" ? [localStorage.getItem("selectedKey") || "home"] : [])
+  );
   const [sidebarVisible, setSidebarVisible] = useState(false);
-
-  useEffect(() => {
-    const storedValue = localStorage.getItem("selectedKey");
-    setSelectedKey(new Set([storedValue || "home"]));
-  }, []);
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
+
+  useEffect(() => {
+    const storedValue = localStorage.getItem("selectedKey") || "home";
+    setSelectedKey(new Set([storedValue]));
+  }, []);
 
   const selectedValue = useMemo(
     () => Array.from(selectedKey).join(", "),

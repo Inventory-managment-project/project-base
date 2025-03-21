@@ -23,10 +23,10 @@ export const columns = [
   {name: "NOMBRE", uid: "name", sortable: true},
   {name: "DESCRIPCION", uid: "description"},
   {name: "PRECIO", uid: "price", sortable: true},
-  {name: "MAYOREO", uid: "wholesale", sortable: true},
-  {name: "MENUDEO", uid: "retail", sortable: true},
+  {name: "MAYOREO", uid: "wholesalePrice", sortable: true},
+  {name: "MENUDEO", uid: "retailPrice", sortable: true},
   {name: "STOCK", uid: "stock", sortable: true},
-  {name: "MINSTOCK", uid: "minStock"},
+  {name: "MINSTOCK", uid: "minAllowStock"},
   {name: "ACCIONES", uid: "actions"},
 ];
 
@@ -95,8 +95,8 @@ const Products = () => {
   }
 
   useLayoutEffect(() => {
-      fetchProducts();
-    }, []);
+    fetchProducts();
+  }, []);
 
   const hasSearchFilter = Boolean(filterValue);
 
