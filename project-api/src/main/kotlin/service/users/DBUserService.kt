@@ -1,5 +1,6 @@
 package mx.unam.fciencias.ids.eq1.service.users
 
+import mx.unam.fciencias.ids.eq1.model.store.repository.StoreRepository
 import mx.unam.fciencias.ids.eq1.model.user.User
 import mx.unam.fciencias.ids.eq1.model.user.repository.UserRepository
 import mx.unam.fciencias.ids.eq1.utils.emailRegex
@@ -9,7 +10,10 @@ import org.koin.core.annotation.Single
  * Service implementation for managing user data.
  */
 @Single
-class DBUserService(private val userRepository: UserRepository) : UserService {
+class DBUserService(
+    private val userRepository: UserRepository,
+    private val storeRepository: StoreRepository
+) : UserService {
 
     /**
      * Retrieves all users.
@@ -41,5 +45,10 @@ class DBUserService(private val userRepository: UserRepository) : UserService {
      */
     override suspend fun getUserByEmail(email: String): User? {
         return userRepository.getAll().firstOrNull { it.email == email }
+    }
+
+    override suspend fun isOwner(user : String, storeId: Int ): Boolean {
+        val userId = userRepository.getByEmail(user)?.id ?: return false
+        return storeRepository.getByOwnerId(userId).any { it.id == storeId }
     }
 }

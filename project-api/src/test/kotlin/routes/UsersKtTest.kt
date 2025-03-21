@@ -8,6 +8,7 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import mx.unam.fciencias.ids.eq1.db.user.UserTable
 import mx.unam.fciencias.ids.eq1.model.user.CreateUserRequest
@@ -36,6 +37,7 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.test.KoinTest
+import org.mockito.Mockito.mock
 import kotlin.test.assertFails
 import kotlin.test.assertNotEquals
 
@@ -59,7 +61,7 @@ class UsersKtTest : KoinTest {
         }
 
         userRepository = DBUserRepository(database)
-        userService = DBUserService(userRepository)
+        userService = DBUserService(userRepository, mock())
 
         startKoin {
             modules(
@@ -104,7 +106,9 @@ class UsersKtTest : KoinTest {
                 json()
             }
             configureAuthentication(environment)
-            authenticationRouting(environment)
+            routing {
+                authenticationRouting(environment)
+            }
             users()
         }
 

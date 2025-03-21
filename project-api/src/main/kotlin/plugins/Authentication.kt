@@ -50,7 +50,7 @@ fun Application.configureAuthentication(environment: ApplicationEnvironment) {
                 }
             }
             challenge { _, _ ->
-                call.respond(HttpStatusCode.Unauthorized)
+                call.respond(HttpStatusCode.Unauthorized, "Auth Failed")
             }
         }
     }

@@ -95,8 +95,12 @@ class DBUserRepository(
         }
     }
 
-    override suspend fun getByEmail(email: String): User? {
-        TODO("Not yet implemented")
+    override suspend fun getByEmail(email: String): User? = suspendTransaction(database) {
+        UserDAO
+            .find { UserTable.email eq email }
+            .limit(1)
+            .map(::userDaoToModel)
+            .firstOrNull()
     }
 
     override suspend fun updatePassword(userId: Int, hashedPassword: String, salt: String): Boolean {
