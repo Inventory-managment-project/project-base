@@ -45,6 +45,7 @@ class DBProductRepository(
             description = product.description
             price = product.price
             stock = product.stock
+            barcode = product.barcode
             wholesalePrice = product.wholesalePrice
             retailPrice = product.retailPrice
             minAllowStock = product.minAllowStock
