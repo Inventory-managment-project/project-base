@@ -6,6 +6,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import mx.unam.fciencias.ids.eq1.model.store.product.Product
+import mx.unam.fciencias.ids.eq1.routes.getRequestEmailOrRespondBadRequest
 import mx.unam.fciencias.ids.eq1.service.store.product.ProductService
 import mx.unam.fciencias.ids.eq1.service.users.UserService
 import org.koin.core.parameter.parametersOf
@@ -14,7 +15,7 @@ import org.koin.ktor.ext.inject
 
 private suspend fun RoutingCall.verifyUser() : Boolean {
     val storeId = this.parameters["storeId"]?.toIntOrNull() ?: return false
-    val userEmail = this.parameters["email"] ?: return false
+    val userEmail = this.getRequestEmailOrRespondBadRequest() ?: return false
     val userService by this.application.inject<UserService>()
     return userService.isOwner(userEmail, storeId)
 }
@@ -50,8 +51,8 @@ fun Route.products() {
             }
         }
 
-        route("{storeId}/product") {
-            route("{productId}") {
+        route("/{storeId}/product") {
+            route("/{productId}") {
                 get {
                     if (!call.verifyUser()) return@get call.respond(HttpStatusCode.NotFound)
                     val storeId = call.getStoreIdOrBadRequest() ?: return@get

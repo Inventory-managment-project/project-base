@@ -30,17 +30,36 @@ fun Route.createStores() {
 }
 
 fun Route.storeRoutes() {
-    val storeService by inject<StoreService>()
     authenticate("auth-jwt") {
         route("/stores") {
-            get("/owner/{ownerId}") {
+            products()
+            route("/{storeId}") {
+                get {
+                    val storeId = call.parameters["storeId"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
+                    val storeService by call.inject<StoreService>()
+                    val store = storeService.getStoreById(storeId) ?: return@get call.respond(HttpStatusCode.NotFound)
+                    call.respond(HttpStatusCode.OK, store)
+                }
+            }
+            get {
                 val email = call.getRequestEmailOrRespondBadRequest() ?: return@get
                 val userService by call.application.inject<UserService>()
-                val ownerId = call.parameters["ownerId"]?.toIntOrNull()
-                    ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid owner ID")
+                val ownerId = userService.getUserByEmail(email)?.id ?: return@get call.respond(HttpStatusCode.NotFound)
                 if (userService.getUserByEmail(email)?.id != ownerId) {
                     return@get call.respond(HttpStatusCode.Forbidden)
                 }
+                val storeService by call.inject<StoreService>()
+                val stores = storeService.getStoresByOwner(ownerId)
+                call.respond(HttpStatusCode.OK, stores)
+            }
+            get("/owner") {
+                val email = call.getRequestEmailOrRespondBadRequest() ?: return@get
+                val userService by call.application.inject<UserService>()
+                val ownerId = userService.getUserByEmail(email)?.id ?: return@get
+                if (userService.getUserByEmail(email)?.id != ownerId) {
+                    return@get call.respond(HttpStatusCode.Forbidden)
+                }
+                val storeService by call.inject<StoreService>()
                 val stores = storeService.getStoresByOwner(ownerId)
                 call.respond(HttpStatusCode.OK, stores)
             }

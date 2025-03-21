@@ -64,7 +64,8 @@ fun Application.module() {
     routing {
         users()
         createStores()
-        authenticationRouting(environment)
         storeRoutes()
+        authenticationRouting(environment)
+
     }
 }
