@@ -5,12 +5,8 @@ import mx.unam.fciencias.ids.eq1.model.store.sales.Sales
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.time.Instant
 
 class SalesDAO(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<SalesDAO>(SalesTable) {
@@ -28,7 +24,7 @@ class SalesDAO(id: EntityID<Int>) : IntEntity(id) {
             }
 
             return Sales(
-                id = dao.id.value,
+                id = dao.salesId,
                 total = dao.total,
                 paymentmethod = dao.paymentMethod,
                 created = dao.createdAt.epochSecond,
