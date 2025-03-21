@@ -48,7 +48,7 @@ fun Route.sales() {
             val saleService by call.application.inject<SaleService> { parametersOf(storeId) }
 
             try {
-                val salesId = saleService.createSale(sale)
+                val salesId = saleService.addSale(sale)
                 call.respond(HttpStatusCode.Created, mapOf("id" to salesId))
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest, mapOf("error" to (e.message ?: "Unknown error")))
@@ -103,7 +103,7 @@ fun Route.sales() {
                 val updatedSale = call.receive<Sales>()
                 val saleService by call.application.inject<SaleService> { parametersOf(storeId) }
 
-                val result = saleService.updateSale(salesId, updatedSale)
+                val result = saleService.updateSale(updatedSale)
                 if (result) {
                     call.respond(HttpStatusCode.OK)
                 } else {
@@ -198,8 +198,8 @@ fun Route.sales() {
                 val period = call.request.queryParameters["period"] ?: "all" // daily, weekly, monthly, all
 
                 val saleService by call.application.inject<SaleService> { parametersOf(storeId) }
-                val reports = saleService.generateSalesReports(period)
-                call.respond(reports)
+                //val reports = saleService.generateSalesReports(period)
+                call.respond(HttpStatusCode.NotImplemented)
             }
         }
     }

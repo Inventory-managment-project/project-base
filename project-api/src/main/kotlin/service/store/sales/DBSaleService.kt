@@ -31,7 +31,7 @@ class DBSaleService(private val storeId: Int) : SaleService, KoinComponent {
         return salesRepository.getAll()
     }
 
-    override suspend fun createSale(sale: Sales): Int {
+    override suspend fun addSale(sale: Sales): Int {
         return salesRepository.add(sale)
     }
 
@@ -39,7 +39,7 @@ class DBSaleService(private val storeId: Int) : SaleService, KoinComponent {
         return salesRepository.update(sale)
     }
 
-    override suspend fun updateSale(id: Int, sale: Sales): Boolean {
+    suspend fun updateSale(id: Int, sale: Sales): Boolean {
         // First check if the sale exists
         val existingSale = salesRepository.getById(id) ?: return false
 
@@ -73,7 +73,7 @@ class DBSaleService(private val storeId: Int) : SaleService, KoinComponent {
         return salesRepository.getSalesByProductId(productId)
     }
 
-    override suspend fun generateSalesReports(period: String): Map<String, Any> {
+    suspend fun generateSalesReports(period: String): Map<String, Any> {
         TODO("Not yet implemented")
     }
 }

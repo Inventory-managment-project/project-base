@@ -8,6 +8,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 
@@ -16,10 +17,11 @@ class SalesDAO(id: EntityID<Int>) : IntEntity(id) {
         fun salesDaoToModel(dao: SalesDAO): Sales {
             val productPairs = transaction {
                 SalesDetailsTable
-                    .select( SalesDetailsTable.salesId eq dao.id )
+                    .selectAll()
+                    .where { SalesDetailsTable.salesId eq dao.id }
                     .map { row ->
                         val productId = row[SalesDetailsTable.productId]
-                        val product = ProductDAO[productId].let { ProductDAO.productDaoToModel(it) }
+                        val product = ProductDAO[productId].productId
                         val quantity = row[SalesDetailsTable.quantity]
                         Pair(product, quantity)
                     }
@@ -30,12 +32,15 @@ class SalesDAO(id: EntityID<Int>) : IntEntity(id) {
                 total = dao.total,
                 paymentmethod = dao.paymentMethod,
                 created = dao.createdAt.epochSecond,
-                productId = productPairs,
+                products = productPairs,
                 subtotal = dao.subtotal
             )
         }
     }
 
+
+    var salesId by SalesTable.salesId
+    var storeId by SalesTable.storeId
     var total by SalesTable.total
     var paymentMethod by SalesTable.paymentMethod
     var createdAt by SalesTable.created
