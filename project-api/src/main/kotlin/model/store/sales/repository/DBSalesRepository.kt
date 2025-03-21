@@ -42,28 +42,30 @@ class DBSalesRepository (
     }
 
     override suspend fun add(sales: Sales): Int = suspendTransaction(database) {
-        val sale = SalesTable.insertAndGetId { builder ->
-            builder[storeId] = EntityID(storeID, StoreTable)
-            builder[SalesDetailsTable.salesId] = (SalesDAO.find { storeId eq storeID }
-                .maxOfOrNull { it.salesId } ?: 0) + 1
-            builder[total] = sales.products.fold(BigDecimal(0.0)) { acc, pair ->
-                acc + (ProductDAO.find { (ProductTable.productId eq pair.first) and (ProductTable.storeId eq storeID) }
-                    .firstOrNull()
-                    ?.retailPrice ?: BigDecimal(0.0))
+        try {
+            val sale = SalesTable.insertAndGetId { builder ->
+                builder[storeId] = EntityID(storeID, StoreTable)
+                builder[SalesDetailsTable.salesId] = (SalesDAO.find { storeId eq storeID }
+                    .maxOfOrNull { it.salesId } ?: 0) + 1
+                builder[total] = sales.products.fold(BigDecimal(0.0)) { acc, pair ->
+                    acc + (ProductDAO.find { (ProductTable.productId eq pair.first) and (ProductTable.storeId eq storeID) }
+                        .firstOrNull()
+                        ?.retailPrice ?: BigDecimal(0.0))
+                }
+                builder[paymentMethod] = sales.paymentmethod
             }
-            builder[paymentMethod] = sales.paymentmethod
-        }
-        sales.products.forEach { product ->
-            val prodId = ProductDAO.find { (ProductTable.storeId eq storeID) and (ProductTable.productId eq product.first) }.firstOrNull()
-            if (prodId == null) return@forEach
-            SalesDetailsTable.insert { salesDetails ->
-                salesDetails[salesId] = sale.value
-                salesDetails[productId] = prodId.id
-                salesDetails[quantity] = product.second
+            sales.products.forEach { product ->
+                val prodId = ProductDAO.find { (ProductTable.storeId eq storeID) and (ProductTable.productId eq product.first) }.firstOrNull()
+                if (prodId == null) return@forEach
+                SalesDetailsTable.insert { salesDetails ->
+                    salesDetails[salesId] = sale.value
+                    salesDetails[productId] = prodId.id
+                    salesDetails[quantity] = product.second
+                }
+                ProductDAO.findSingleByAndUpdate((ProductTable.storeId eq storeID) and (ProductTable.productId eq product.first)) { it.stock -= product.second.toInt() }
             }
-            ProductDAO.findSingleByAndUpdate((ProductTable.storeId eq storeID) and (ProductTable.productId eq product.first)) { it.stock -= product.second.toInt() }
-        }
-        SalesDAO.findById(sale)?.salesId ?: -1
+            SalesDAO.findById(sale)?.salesId ?: -1
+        } catch (e : Exception) { -1 }
     }
 
     override suspend fun update(sales: Sales): Boolean {
