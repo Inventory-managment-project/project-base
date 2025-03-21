@@ -12,6 +12,6 @@ data class Sales (
     @Serializable(BigDecimalSerializer ::class) val total : BigDecimal,
     val paymentmethod : PAYMENTMETHOD,
     val created : Long,
-    val productId : List<Pair<Product, @Serializable(BigDecimalSerializer ::class) BigDecimal>>,
+    val products : List<Pair<Int, @Serializable(BigDecimalSerializer ::class) BigDecimal>>,
     @Serializable(BigDecimalSerializer ::class) val subtotal  : BigDecimal
 )

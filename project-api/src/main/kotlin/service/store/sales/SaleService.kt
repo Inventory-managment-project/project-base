@@ -24,12 +24,12 @@ interface SaleService {
     suspend fun getAllSales(): List<Sales>
 
     /**
-     * Creates a new sale.
+     * Adds a new sale.
      *
-     * @param sale The sale to be created.
-     * @return The ID of the newly created sale.
+     * @param sale The sale to be added.
+     * @return The ID of the newly added sale.
      */
-    suspend fun createSale(sale: Sales): Int
+    suspend fun addSale(sale: Sales): Int
 
     /**
      * Updates an existing sale.
@@ -38,15 +38,6 @@ interface SaleService {
      * @return True if the update was successful, false otherwise.
      */
     suspend fun updateSale(sale: Sales): Boolean
-
-    /**
-     * Updates an existing sale by ID.
-     *
-     * @param id The ID of the sale to update.
-     * @param sale The updated sale data.
-     * @return True if the update was successful, false otherwise.
-     */
-    suspend fun updateSale(id: Int, sale: Sales): Boolean
 
     /**
      * Deletes a sale by ID.
@@ -96,12 +87,4 @@ interface SaleService {
      * @return A list of sales containing the specified product.
      */
     suspend fun getSalesByProductId(productId: Int): List<Sales>
-
-    /**
-     * Generates sales reports based on the specified period.
-     *
-     * @param period The period for which to generate reports (daily, weekly, monthly, all).
-     * @return A map containing the report data.
-     */
-    suspend fun generateSalesReports(period: String): Map<String, Any>
 }
