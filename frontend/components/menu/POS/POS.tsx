@@ -9,7 +9,7 @@ import { Button } from "@heroui/button";
 import { ProductPOS } from "@/types/product";
 import { useEffect } from "react";
 
-export default function App() {
+export default function POS() {
   const [products, setProducts] = useState<ProductPOS[]>([]);
   const [barcode, setBarcode] = useState("");
   const { isOpen, onOpen, onOpenChange } = useDisclosure();

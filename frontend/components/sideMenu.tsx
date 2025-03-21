@@ -6,6 +6,7 @@ import Logout from "./menu/Logout";
 import Setting from "./menu/Settings";
 import Products from "./menu/Products/Products";
 import POS from "./menu/POS/POS"
+import Stores from "./menu/Stores/Stores";
 import { useState, useMemo, useEffect } from "react";
 
 interface SideMenuProps {
@@ -32,6 +33,11 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
 
   useEffect(() => {
     switch (selectedValue) {
+      case "home":
+        setContent(
+          <Stores />
+        );
+        break;
       case "pdv":
         setContent(
           <POS />

@@ -12,7 +12,7 @@ import { Tooltip } from "@heroui/tooltip";
 import { Input } from "@heroui/input";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/dropdown";
 import { Pagination } from "@heroui/pagination";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useLayoutEffect } from "react";
 import { SearchIcon, ChevronDownIcon, PlusIcon, PencilIcon, Trash2Icon } from "lucide-react";
 import { SharedSelection } from "@heroui/system";
 import AddProductsModal from "./AddProductsModal";
@@ -32,18 +32,27 @@ export const columns = [
 
 export type Product = {
   id: number;
-  barcode: string;
   name: string;
   description: string;
   price: number;
-  wholesale: number;
-  retail: number;
+  barcode: string;
+  wholesalePrice: number;
+  retailPrice: number;
+  createdAt: number;
   stock: number;
-  minStock: number;
+  minAllowStock: number;
+  storeId: number;
   [key: string]: any;
 };
 
-const products = new Array<Product>();
+function parseProducts(data: any[]): Product[] {
+  return data.map(item => ({
+    ...item,
+    price: parseFloat(item.price),
+    wholesalePrice: parseFloat(item.wholesalePrice),
+    retailPrice: parseFloat(item.retailPrice)
+  }));
+}
 
 export type SortDirection = "ascending" | "descending";
 
@@ -59,6 +68,7 @@ export function capitalize(s : string) {
 const INITIAL_VISIBLE_COLUMNS = ["barcode", "name", "price", "stock", "actions"];
 
 const Products = () => {
+  const [products, setProducts] = useState<Product[]>([]);
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<Set<string> | "all">(new Set<string>());
   const [visibleColumns, setVisibleColumns] = useState<Set<string>>(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -68,6 +78,25 @@ const Products = () => {
     direction: "ascending",
   });
   const [page, setPage] = useState(1);
+
+  const fetchProducts = async () => {
+    try {
+      const res = await fetch(`http://localhost:8080/stores/${localStorage.getItem("selectedStore")}/products`, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+          "Content-Type": "application/json",
+        }
+      });
+      const data = await res.json();
+      setProducts(parseProducts(data));
+    } catch (error) {
+      console.error("Error al obtener las tiendas:", error);
+    }
+  }
+
+  useLayoutEffect(() => {
+      fetchProducts();
+    }, []);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -188,7 +217,7 @@ const Products = () => {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <AddProductsModal />
+            <AddProductsModal onProductAdded={(newProduct) => setProducts((prevProducts) => [...prevProducts, newProduct])} />
           </div>
         </div>
         <div className="flex justify-end items-center">
