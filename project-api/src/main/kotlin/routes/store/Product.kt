@@ -90,7 +90,7 @@ fun Route.products() {
                 if (productService.updateProduct(updatedProduct)) {
                     call.respond(HttpStatusCode.OK, updatedProduct)
                 } else {
-                    call.respond(HttpStatusCode.NotFound)
+                    call.respond(HttpStatusCode.Conflict)
                 }
             }
         }
