@@ -14,9 +14,6 @@ import org.koin.core.parameter.parametersOf
 import org.koin.ktor.ext.inject
 
 fun Route.sales() {
-    val storeService by inject<StoreService>()
-    val userService by inject<UserService>()
-
     // All operations below require authentication
     authenticate("auth-jwt") {
         // Create a new sale
@@ -28,6 +25,7 @@ fun Route.sales() {
                 // Get authenticated user
                 val userEmail = call.principal<JWTPrincipal>()?.payload?.getClaim("email")?.asString()
                     ?: return@post call.respond(HttpStatusCode.NotFound)
+                val userService by call.application.inject<UserService>() { parametersOf(storeId) }
                 val user = userService.getUserByEmail(userEmail)
                     ?: return@post call.respond(HttpStatusCode.NotFound)
 
@@ -36,6 +34,8 @@ fun Route.sales() {
                     return@post call.respond(HttpStatusCode.NotFound)
                 }
                 // Verify the store exists
+                val storeService by call.application.inject<StoreService>()
+
                 val store = storeService.getStoreById(storeId)
                     ?: return@post call.respond(HttpStatusCode.NotFound, "Store not found")
 
@@ -82,10 +82,13 @@ fun Route.sales() {
                 // Get authenticated user
                 val userEmail = call.principal<JWTPrincipal>()?.payload?.getClaim("email")?.asString()
                     ?: return@put call.respond(HttpStatusCode.BadRequest)
+                val userService by call.application.inject<UserService>() { parametersOf(storeId) }
                 val user = userService.getUserByEmail(userEmail)
                     ?: return@put call.respond(HttpStatusCode.Forbidden)
 
                 // Verify the store exists
+                val storeService by call.application.inject<StoreService>()
+
                 val store = storeService.getStoreById(storeId)
                     ?: return@put call.respond(HttpStatusCode.NotFound, "Store not found")
 
@@ -113,10 +116,14 @@ fun Route.sales() {
                 // Get authenticated user
                 val userEmail = call.principal<JWTPrincipal>()?.payload?.getClaim("email")?.asString()
                     ?: return@delete call.respond(HttpStatusCode.BadRequest)
+                val userService by call.application.inject<UserService>() { parametersOf(storeId) }
+
                 val user = userService.getUserByEmail(userEmail)
                     ?: return@delete call.respond(HttpStatusCode.Forbidden)
 
                 // Verify the store exists
+                val storeService by call.application.inject<StoreService>()
+
                 val store = storeService.getStoreById(storeId)
                     ?: return@delete call.respond(HttpStatusCode.NotFound, "Store not found")
 
@@ -141,10 +148,12 @@ fun Route.sales() {
                 // Get authenticated user
                 val userEmail = call.principal<JWTPrincipal>()?.payload?.getClaim("email")?.asString()
                     ?: return@get call.respond(HttpStatusCode.BadRequest)
+                val userService by call.application.inject<UserService>() { parametersOf(storeId) }
                 val user = userService.getUserByEmail(userEmail)
                     ?: return@get call.respond(HttpStatusCode.Forbidden)
 
                 // Verify the store exists
+                val storeService by call.application.inject<StoreService>()
                 val store = storeService.getStoreById(storeId)
                     ?: return@get call.respond(HttpStatusCode.NotFound, "Store not found")
 
