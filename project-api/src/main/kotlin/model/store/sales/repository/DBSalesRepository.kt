@@ -54,9 +54,11 @@ class DBSalesRepository (
             builder[paymentMethod] = sales.paymentmethod
         }
         sales.products.forEach { product ->
+            val prodId = ProductDAO.find { (ProductTable.storeId eq storeID) and (ProductTable.productId eq product.first) }.firstOrNull()
+            if (prodId == null) return@forEach
             SalesDetailsTable.insert { salesDetails ->
                 salesDetails[salesId] = sale.value
-                salesDetails[productId] = product.first
+                salesDetails[productId] = prodId.id
                 salesDetails[quantity] = product.second
             }
             ProductDAO.findSingleByAndUpdate((ProductTable.storeId eq storeID) and (ProductTable.productId eq product.first)) { it.stock -= product.second.toInt() }
