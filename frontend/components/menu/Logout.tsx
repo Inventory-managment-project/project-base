@@ -4,11 +4,17 @@ import { Button } from "@heroui/button";
 const Logout = () => {
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:8080/logout", {
+      const res = await fetch("http://localhost:8080/logout", {
         method: "POST",
-        credentials: "include",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: localStorage.getItem("authToken") }),
       });
       localStorage.removeItem("authToken");
+      localStorage.removeItem("selectedKey");
+      document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       window.location.href = "/";
     } catch (error) {
       console.error("Error durante el logout:", error);

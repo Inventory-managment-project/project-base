@@ -1,33 +1,50 @@
 import { Listbox, ListboxItem, ListboxSection } from "@heroui/listbox";
 import { Package, ChartBar, FileStack, Mail, Settings, ChevronRight, Home, ReceiptText } from "lucide-react";
-import React from "react";
 import { IconWrapper } from "@/components/misc/IconWrapper";
 import { Icon } from "@/components/misc/Icon";
 import Logout from "./menu/Logout";
 import Setting from "./menu/Settings";
-import Products from "./menu/Products";
+import Products from "./menu/Products/Products";
+import POS from "./menu/POS/POS"
+import Stores from "./menu/Stores/Stores";
+import { useState, useMemo, useEffect, useLayoutEffect } from "react";
 
 interface SideMenuProps {
   setContent: (content: JSX.Element) => void;
 }
 
 const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
-  const [selectedKey, setSelectedKey] = React.useState<Set<string>>(
-    new Set(["products"]),
+  const [selectedKey, setSelectedKey] = useState<Set<string>>(
+    new Set(typeof window !== "undefined" ? [localStorage.getItem("selectedKey") || "home"] : [])
   );
-  const [sidebarVisible, setSidebarVisible] = React.useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
 
-  const selectedValue = React.useMemo(
+  useEffect(() => {
+    const storedValue = localStorage.getItem("selectedKey") || "home";
+    setSelectedKey(new Set([storedValue]));
+  }, []);
+
+  const selectedValue = useMemo(
     () => Array.from(selectedKey).join(", "),
     [selectedKey],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     switch (selectedValue) {
+      case "home":
+        setContent(
+          <Stores />
+        );
+        break;
+      case "pdv":
+        setContent(
+          <POS />
+        );
+        break;
       case "products":
         setContent(
           <Products />
@@ -49,6 +66,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
         );
         break;
     }
+    localStorage.setItem("selectedKey", selectedValue);
   }, [selectedValue]);
 
   return (
