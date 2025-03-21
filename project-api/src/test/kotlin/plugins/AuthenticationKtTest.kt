@@ -6,6 +6,7 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import mx.unam.fciencias.ids.eq1.model.user.CreateUserRequest
 import mx.unam.fciencias.ids.eq1.plugins.configureAuthentication
@@ -71,7 +72,9 @@ class AuthenticationKtTest {
                 json()
             }
             configureAuthentication(environment)
-            authenticationRouting(environment)
+            routing {
+                authenticationRouting(environment)
+            }
         }
 
         val client = createClient {

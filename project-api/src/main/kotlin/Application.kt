@@ -60,10 +60,12 @@ fun Application.module() {
     configureSerialization()
 
     //Routes
-    authenticationRouting(environment)
-    users()
-    createStores()
+
     routing {
+        users()
+        createStores()
         storeRoutes()
+        authenticationRouting(environment)
+
     }
 }
