@@ -90,7 +90,7 @@ const Products = () => {
       const data = await res.json();
       setProducts(parseProducts(data));
     } catch (error) {
-      console.error("Error al obtener las tiendas:", error);
+      console.error("Error al obtener los productos:", error);
     }
   }
 

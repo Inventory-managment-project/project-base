@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const API_AUTH_URL = "http://localhost:8080/validate";
+const API_AUTH_URL = "http://172.18.0.4:8080/validate";
 
 function decodeBase64(str: string) {
   return Buffer.from(str, "base64").toString("utf-8");

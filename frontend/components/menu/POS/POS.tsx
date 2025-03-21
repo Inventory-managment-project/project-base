@@ -7,12 +7,51 @@ import { BarcodeIcon, PlusIcon, CheckCircleIcon, CircleXIcon } from "lucide-reac
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { ProductPOS } from "@/types/product";
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
+import { Product } from "../Products/Products";
+
+export function convertToProductPOS(product: Product): ProductPOS {
+  return {
+    id: product.id,
+    name: product.name,
+    price: product.retailPrice,
+    quantity: product.stock
+  };
+}
+
+function parseProducts(data: any[]): Product[] {
+  return data.map(item => ({
+    ...item,
+    price: parseFloat(item.price),
+    wholesalePrice: parseFloat(item.wholesalePrice),
+    retailPrice: parseFloat(item.retailPrice)
+  }));
+}
 
 export default function POS() {
+  const [productList, setProductList] = useState<Product[]>([]);
   const [products, setProducts] = useState<ProductPOS[]>([]);
   const [barcode, setBarcode] = useState("");
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  const fetchProducts = async () => {
+    try {
+      const res = await fetch(`http://localhost:8080/stores/${localStorage.getItem("selectedStore")}/products`, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+          "Content-Type": "application/json",
+        }
+      });
+      const data = await res.json();
+      setProductList(parseProducts(data));
+    } catch (error) {
+      console.error("Error al obtener los productos:", error);
+    }
+  }
+
+  useLayoutEffect(() => {
+    fetchProducts();
+  }, []);
 
   useEffect(() => {
     const savedProducts = localStorage.getItem("products") || "";
@@ -25,15 +64,24 @@ export default function POS() {
 
   const handleScan = () => {
     if (!barcode.trim()) return;
-    
-    const newProduct: ProductPOS = {
-      id: Math.floor(Math.random() * 100) + 1,
-      name: `Producto ${products.length + 1}`,
-      price: Math.floor(Math.random() * 100) + 1,
-      quantity: 1,
-    };
-
-    setProducts([...products, newProduct]);
+    const foundProduct = productList.find(product => product.barcode === barcode.trim());
+  
+    if (foundProduct) {
+      const existingProductIndex = products.findIndex(p => p.id === foundProduct.id);
+  
+      if (existingProductIndex !== -1) {
+        const updatedProducts = [...products];
+        updatedProducts[existingProductIndex].quantity += 1;
+        setProducts(updatedProducts);
+      } else {
+        const newProduct: ProductPOS = convertToProductPOS(foundProduct);
+        newProduct.quantity = 1;
+        setProducts([...products, newProduct]);
+      }
+    } else {
+      console.warn(`Producto con código de barras ${barcode} no encontrado.`);
+    }
+  
     setBarcode("");
   };
 
