@@ -9,7 +9,6 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.annotation.Factory
 
@@ -28,7 +27,7 @@ class DBProductRepository(
 
     override suspend fun getById(id: Int): Product? = suspendTransaction(database) {
         ProductDAO
-            .find { (ProductTable.id eq id) and (ProductTable.storeId eq id) }
+            .find { (ProductTable.productId eq id) and (ProductTable.storeId eq storeID) }
             .firstOrNull()
             ?.let { productDaoToModel(it) }
     }

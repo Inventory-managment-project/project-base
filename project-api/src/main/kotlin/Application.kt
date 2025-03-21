@@ -6,6 +6,9 @@ import io.ktor.http.*
 import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
+import mx.unam.fciencias.ids.eq1.db.store.StoreTable
+import mx.unam.fciencias.ids.eq1.db.store.product.ProductTable
+import mx.unam.fciencias.ids.eq1.db.user.UserTable
 import mx.unam.fciencias.ids.eq1.di.*
 import mx.unam.fciencias.ids.eq1.plugins.configureAuthentication
 import mx.unam.fciencias.ids.eq1.plugins.configureSerialization
@@ -13,7 +16,11 @@ import mx.unam.fciencias.ids.eq1.routes.authentication.authenticationRouting
 import mx.unam.fciencias.ids.eq1.routes.store.createStores
 import mx.unam.fciencias.ids.eq1.routes.store.storeRoutes
 import mx.unam.fciencias.ids.eq1.routes.users.users
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.ksp.generated.module
+import org.koin.ktor.ext.inject
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 import org.slf4j.event.Level
@@ -53,6 +60,15 @@ fun Application.module() {
         allowHeader(HttpHeaders.Authorization)
         allowMethod(HttpMethod.Options) 
         allowMethod(HttpMethod.Post) 
+    }
+
+    val database by inject<Database>()
+    transaction(database) {
+        SchemaUtils.create(
+            UserTable,
+            StoreTable,
+            ProductTable
+        )
     }
 
     //Plugins
