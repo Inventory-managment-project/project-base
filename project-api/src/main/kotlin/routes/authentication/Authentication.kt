@@ -6,6 +6,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.util.date.*
 import mx.unam.fciencias.ids.eq1.model.user.CreateUserRequest
 import mx.unam.fciencias.ids.eq1.model.user.User
 import mx.unam.fciencias.ids.eq1.security.hashing.HashingService
@@ -107,6 +108,16 @@ fun Route.authenticationRouting(environment: ApplicationEnvironment) {
         route("validate") {
             post {
                 call.respond(HttpStatusCode.OK, mapOf("message" to "Token is valid"))
+            }
+            route("logout") {
+                post {
+                    call.response.cookies.append(
+                        name = "token",
+                        value = "",
+                        expires = GMTDate.START
+                    )
+                    call.respond(HttpStatusCode.OK, mapOf("message" to "Logged out"))
+                }
             }
         }
     }
