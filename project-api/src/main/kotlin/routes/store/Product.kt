@@ -75,6 +75,7 @@ fun Route.products() {
                 }
             }
             post {
+                if (!call.verifyUser()) return@post call.respond(HttpStatusCode.NotFound)
                 val storeId = call.getStoreIdOrBadRequest() ?: return@post
                 val product = call.receive<Product>()
                 val productService by call.application.inject<ProductService> { parametersOf(storeId) }
@@ -82,6 +83,7 @@ fun Route.products() {
                 call.respond(HttpStatusCode.Created, mapOf("id" to productId))
             }
             put {
+                if (!call.verifyUser()) return@put call.respond(HttpStatusCode.NotFound)
                 val storeId = call.getStoreIdOrBadRequest() ?: return@put
                 val updatedProduct = call.receive<Product>()
                 val productService by call.application.inject<ProductService> { parametersOf(storeId) }
