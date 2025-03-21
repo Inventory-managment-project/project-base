@@ -6,6 +6,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.util.date.*
 import mx.unam.fciencias.ids.eq1.model.user.CreateUserRequest
 import mx.unam.fciencias.ids.eq1.model.user.User
 import mx.unam.fciencias.ids.eq1.security.hashing.HashingService
@@ -49,10 +50,11 @@ fun Application.authenticationRouting(environment: ApplicationEnvironment) {
                 }
                 val saltedHash = SaltedHash(user.hashedPassword, user.salt)
                 if (hashingService.verifySaltedHash(request.password, saltedHash)) {
+                    val expireS = 60000L
                     val tokenConfig = TokenConfig(
                         environment.config.property("jwt.issuer").getString(),
                         environment.config.property("jwt.audience").getString(),
-                        60000L,
+                        expireS,
                         environment.config.property("jwt.secret").getString()
                     )
                     val claim = TokenClaim(
@@ -67,7 +69,9 @@ fun Application.authenticationRouting(environment: ApplicationEnvironment) {
                     call.response.cookies.append(
                         name = "token",
                         value = token,
-                        encoding = CookieEncoding.BASE64_ENCODING
+                        encoding = CookieEncoding.BASE64_ENCODING,
+                        expires = GMTDate() + (expireS * 1000L)
+
                     )
                     call.respond(HttpStatusCode.OK, mapOf("token" to token))
                 } else {
@@ -100,7 +104,6 @@ fun Application.authenticationRouting(environment: ApplicationEnvironment) {
                 } else call.respond(HttpStatusCode.Conflict, mapOf("message" to "Error"))
             }
         }
-
         /**
          * Validates a JWT token to confirm its authenticity.
          */
@@ -108,6 +111,16 @@ fun Application.authenticationRouting(environment: ApplicationEnvironment) {
             route("validate") {
                 post {
                     call.respond(HttpStatusCode.OK, mapOf("message" to "Token is valid"))
+                }
+            }
+            route("logout") {
+                post {
+                    call.response.cookies.append(
+                        name = "token",
+                        value = "",
+                        expires = GMTDate.START
+                    )
+                    call.respond(HttpStatusCode.OK, mapOf("message" to "Logged out"))
                 }
             }
         }
