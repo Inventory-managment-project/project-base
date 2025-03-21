@@ -1,3 +1,5 @@
+"use client";
+
 import { title, subtitle } from "@/components/misc/primitives";
 import {
   Table,
@@ -17,15 +19,15 @@ import { SearchIcon, ChevronDownIcon, PlusIcon, PencilIcon, Trash2Icon } from "l
 import { SharedSelection } from "@heroui/system";
 
 export const columns = [
-  {name: "ID", uid: "id", sortable: true},
-  {name: "BARCODE", uid: "barcode", sortable: true},
-  {name: "NOMBRE", uid: "name", sortable: true},
-  {name: "DESCRIPCION", uid: "description"},
-  {name: "PRECIO", uid: "price", sortable: true},
-  {name: "MAYOREO", uid: "wholesale", sortable: true},
-  {name: "MENUDEO", uid: "retail", sortable: true},
-  {name: "STOCK", uid: "stock", sortable: true},
-  {name: "ACCIONES", uid: "actions"},
+  { name: "ID", uid: "id", sortable: true },
+  { name: "BARCODE", uid: "barcode", sortable: true },
+  { name: "NOMBRE", uid: "name", sortable: true },
+  { name: "DESCRIPCION", uid: "description" },
+  { name: "PRECIO", uid: "price", sortable: true },
+  { name: "MAYOREO", uid: "wholesale", sortable: true },
+  { name: "MENUDEO", uid: "retail", sortable: true },
+  { name: "STOCK", uid: "stock", sortable: true },
+  { name: "ACCIONES", uid: "actions" },
 ];
 
 export const products = [
@@ -253,6 +255,21 @@ export type Product = {
   [key: string]: any;
 };
 
+// Nuevo tipo para la estructura que requiere el backend
+export type BackendProduct = {
+  id: number;
+  name: string;
+  description: string;
+  price: string;
+  barcode: string;
+  wholesalePrice: string;
+  retailPrice: string;
+  createdAt: number;
+  stock: number;
+  minAllowStock: number;
+  storeId: number;
+};
+
 export type SortDirection = "ascending" | "descending";
 
 export type SortDescriptor = {
@@ -260,11 +277,28 @@ export type SortDescriptor = {
   direction: SortDirection;
 };
 
-export function capitalize(s : string) {
+export function capitalize(s: string) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
 }
 
 const INITIAL_VISIBLE_COLUMNS = ["barcode", "name", "price", "stock", "actions"];
+
+// Función para mapear un producto a la estructura requerida por el backend
+const mapProductToBackend = (product: Product): BackendProduct => {
+  return {
+    id: product.id, // Este campo es ignorado en creación, se puede enviar cualquier valor
+    name: product.name,
+    description: product.description,
+    price: product.price.toFixed(2),
+    barcode: product.barcode,
+    wholesalePrice: product.wholesale.toFixed(2),
+    retailPrice: product.retail.toFixed(2),
+    createdAt: Math.floor(Date.now() / 1000), // Timestamp actual en segundos
+    stock: product.stock,
+    minAllowStock: product.minAllowStock || 5, // Valor por defecto de 5 si no está definido
+    storeId: 1, // Valor fijo o por defecto
+  };
+};
 
 const Products = () => {
   const [filterValue, setFilterValue] = useState("");
@@ -294,7 +328,7 @@ const Products = () => {
     }
 
     return filteredproducts;
-  }, [products, filterValue]);
+  }, [filterValue]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -306,7 +340,7 @@ const Products = () => {
   }, [page, filteredItems, rowsPerPage]);
 
   const sortedItems = useMemo(() => {
-    return [...items].sort((a : Product, b : Product) => {
+    return [...items].sort((a: Product, b: Product) => {
       const first = a[sortDescriptor.column];
       const second = b[sortDescriptor.column];
       const cmp = first < second ? -1 : first > second ? 1 : 0;
@@ -315,7 +349,7 @@ const Products = () => {
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = useCallback((product : Product, columnKey : string|number) => {
+  const renderCell = useCallback((product: Product, columnKey: string | number) => {
     const cellValue = product[columnKey];
 
     switch (columnKey) {
@@ -324,12 +358,12 @@ const Products = () => {
           <div className="relative flex justify-center items-center gap-2">
             <Tooltip content="Editar">
               <Button isIconOnly size="sm" variant="light">
-                <PencilIcon className="text-default-400"/>
+                <PencilIcon className="text-default-400" />
               </Button>
             </Tooltip>
             <Tooltip color="danger" content="Eliminar">
               <Button isIconOnly size="sm" variant="light">
-                <Trash2Icon className="text-danger"/>
+                <Trash2Icon className="text-danger" />
               </Button>
             </Tooltip>
           </div>
@@ -356,7 +390,7 @@ const Products = () => {
     setPage(1);
   }, []);
 
-  const onSearchChange = useCallback((value : string) => {
+  const onSearchChange = useCallback((value: string) => {
     if (value) {
       setFilterValue(value);
       setPage(1);
@@ -368,6 +402,40 @@ const Products = () => {
   const onClear = useCallback(() => {
     setFilterValue("");
     setPage(1);
+  }, []);
+
+  // Función para crear un nuevo producto y enviar los datos al backend
+  const onAddProduct = useCallback(async () => {
+    // Se simula la creación de un producto; en la práctica, estos datos se obtendrían de un formulario
+    const newProduct: Product = {
+      id: products.length + 1, // Valor arbitrario (el backend ignora este campo en creación)
+      barcode: "0000000000000",
+      name: "Nuevo Producto",
+      description: "Descripción del nuevo producto",
+      price: 100.00,
+      wholesale: 90.00,
+      retail: 110.00,
+      stock: 20,
+    };
+
+    const payload = mapProductToBackend(newProduct);
+
+    try {
+      const response = await fetch("../pages/api/product.ts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        console.log("Producto creado correctamente");
+        // Aquí se podría actualizar el estado para reflejar el nuevo producto
+      } else {
+        console.error("Error al crear el producto");
+      }
+    } catch (error) {
+      console.error("Error en la petición", error);
+    }
   }, []);
 
   const topContent = useMemo(() => {
@@ -412,7 +480,8 @@ const Products = () => {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button color="secondary" endContent={<PlusIcon />}>
+            {/* Se añade el manejador onPress para enviar los datos al backend */}
+            <Button onPress={onAddProduct} color="secondary" endContent={<PlusIcon />}>
               Agregar
             </Button>
           </div>
@@ -439,6 +508,8 @@ const Products = () => {
     products.length,
     onSearchChange,
     hasSearchFilter,
+    onAddProduct,
+    onClear,
   ]);
 
   const bottomContent = useMemo(() => {
@@ -468,7 +539,7 @@ const Products = () => {
         </div>
       </div>
     );
-  }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+  }, [selectedKeys, page, pages, onNextPage, onPreviousPage, filteredItems.length]);
 
   return (
     <Table
@@ -484,7 +555,9 @@ const Products = () => {
       sortDescriptor={sortDescriptor}
       topContent={topContent}
       topContentPlacement="outside"
-      onSelectionChange={(keys : SharedSelection) => setSelectedKeys(keys === "all" ? "all" : new Set(keys as Set<string>))}
+      onSelectionChange={(keys: SharedSelection) =>
+        setSelectedKeys(keys === "all" ? "all" : new Set(keys as Set<string>))
+      }
       onSortChange={setSortDescriptor}
       onRowAction={() => {}}
     >
@@ -508,6 +581,6 @@ const Products = () => {
       </TableBody>
     </Table>
   );
-}
+};
 
 export default Products;

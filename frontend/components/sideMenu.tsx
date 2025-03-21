@@ -6,6 +6,7 @@ import { Icon } from "@/components/misc/Icon";
 import Logout from "./menu/Logout";
 import Setting from "./menu/Settings";
 import Products from "./menu/Products";
+import SalesForm from "./menu/SalesForm";
 
 interface SideMenuProps {
   setContent: (content: JSX.Element) => void;
@@ -42,7 +43,12 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
       setContent(
         <Logout />
       );
-      break;
+        break;
+      case "pdv":
+          setContent(
+          <SalesForm />
+      );
+        break;
       default:
         setContent(
           <div>La función {selectedValue} estará disponible pronto.</div>,
