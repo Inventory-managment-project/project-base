@@ -8,6 +8,7 @@ import mx.unam.fciencias.ids.eq1.model.store.CreateStoreRequest
 import mx.unam.fciencias.ids.eq1.service.users.UserService
 import io.ktor.server.response.*
 import mx.unam.fciencias.ids.eq1.routes.getRequestEmailOrRespondBadRequest
+import mx.unam.fciencias.ids.eq1.routes.store.sales.sales
 import mx.unam.fciencias.ids.eq1.service.store.StoreService
 import org.koin.ktor.ext.inject
 
@@ -33,6 +34,7 @@ fun Route.storeRoutes() {
     authenticate("auth-jwt") {
         route("/stores") {
             products()
+            sales()
             route("/{storeId}") {
                 get {
                     val storeId = call.parameters["storeId"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
