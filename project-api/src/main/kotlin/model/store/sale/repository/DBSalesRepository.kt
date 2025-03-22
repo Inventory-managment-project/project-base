@@ -9,7 +9,7 @@ import mx.unam.fciencias.ids.eq1.db.store.sales.SalesDAO.Companion.salesDaoToMod
 import mx.unam.fciencias.ids.eq1.db.store.sales.SalesDetailsTable
 import mx.unam.fciencias.ids.eq1.db.store.sales.SalesTable
 import mx.unam.fciencias.ids.eq1.db.utils.suspendTransaction
-import mx.unam.fciencias.ids.eq1.model.store.sales.Sales
+import mx.unam.fciencias.ids.eq1.model.store.sales.Sale
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -30,45 +30,45 @@ class DBSalesRepository (
     }
 
 
-    override suspend fun getById(id: Int): Sales? = suspendTransaction(database) {
+    override suspend fun getById(id: Int): Sale? = suspendTransaction(database) {
         SalesDAO.find { (SalesTable.storeId eq storeID) and (SalesTable.salesId eq id) }
             .firstOrNull()
             ?.let { salesDaoToModel(it) }
 
     }
 
-    override suspend fun getAll(): List<Sales>  = suspendTransaction(database){
+    override suspend fun getAll(): List<Sale>  = suspendTransaction(database){
         SalesDAO.all().map(::salesDaoToModel)
     }
 
-    override suspend fun add(sales: Sales): Int = suspendTransaction(database) {
+    override suspend fun add(sale: Sale): Int = suspendTransaction(database) {
         try {
-            val sale = SalesTable.insertAndGetId { builder ->
+            val saleId = SalesTable.insertAndGetId { builder ->
                 builder[storeId] = EntityID(storeID, StoreTable)
                 builder[SalesDetailsTable.salesId] = (SalesDAO.find { storeId eq storeID }
                     .maxOfOrNull { it.salesId } ?: 0) + 1
-                builder[total] = sales.products.fold(BigDecimal(0.0)) { acc, pair ->
+                builder[total] = sale.products.fold(BigDecimal(0.0)) { acc, pair ->
                     acc + (ProductDAO.find { (ProductTable.productId eq pair.first) and (ProductTable.storeId eq storeID) }
                         .firstOrNull()
                         ?.retailPrice ?: BigDecimal(0.0))
                 }
-                builder[paymentMethod] = sales.paymentmethod
+                builder[paymentMethod] = sale.paymentmethod
             }
-            sales.products.forEach { product ->
+            sale.products.forEach { product ->
                 val prodId = ProductDAO.find { (ProductTable.storeId eq storeID) and (ProductTable.productId eq product.first) }.firstOrNull()
                 if (prodId == null) return@forEach
                 SalesDetailsTable.insert { salesDetails ->
-                    salesDetails[salesId] = sale.value
+                    salesDetails[salesId] = saleId
                     salesDetails[productId] = prodId.id
                     salesDetails[quantity] = product.second
                 }
                 ProductDAO.findSingleByAndUpdate((ProductTable.storeId eq storeID) and (ProductTable.productId eq product.first)) { it.stock -= product.second.toInt() }
             }
-            SalesDAO.findById(sale)?.salesId ?: -1
+            SalesDAO.findById(saleId)?.salesId ?: -1
         } catch (e : Exception) { -1 }
     }
 
-    override suspend fun update(sales: Sales): Boolean {
+    override suspend fun update(sale: Sale): Boolean {
         TODO("Not yet implemented")
     }
 
@@ -80,11 +80,11 @@ class DBSalesRepository (
         TODO("Not yet implemented")
     }
 
-    override suspend fun getByPaymentMethod(paymentMethod: PAYMENTMETHOD): List<Sales> {
+    override suspend fun getByPaymentMethod(paymentMethod: PAYMENTMETHOD): List<Sale> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getByDateRange(startDate: Long, endDate: Long): List<Sales> {
+    override suspend fun getByDateRange(startDate: Long, endDate: Long): List<Sale> {
         TODO("Not yet implemented")
     }
 
@@ -92,7 +92,7 @@ class DBSalesRepository (
         TODO("Not yet implemented")
     }
 
-    override suspend fun getSalesByProductId(productId: Int): List<Sales> {
+    override suspend fun getSalesByProductId(productId: Int): List<Sale> {
         TODO("Not yet implemented")
     }
 }

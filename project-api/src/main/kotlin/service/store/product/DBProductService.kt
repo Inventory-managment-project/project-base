@@ -28,7 +28,18 @@ class DBProductService(storeId : Int) : ProductService, KoinComponent {
         return productRepository.update(product)
     }
 
-    override suspend fun deleteProduct(id: Int): Boolean {
+    override suspend fun deleteProductById(id: Int): Boolean {
         return productRepository.delete(id)
+    }
+
+    override suspend fun deleteProductByBarcode(barcode: String): Boolean {
+        val prodId = productRepository.getByBarcode(barcode)?.id
+        return if (prodId != null) {
+            productRepository.delete(prodId)
+        } else false
+    }
+
+    override suspend fun getProductByBarcode(string: String): Product? {
+        return productRepository.getByBarcode(string)
     }
 }

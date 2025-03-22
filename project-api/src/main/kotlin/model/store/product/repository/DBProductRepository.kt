@@ -86,4 +86,10 @@ class DBProductRepository(
     override suspend fun getBelowMinStock(): List<Product> {
         TODO("Not yet implemented")
     }
+
+    override suspend fun getByBarcode(barcode: String): Product? = suspendTransaction(database) {
+       ProductDAO.find { (ProductTable.storeId eq storeID) and (ProductTable.barcode eq barcode) }
+           .firstOrNull()
+        ?.let { productDaoToModel(it) }
+    }
 }

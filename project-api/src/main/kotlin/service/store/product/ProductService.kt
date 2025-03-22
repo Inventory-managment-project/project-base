@@ -11,5 +11,9 @@ interface ProductService {
 
     suspend fun updateProduct(product: Product): Boolean
 
-    suspend fun deleteProduct(id: Int): Boolean
+    suspend fun deleteProductById(id: Int): Boolean
+
+    suspend fun deleteProductByBarcode(barcode: String): Boolean
+
+    suspend fun getProductByBarcode(string: String): Product?
 }
