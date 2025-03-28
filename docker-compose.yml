@@ -40,14 +40,11 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    restart: unless-stopped
     ports:
       - "3000:3000"
     networks:
       - app_network
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
 
 networks:
   app_network:
