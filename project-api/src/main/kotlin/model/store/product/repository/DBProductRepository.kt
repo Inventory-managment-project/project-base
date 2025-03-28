@@ -2,6 +2,8 @@ package mx.unam.fciencias.ids.eq1.model.store.product.repository
 
 import mx.unam.fciencias.ids.eq1.db.store.product.ProductDAO
 import mx.unam.fciencias.ids.eq1.db.store.product.ProductDAO.Companion.productDaoToModel
+import mx.unam.fciencias.ids.eq1.db.store.product.ProductPriceDAO
+import mx.unam.fciencias.ids.eq1.db.store.product.ProductPriceTable
 import mx.unam.fciencias.ids.eq1.db.store.product.ProductTable
 import mx.unam.fciencias.ids.eq1.db.utils.suspendTransaction
 import mx.unam.fciencias.ids.eq1.model.store.product.Product
@@ -21,7 +23,7 @@ class DBProductRepository(
 
     init {
         transaction(database) {
-            SchemaUtils.create(ProductTable)
+            SchemaUtils.create(ProductTable, ProductPriceTable)
         }
     }
 
@@ -44,26 +46,35 @@ class DBProductRepository(
                 .maxOfOrNull { it.productId } ?: 0) + 1
             name = product.name
             description = product.description
-            price = product.price
             stock = product.stock
             barcode = product.barcode
-            wholesalePrice = product.wholesalePrice
-            retailPrice = product.retailPrice
             minAllowStock = product.minAllowStock
             this.storeId = EntityID(this@DBProductRepository.storeID, ProductTable)
         }
+        ProductPriceDAO.new {
+            price = product.price
+            retailPrice = product.retailPrice
+            wholesalePrice = product.wholesalePrice
+        }
+
         productDao.productId
     }
 
     override suspend fun update(product: Product): Boolean = suspendTransaction(database) {
         val prodId = ProductDAO.find { (ProductTable.storeId eq storeID) and (ProductTable.productId eq product.id) }
             .firstOrNull()?.id ?: return@suspendTransaction false
-        ProductDAO.findByIdAndUpdate(prodId.value) {
+        val productDAO = ProductDAO.findByIdAndUpdate(prodId.value) {
             it.name = product.name
             it.description = product.description
-            it.price = product.price
             it.stock = product.stock
         }
+        ProductPriceDAO.new {
+            productId = productDAO!!.id
+            price = product.price
+            retailPrice = product.retailPrice
+            wholesalePrice = product.wholesalePrice
+        }
+
         true
     }
 
@@ -71,8 +82,9 @@ class DBProductRepository(
         val productDao = ProductDAO
             .find { (ProductTable.id eq id) and (ProductTable.storeId eq storeID) }
             .firstOrNull() ?: return@suspendTransaction false
-
         productDao.delete()
+        ProductPriceDAO.find { ProductPriceTable.productId eq productDao.id }
+            .forEach { it.delete() }
         true
     }
 
@@ -88,8 +100,9 @@ class DBProductRepository(
     }
 
     override suspend fun getByBarcode(barcode: String): Product? = suspendTransaction(database) {
-       ProductDAO.find { (ProductTable.storeId eq storeID) and (ProductTable.barcode eq barcode) }
-           .firstOrNull()
-        ?.let { productDaoToModel(it) }
+     ProductDAO
+          .find { (ProductTable.storeId eq storeID) and (ProductTable.barcode eq barcode) }
+          .firstOrNull()
+          ?.let { productDaoToModel(it) }
     }
 }

@@ -9,12 +9,9 @@ object ProductTable  : IntIdTable("products") {
     val storeId = reference("id_store", StoreTable)
     val productId = integer("id_product")
     val name = varchar("name", 255)
-    val price = decimal("price", 10, 2)
     val barcode = varchar("barcode", 255).nullable()
     val description = varchar("description", 255).nullable()
-    val wholesalePrice = decimal("wholesalePrice", 10, 2)
-    val retailPrice = decimal("retailPrice", 10, 2)
-    val stock = integer("stock")
+    val stock = decimal("stock", 14, 4)
     val minAllowStock = integer("minAllowStock")
     val createdAt = timestamp("created_at").defaultExpression(CurrentTimestamp)
 
