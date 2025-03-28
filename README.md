@@ -14,15 +14,8 @@ cd project-base
 ### 2. Inicializar los contenedores del Backend (Ktor) + DB (Postgres) + Frontend (Next.js)
 
 ```bash
-docker compose up -d
+docker compose up --build (-d -> Para que corra en segundo plano)  
 ```
-
-### 2.1. Si ya se corrieron los contenedores al menos una vez, se recomienda utilizar este en su lugar.
-
-```bash
-docker compose up --no-recreate --build -d
-```
-
 ### 3. Acceder a la página [principal](http://localhost:3000/)
 
 ## Finalizar los contenedores
