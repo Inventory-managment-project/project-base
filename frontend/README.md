@@ -34,10 +34,19 @@ yarn install
 
 Esto descargará todas las dependencias necesarias definidas en `package.json`.
 
-## 4. Ejecutar el servidor de desarrollo
+## 5. Ejecutar el servidor de desarrollo
 
 Para iniciar el servidor de desarrollo local, usa:
 
 ```bash
 yarn dev
 ```
+
+## 6. Ejecutar el servidor de desarrollo
+
+Inicializar el Backend y la base de datos
+
+```bash
+docker compose up api db (-d -> para que se ejecute en segundo plano)
+```
+
