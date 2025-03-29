@@ -1,55 +1,52 @@
-# Next.js & HeroUI Template
+# Instrucciones para trabajar con el frontend en modo de desarrollo (Se refresca automáticamente al modificar cualquier archivo)
 
-This is a template for creating applications using Next.js 14 (pages directory) and HeroUI (v2).
+## 1. Instalar NVM (Node Version Manager)
 
-[Try it on CodeSandbox](https://githubbox.com/heroui-inc/next-pages-template)
-
-> Note: Since Next.js 14, the pages router is recommend migrating to the [new App Router](https://nextjs.org/docs/app) to leverage React's latest features
->
-> Read more: [Pages Router](https://nextjs.org/docs/pages)
-
-## Technologies Used
-
-- [Next.js 14](https://nextjs.org/docs/getting-started)
-- [HeroUI](https://heroui.com)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org)
-- [Framer Motion](https://www.framer.com/motion)
-- [next-themes](https://github.com/pacocoursey/next-themes)
-
-## How to Use
-
-To create a new project based on this template using `create-next-app`, run the following command:
+Instala NVM ejecutando:
 
 ```bash
-npx create-next-app -e https://github.com/heroui-inc/next-pages-template
+wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash
 ```
+> **Nota:** Es posible que necesites cerrar y volver a abrir tu terminal
 
-### Install dependencies
+## 2. Instalar la última versión LTS de Node.js
 
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
+Con NVM instalado, ejecuta:
 
 ```bash
-npm install
+nvm install --lts
 ```
 
-### Run the development server
+## 3. Instalar el manejador de dependencias YARN
+
 
 ```bash
-npm run dev
+npm install -g yarn
 ```
 
-### Setup pnpm (optional)
+## 4. Instalar dependencias del frontend
 
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
+Navega a la carpeta de frontend y ejecuta:
 
 ```bash
-public-hoist-pattern[]=*@heroui/*
+yarn install
 ```
 
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
+Esto descargará todas las dependencias necesarias definidas en `package.json`.
 
-## License
+## 5. Ejecutar el servidor de desarrollo
 
-Licensed under the [MIT license](https://github.com/heroui-inc/next-pages-template/blob/main/LICENSE).
+Para iniciar el servidor de desarrollo local, usa:
+
+```bash
+yarn dev
+```
+
+## 6. Ejecutar el servidor de desarrollo
+
+Inicializar el Backend y la base de datos
+
+```bash
+docker compose up api db (-d -> para que se ejecute en segundo plano)
+```
+
