@@ -1,7 +1,7 @@
 package mx.unam.fciencias.ids.eq1.service.store.sales
 
 import mx.unam.fciencias.ids.eq1.db.store.sales.PAYMENTMETHOD
-import mx.unam.fciencias.ids.eq1.model.store.sales.Sales
+import mx.unam.fciencias.ids.eq1.model.store.sales.Sale
 import java.math.BigDecimal
 
 /**
@@ -14,14 +14,14 @@ interface SaleService {
      * @param id The unique identifier of the sale.
      * @return The sale if found, null otherwise.
      */
-    suspend fun getSaleById(id: Int): Sales?
+    suspend fun getSaleById(id: Int): Sale?
 
     /**
      * Retrieves all sales.
      *
      * @return A list of all sales.
      */
-    suspend fun getAllSales(): List<Sales>
+    suspend fun getAllSales(): List<Sale>
 
     /**
      * Adds a new sale.
@@ -29,7 +29,7 @@ interface SaleService {
      * @param sale The sale to be added.
      * @return The ID of the newly added sale.
      */
-    suspend fun addSale(sale: Sales): Int
+    suspend fun addSale(sale: Sale): Int
 
     /**
      * Updates an existing sale.
@@ -37,7 +37,7 @@ interface SaleService {
      * @param sale The sale with updated information.
      * @return True if the update was successful, false otherwise.
      */
-    suspend fun updateSale(sale: Sales): Boolean
+    suspend fun updateSale(sale: Sale): Boolean
 
     /**
      * Deletes a sale by ID.
@@ -60,7 +60,7 @@ interface SaleService {
      * @param paymentMethod The payment method to filter by.
      * @return A list of sales with the specified payment method.
      */
-    suspend fun getSalesByPaymentMethod(paymentMethod: PAYMENTMETHOD): List<Sales>
+    suspend fun getSalesByPaymentMethod(paymentMethod: PAYMENTMETHOD): List<Sale>
 
     /**
      * Retrieves sales within a date range.
@@ -69,7 +69,7 @@ interface SaleService {
      * @param endDate The end date of the range (as Unix timestamp).
      * @return A list of sales within the specified date range.
      */
-    suspend fun getSalesByDateRange(startDate: Long, endDate: Long): List<Sales>
+    suspend fun getSalesByDateRange(startDate: Long, endDate: Long): List<Sale>
 
     /**
      * Calculates total revenue for a specific period.
@@ -86,5 +86,9 @@ interface SaleService {
      * @param productId The ID of the product to filter by.
      * @return A list of sales containing the specified product.
      */
-    suspend fun getSalesByProductId(productId: Int): List<Sales>
+    suspend fun getSalesByProductId(productId: Int): List<Sale>
+
+    suspend fun updateSale(id: Int, sale: Sale): Boolean
+
+    suspend fun generateSalesReports(period: String): Map<String, Any>
 }

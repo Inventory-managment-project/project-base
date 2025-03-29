@@ -7,12 +7,42 @@ import mx.unam.fciencias.ids.eq1.routes.getRequestEmailOrRespondBadRequest
 import mx.unam.fciencias.ids.eq1.service.users.UserService
 import org.koin.ktor.ext.inject
 
+
+
+/**
+ * Endpoint to retrieve user details based on their email.
+ *
+ * **Authentication:** Requires JWT authentication with the "auth-jwt" scheme.
+ * Authentication can be provided via:
+ * - `Authorization` header (e.g., `Bearer <token>`)
+ * - Cookie named `token`
+ *
+ * **Request Format:**
+ * - HTTP Method: GET
+ * - Endpoint: `/user`
+ * - Headers (optional if cookie is used):
+ *   - `Authorization: Bearer <token>`
+ * - Body: JSON object containing an `email` field.
+ *
+ * **Response Format:**
+ * - Success: Returns the user details in JSON format.
+ * - Failure:
+ *   - 400 Bad Request: If the email is missing or malformed.
+ *   - 404 Not Found: If no user is found with the provided email.
+ *
+ * Response (Success): JSON of [mx.unam.fciencias.ids.eq1.model.user.User]
+ *
+ * Example Response (Not Found):
+ * ```json
+ * "Not Found"
+ * ```
+ */
 fun Route.users() {
     authenticate("auth-jwt") {
         route("/user") {
-            post {
-                val email = call.getRequestEmailOrRespondBadRequest() ?: return@post
-                val userService by call.application.inject<UserService>()
+            get {
+                val email = call.getRequestEmailOrRespondBadRequest() ?: return@get
+                val userService by call.inject<UserService>()
                 val user = userService.getUserByEmail(email)
                 call.respond(user ?: "Not Found")
             }

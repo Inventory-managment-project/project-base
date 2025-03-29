@@ -23,28 +23,48 @@ import java.time.Instant
 /**
  * Defines authentication-related routes for user login, registration, and token validation.
  *
- * Requires the following injected dependencies:
- * - [HashingService] for password hashing and verification.
- * - [UserService] for user-related operations.
- * - [TokenProvider] for generating JWT tokens.
- * - [ApplicationEnvironment] for accessing environment configurations.
+ * **Login Endpoint**
+ * - URL: `/login`
+ * - Method: `POST`
+ * - Request Body: JSON [AuthRequest]
+ * - Response:
+ *     - 200 OK: Returns a JWT token (in both response body and `token` cookie)
+ *     - 401 Unauthorized: Invalid credentials
+ *
+ * **Register Endpoint**
+ * - URL: `/register`
+ * - Method: `POST`
+ * - Request Body: JSON [CreateUserRequest]
+ * - Response:
+ *     - 201 Created: User successfully created
+ *     - 409 Conflict: Registration error (invalid email or duplicate entry)
+ *
+ * **Validate Token Endpoint**
+ * - URL: `/validate`
+ * - Method: `POST`
+ * - Authentication: Requires JWT token via `Authorization` header or `token` cookie
+ * - Response:
+ *     - 200 OK: Token is valid
+ *     - 404 Not Found: Token is invalid
+ *
+ * **Logout Endpoint**
+ * - URL: `/logout`
+ * - Method: `POST`
+ * - Response:
+ *     - 200 OK: Clears the `token` cookie and confirms logout
  */
 fun Route.authenticationRouting(environment: ApplicationEnvironment) {
-    /**
-     * Handles user login requests.
-     * Verifies user credentials and responds with a JWT token if successful.
-     */
-    route("login") {
+    route("/login") {
         post {
             val request = call.receive<AuthRequest>()
-            val userService by call.application.inject<UserService>()
+            val userService by call.inject<UserService>()
             val user = userService.getUserByEmail(request.username)
             if (user == null) {
                 call.respond(HttpStatusCode.Unauthorized, mapOf("message" to "Invalid credentials"))
                 return@post
             }
             val saltedHash = SaltedHash(user.hashedPassword, user.salt)
-            val hashingService by call.application.inject<HashingService>()
+            val hashingService by call.inject<HashingService>()
             if (hashingService.verifySaltedHash(request.password, saltedHash)) {
                 val tokenConfig = TokenConfig(
                     environment.config.property("jwt.issuer").getString(),
@@ -60,7 +80,7 @@ fun Route.authenticationRouting(environment: ApplicationEnvironment) {
                     "email",
                     user.email
                 )
-                val tokenProvider by call.application.inject<TokenProvider>()
+                val tokenProvider by call.inject<TokenProvider>()
                 val token = tokenProvider.getToken(tokenConfig, claim, email)
                 call.response.cookies.append(
                     name = "token",
@@ -74,15 +94,11 @@ fun Route.authenticationRouting(environment: ApplicationEnvironment) {
         }
     }
 
-    /**
-     * Handles user registration requests.
-     * Creates a new user with a securely hashed password.
-     */
-    route("register") {
+    route("/register") {
         post {
             val newUser = call.receive<CreateUserRequest>()
-            val hashingService by call.application.inject<HashingService>()
-            val userService by call.application.inject<UserService>()
+            val hashingService by call.inject<HashingService>()
+            val userService by call.inject<UserService>()
             val saltedHash = hashingService.generateSaltedHash(newUser.password)
             val user = User(
                 name = newUser.name,
@@ -101,23 +117,20 @@ fun Route.authenticationRouting(environment: ApplicationEnvironment) {
         }
     }
 
-    /**
-     * Validates a JWT token to confirm its authenticity.
-     */
     authenticate("auth-jwt") {
-        route("validate") {
+        route("/validate") {
             post {
                 call.respond(HttpStatusCode.OK, mapOf("message" to "Token is valid"))
             }
-            route("logout") {
-                post {
-                    call.response.cookies.append(
-                        name = "token",
-                        value = "",
-                        expires = GMTDate.START
-                    )
-                    call.respond(HttpStatusCode.OK, mapOf("message" to "Logged out"))
-                }
+        }
+        route("/logout") {
+            post {
+                call.response.cookies.append(
+                    name = "token",
+                    value = "",
+                    expires = GMTDate.START
+                )
+                call.respond(HttpStatusCode.OK, mapOf("message" to "Logged out"))
             }
         }
     }

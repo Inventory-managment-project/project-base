@@ -1,7 +1,7 @@
 package mx.unam.fciencias.ids.eq1.db.store.sales
 
 import mx.unam.fciencias.ids.eq1.db.store.product.ProductDAO
-import mx.unam.fciencias.ids.eq1.model.store.sales.Sales
+import mx.unam.fciencias.ids.eq1.model.store.sales.Sale
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class SalesDAO(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<SalesDAO>(SalesTable) {
-        fun salesDaoToModel(dao: SalesDAO): Sales {
+        fun salesDaoToModel(dao: SalesDAO): Sale {
             val productPairs = transaction {
                 SalesDetailsTable
                     .selectAll()
@@ -23,7 +23,7 @@ class SalesDAO(id: EntityID<Int>) : IntEntity(id) {
                     }
             }
 
-            return Sales(
+            return Sale(
                 id = dao.salesId,
                 total = dao.total,
                 paymentmethod = dao.paymentMethod,

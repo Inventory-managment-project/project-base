@@ -1,17 +1,13 @@
 package mx.unam.fciencias.ids.eq1.service.store.sales
 
 import mx.unam.fciencias.ids.eq1.db.store.sales.PAYMENTMETHOD
-import mx.unam.fciencias.ids.eq1.model.store.sales.Sales
+import mx.unam.fciencias.ids.eq1.model.store.sales.Sale
 import mx.unam.fciencias.ids.eq1.model.store.sales.repository.SalesRepository
 import org.koin.core.annotation.Factory
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
 import java.math.BigDecimal
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneId
-import java.time.temporal.ChronoUnit
 
 /**
  * Implementation of [SaleService] that interacts with a sales repository.
@@ -23,27 +19,25 @@ class DBSaleService(private val storeId: Int) : SaleService, KoinComponent {
 
     private val salesRepository: SalesRepository by inject { return@inject parametersOf(storeId) }
 
-    override suspend fun getSaleById(id: Int): Sales? {
+    override suspend fun getSaleById(id: Int): Sale? {
         return salesRepository.getById(id)
     }
 
-    override suspend fun getAllSales(): List<Sales> {
+    override suspend fun getAllSales(): List<Sale> {
         return salesRepository.getAll()
     }
 
-    override suspend fun addSale(sale: Sales): Int {
+    override suspend fun addSale(sale: Sale): Int {
         return salesRepository.add(sale)
     }
 
-    override suspend fun updateSale(sale: Sales): Boolean {
+    override suspend fun updateSale(sale: Sale): Boolean {
         return salesRepository.update(sale)
     }
 
-    suspend fun updateSale(id: Int, sale: Sales): Boolean {
-        // First check if the sale exists
-        val existingSale = salesRepository.getById(id) ?: return false
+    override suspend fun updateSale(id: Int, sale: Sale): Boolean {
+        salesRepository.getById(id) ?: return false
 
-        // Create a copy of the sale with the correct ID
         val updatedSale = sale.copy(id = id)
 
         return salesRepository.update(updatedSale)
@@ -57,11 +51,11 @@ class DBSaleService(private val storeId: Int) : SaleService, KoinComponent {
         return salesRepository.deleteAll()
     }
 
-    override suspend fun getSalesByPaymentMethod(paymentMethod: PAYMENTMETHOD): List<Sales> {
+    override suspend fun getSalesByPaymentMethod(paymentMethod: PAYMENTMETHOD): List<Sale> {
         return salesRepository.getByPaymentMethod(paymentMethod)
     }
 
-    override suspend fun getSalesByDateRange(startDate: Long, endDate: Long): List<Sales> {
+    override suspend fun getSalesByDateRange(startDate: Long, endDate: Long): List<Sale> {
         return salesRepository.getByDateRange(startDate, endDate)
     }
 
@@ -69,11 +63,11 @@ class DBSaleService(private val storeId: Int) : SaleService, KoinComponent {
         return salesRepository.getTotalRevenue(startDate, endDate)
     }
 
-    override suspend fun getSalesByProductId(productId: Int): List<Sales> {
+    override suspend fun getSalesByProductId(productId: Int): List<Sale> {
         return salesRepository.getSalesByProductId(productId)
     }
 
-    suspend fun generateSalesReports(period: String): Map<String, Any> {
+    override suspend fun generateSalesReports(period: String): Map<String, Any> {
         TODO("Not yet implemented")
     }
 }

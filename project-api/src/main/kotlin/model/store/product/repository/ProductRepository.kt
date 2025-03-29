@@ -41,4 +41,6 @@ interface ProductRepository {
      * Retrieves products below minimum stock levels.
      */
     suspend fun getBelowMinStock(): List<Product>
+
+    suspend fun getByBarcode(barcode : String): Product?
 }

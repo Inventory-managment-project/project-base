@@ -13,8 +13,7 @@ import mx.unam.fciencias.ids.eq1.di.*
 import mx.unam.fciencias.ids.eq1.plugins.configureAuthentication
 import mx.unam.fciencias.ids.eq1.plugins.configureSerialization
 import mx.unam.fciencias.ids.eq1.routes.authentication.authenticationRouting
-import mx.unam.fciencias.ids.eq1.routes.store.createStores
-import mx.unam.fciencias.ids.eq1.routes.store.storeRoutes
+import mx.unam.fciencias.ids.eq1.routes.stores.storeRoutes
 import mx.unam.fciencias.ids.eq1.routes.users.users
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -79,7 +78,6 @@ fun Application.module() {
 
     routing {
         users()
-        createStores()
         storeRoutes()
         authenticationRouting(environment)
 
