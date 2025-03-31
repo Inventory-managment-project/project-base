@@ -14,6 +14,7 @@ object ProductTable  : IntIdTable("products") {
     val stock = decimal("stock", 14, 4)
     val minAllowStock = integer("minAllowStock")
     val createdAt = timestamp("created_at").defaultExpression(CurrentTimestamp)
+    val active = bool("active").default(true)
 
     init {
         uniqueIndex("unique_store_barcode", storeId, barcode)

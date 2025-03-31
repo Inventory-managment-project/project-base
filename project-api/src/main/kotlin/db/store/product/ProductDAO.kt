@@ -25,7 +25,7 @@ class ProductDAO(id: EntityID<Int>) : IntEntity(id) {
         }
         fun productDaoToModelWithTime(dao: ProductDAO, timestamp : Long) : Product? {
             try {
-                val priceAtTime = dao.prices.first { it.timetamp.epochSecond <= timestamp }
+                val priceAtTime = dao.prices.first { it.timestamp.value.epochSecond <= timestamp }
                 return Product(
                     dao.productId,
                     dao.name,
@@ -53,6 +53,7 @@ class ProductDAO(id: EntityID<Int>) : IntEntity(id) {
     var stock by ProductTable.stock
     var minAllowStock by ProductTable.minAllowStock
     var storeId by ProductTable.storeId
+    var active by ProductTable.active
 
     val prices by ProductPriceDAO referrersOn ProductPriceTable orderBy listOf(ProductPriceTable.timestamp to SortOrder.DESC)
 }
