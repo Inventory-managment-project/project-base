@@ -2,6 +2,7 @@ package model.store.product.repository
 
 import kotlinx.coroutines.runBlocking
 import mx.unam.fciencias.ids.eq1.db.store.StoreTable
+import mx.unam.fciencias.ids.eq1.db.store.product.ProductPriceTable
 import mx.unam.fciencias.ids.eq1.db.store.product.ProductTable
 import mx.unam.fciencias.ids.eq1.db.user.UserTable
 import mx.unam.fciencias.ids.eq1.model.store.CreateStoreRequest
@@ -93,6 +94,7 @@ class DBProductRepositoryTest {
     @AfterEach
     fun tearDown() {
         transaction(database) {
+            SchemaUtils.drop(ProductPriceTable)
             SchemaUtils.drop(ProductTable)
             SchemaUtils.drop(StoreTable)
             SchemaUtils.drop(UserTable)
@@ -111,7 +113,7 @@ class DBProductRepositoryTest {
             BigDecimal.valueOf(15.0),
             BigDecimal.valueOf(15.0),
             0L,
-            100,
+            BigDecimal(100),
             0,
             1
         )
@@ -123,7 +125,7 @@ class DBProductRepositoryTest {
 
         val savedProduct = allProducts[0]
         assertEquals("Sample Product", savedProduct.name)
-        assertEquals(100, savedProduct.stock)
+        assertEquals(BigDecimal("100.0000"), savedProduct.stock)
     }
 
     @Test
@@ -137,7 +139,7 @@ class DBProductRepositoryTest {
             BigDecimal.valueOf(15.0),
             BigDecimal.valueOf(15.0),
             0L,
-            1,
+            BigDecimal(1),
             0,
             1
         )
@@ -162,20 +164,20 @@ class DBProductRepositoryTest {
             BigDecimal.valueOf(15.0),
             BigDecimal.valueOf(15.0),
             0L,
-            1,
+            BigDecimal(1),
             0,
             1
         )
         productRepository.add(product)
 
-        val updatedProduct = product.copy(name = "Updated Name", stock = 40)
+        val updatedProduct = product.copy(name = "Updated Name", stock = BigDecimal(40))
         val updateResult = productRepository.update(updatedProduct)
         assertTrue(updateResult, "Update should succeed")
 
         val retrievedProduct = productRepository.getById(product.id)
         assertNotNull(retrievedProduct)
         assertEquals("Updated Name", retrievedProduct.name)
-        assertEquals(40, retrievedProduct.stock)
+        assertEquals(BigDecimal("40.0000"), retrievedProduct.stock)
     }
 
     @Test
@@ -189,7 +191,7 @@ class DBProductRepositoryTest {
             BigDecimal.valueOf(15.0),
             BigDecimal.valueOf(15.0),
             0L,
-            1,
+            BigDecimal(1),
             0,
             1
         )
@@ -210,11 +212,11 @@ class DBProductRepositoryTest {
                 "Product 1",
                 "Desc 1",
                 BigDecimal.valueOf(15.0),
-                "",
+                "1234567890",
                 BigDecimal.valueOf(15.0),
                 BigDecimal.valueOf(15.0),
                 0L,
-                1,
+                BigDecimal(1),
                 0,
                 1
             )
@@ -225,11 +227,11 @@ class DBProductRepositoryTest {
                 "Product 2",
                 "Desc 2",
                 BigDecimal.valueOf(15.0),
-                "",
+                "112345678",
                 BigDecimal.valueOf(15.0),
                 BigDecimal.valueOf(15.0),
                 0L,
-                1,
+                BigDecimal(1),
                 0,
                 1
             )
