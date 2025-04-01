@@ -94,7 +94,7 @@ class DBProductRepository(
 
     override suspend fun delete(id: Int): Boolean = suspendTransaction(database) {
         val productDao = ProductDAO
-            .find { (ProductTable.id eq id) and (ProductTable.storeId eq storeID) }
+            .find { (ProductTable.productId eq id) and (ProductTable.storeId eq storeID) }
             .firstOrNull() ?: return@suspendTransaction false
         productDao.active = false
         true
