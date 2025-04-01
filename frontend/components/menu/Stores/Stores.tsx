@@ -23,7 +23,7 @@ export default function Stores() {
     onOpenChange
   } = useDisclosure();
   const [stores, setStores] = useState<Store[]>([]);
-  const { selectedStore, setSelectedStore } = useSelectedStore();
+  const { selectedStoreString, selectedStore, setSelectedStore } = useSelectedStore();
   const [showDelete, setShowDelete] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -86,6 +86,9 @@ export default function Stores() {
   }
 
   const handleDeleteStore = (storeId: string, storeName: string) => {
+    if (selectedStoreString == storeId) {
+      setSelectedStore(new Set("0"));
+    }
     setStores((prevStores) => prevStores.filter((store) => store.id !== storeId));
     handleShowAlert("Tienda eliminada", `La tienda ${storeName} ha sido eliminada correctamente.`, 200);
   };

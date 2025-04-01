@@ -85,7 +85,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
             disallowEmptySelection
             selectionMode="single"
             selectedKeys={selectedKey}
-            disabledKeys={selectedStoreString == "0" ? ["pdv", "products", "reports", "stats"] : []}
+            disabledKeys={selectedStoreString == "0" ? ["pdv", "products", "reports", "stats", "notifications"] : []}
             onSelectionChange={(keys) => {
               const newSelectedKey = new Set<string>(
                 Array.from(keys).map((key) => String(key)),
@@ -106,7 +106,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
                 Inicio
               </ListboxItem>
             </ListboxSection>
-            <ListboxSection title="User Management" showDivider>
+            <ListboxSection title="Manejo de Tienda" showDivider>
               <ListboxItem
                 key="pdv"
                 endContent={<ChevronRight />}
@@ -151,8 +151,6 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
               >
                 Reportes
               </ListboxItem>
-            </ListboxSection>
-            <ListboxSection title="Administration" showDivider>
               <ListboxItem
                 key="notifications"
                 endContent={<ChevronRight />}
@@ -164,6 +162,8 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
               >
                 Notificaciones
               </ListboxItem>
+            </ListboxSection>
+            <ListboxSection title="Administración" showDivider>
               <ListboxItem
                 key="settings"
                 endContent={<ChevronRight />}
