@@ -11,3 +11,10 @@ data class User(
     val salt: String,
     val createdAt: Long
 )
+
+@Serializable
+data class PublicUser(
+    val name : String,
+    val email : String,
+    val createdAt : Long
+)

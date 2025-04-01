@@ -1,4 +1,4 @@
-package mx.unam.fciencias.ids.eq1.model.store.sales.repository
+package model.store.sale.repository
 
 import mx.unam.fciencias.ids.eq1.db.store.StoreTable
 import mx.unam.fciencias.ids.eq1.db.store.product.ProductDAO
@@ -10,6 +10,7 @@ import mx.unam.fciencias.ids.eq1.db.store.sales.SalesDetailsTable
 import mx.unam.fciencias.ids.eq1.db.store.sales.SalesTable
 import mx.unam.fciencias.ids.eq1.db.utils.suspendTransaction
 import mx.unam.fciencias.ids.eq1.model.store.sales.Sale
+import mx.unam.fciencias.ids.eq1.model.store.sales.repository.SalesRepository
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -50,7 +51,7 @@ class DBSalesRepository (
                 builder[total] = sale.products.fold(BigDecimal(0.0)) { acc, pair ->
                     acc + (ProductDAO.find { (ProductTable.productId eq pair.first) and (ProductTable.storeId eq storeID) }
                         .firstOrNull()
-                        ?.retailPrice ?: BigDecimal(0.0))
+                        ?.prices?.firstOrNull()?.retailPrice ?: BigDecimal(0.0))
                 }
                 builder[paymentMethod] = sale.paymentmethod
             }
@@ -62,7 +63,7 @@ class DBSalesRepository (
                     salesDetails[productId] = prodId.id
                     salesDetails[quantity] = product.second
                 }
-                ProductDAO.findSingleByAndUpdate((ProductTable.storeId eq storeID) and (ProductTable.productId eq product.first)) { it.stock -= product.second.toInt() }
+                ProductDAO.findSingleByAndUpdate((ProductTable.storeId eq storeID) and (ProductTable.productId eq product.first)) { it.stock -= product.second }
             }
             SalesDAO.findById(saleId)?.salesId ?: -1
         } catch (e : Exception) { -1 }

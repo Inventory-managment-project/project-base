@@ -108,8 +108,8 @@ class UsersKtTest : KoinTest {
             configureAuthentication(environment)
             routing {
                 authenticationRouting(environment)
+                users()
             }
-            users()
         }
 
 

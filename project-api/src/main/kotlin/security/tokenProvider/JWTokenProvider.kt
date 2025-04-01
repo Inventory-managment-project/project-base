@@ -20,17 +20,10 @@ import java.time.Instant
 @Single
 class JWTokenProvider(environment: ApplicationEnvironment) : TokenProvider {
 
-    private val secret: String
-    private val issuer: String
-    private val audience: String
-    private val myRealm: String
-
-    init {
-        secret = environment.config.property("jwt.secret").getString()
-        issuer = environment.config.property("jwt.issuer").getString()
-        audience = environment.config.property("jwt.audience").getString()
-        myRealm = environment.config.property("jwt.realm").getString()
-    }
+    private val secret = environment.config.property("jwt.secret").getString()
+    private val issuer: String = environment.config.property("jwt.issuer").getString()
+    private val audience: String = environment.config.property("jwt.audience").getString()
+    private val myRealm: String  = environment.config.property("jwt.realm").getString()
 
     override fun getToken(config: TokenConfig, vararg claims: TokenClaim): String {
         var token = JWT.create()

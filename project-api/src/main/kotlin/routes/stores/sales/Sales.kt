@@ -76,7 +76,7 @@ fun Route.sales() {
 
                 val storeId = call.getStoreIdOrBadRequest() ?: return@post
                 val userEmail = call.getRequestEmailOrRespondBadRequest() ?: return@post
-                val userService by call.inject<UserService> { parametersOf(storeId) }
+                val userService by call.inject<UserService>()
                 val user = userService.getUserByEmail(userEmail) ?: return@post call.respond(HttpStatusCode.NotFound)
                 val storeService by call.inject<StoreService>()
 

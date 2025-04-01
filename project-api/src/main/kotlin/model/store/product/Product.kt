@@ -14,7 +14,7 @@ data class Product(
     @Serializable(BigDecimalSerializer::class) val wholesalePrice: BigDecimal,
     @Serializable(BigDecimalSerializer::class) val retailPrice: BigDecimal,
     val createdAt: Long,
-    val stock : Int,
+    @Serializable(BigDecimalSerializer::class) val stock : BigDecimal,
     val minAllowStock : Int,
     val storeId : Int
 )
