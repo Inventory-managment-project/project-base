@@ -43,6 +43,9 @@ class DBProductRepository(
     }
 
     override suspend fun add(product: Product): Int = suspendTransaction(database) {
+        if (!ProductDAO.find {
+            (ProductTable.storeId eq storeID) and (ProductTable.barcode eq product.barcode)
+        }.empty()) return@suspendTransaction -1
         val productDao = ProductDAO.new {
             productId = (ProductDAO.find { ProductTable.storeId eq storeID }
                 .maxOfOrNull { it.productId } ?: 0) + 1

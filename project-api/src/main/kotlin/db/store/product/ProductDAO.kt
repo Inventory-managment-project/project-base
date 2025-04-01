@@ -55,5 +55,5 @@ class ProductDAO(id: EntityID<Int>) : IntEntity(id) {
     var storeId by ProductTable.storeId
     var active by ProductTable.active
 
-    val prices by ProductPriceDAO referrersOn ProductPriceTable orderBy listOf(ProductPriceTable.timestamp to SortOrder.DESC)
+    val prices by ProductPriceDAO referrersOn ProductPriceTable.productId orderBy listOf(ProductPriceTable.timestamp to SortOrder.DESC)
 }

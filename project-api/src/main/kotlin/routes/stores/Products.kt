@@ -12,9 +12,6 @@ import mx.unam.fciencias.ids.eq1.service.store.product.ProductService
 import org.koin.core.parameter.parametersOf
 import org.koin.ktor.ext.inject
 
-
-
-
 private suspend fun RoutingCall.getProductIdOrBadRequest(): Int? {
     val storeId = this.parameters["productId"]?.toIntOrNull()
     if (storeId == null) this.respond(HttpStatusCode.NoContent, "Product not found")
@@ -84,6 +81,7 @@ private suspend fun RoutingCall.getProductBarcodeOrBadRequest(): String? {
  * - Response:
  *     - 201 Created: Returns the newly created product ID.
  *     - 404 Not Found: If the user is not authorized.
+ *     - 409 Conflict: If a product with that barcode already exists.
  *
  * **Update an Existing Product**
  * - URL: `/{storeId}/product`
@@ -163,6 +161,7 @@ fun Route.products() {
                 val product = call.receive<Product>()
                 val productService by call.inject<ProductService> { parametersOf(storeId) }
                 val productId = productService.addProduct(product)
+                if (productId == -1) return@post call.respond(HttpStatusCode.Conflict)
                 call.respond(HttpStatusCode.Created, mapOf("id" to productId))
             }
             put {
