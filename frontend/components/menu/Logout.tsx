@@ -12,8 +12,8 @@ const Logout = () => {
         },
         body: JSON.stringify({ token: localStorage.getItem("authToken") }),
       });
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("selectedKey");
+      localStorage.clear();
+      localStorage.setItem("theme", "light");
       document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       window.location.href = "/";
     } catch (error) {

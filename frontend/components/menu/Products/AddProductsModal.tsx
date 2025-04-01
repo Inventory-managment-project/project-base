@@ -6,6 +6,7 @@ import { useDisclosure } from "@heroui/use-disclosure";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/modal";
 import { PlusIcon } from "lucide-react";
 import { Product } from "./Products";
+import { useSelectedStore } from "@/context/SelectedStoreContext";
 
 export default function AddProductsModal({ onProductAdded }: { onProductAdded: (product: Product) => void }) {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
@@ -28,11 +29,11 @@ export default function AddProductsModal({ onProductAdded }: { onProductAdded: (
     stock: false,
     minAllowStock: false
   });
-  const storeId = parseInt(localStorage.getItem("selectedStore") || "0");
+  const { selectedStoreString } = useSelectedStore();
 
   const postProduct = async (product: Product) => {
     try {
-      const res = await fetch(`http://localhost:8080/stores/${storeId}/product`, {
+      const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}/product`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
@@ -61,7 +62,7 @@ export default function AddProductsModal({ onProductAdded }: { onProductAdded: (
       return;
     }
 
-    if (!storeId) {
+    if (!selectedStoreString) {
       console.error("No se ha seleccionado una tienda");
       return;
     }
@@ -69,7 +70,7 @@ export default function AddProductsModal({ onProductAdded }: { onProductAdded: (
     const newProduct: Product = {
       id: Math.floor(Math.random() * 1000) + 1, 
       createdAt: Date.now(),
-      storeId: storeId,
+      storeId: Number(selectedStoreString),
       name: formData.name || "",
       description: formData.description || "",
       price: formData.price || 0,

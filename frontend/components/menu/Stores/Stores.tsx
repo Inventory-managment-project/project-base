@@ -13,6 +13,8 @@ import StatusAlert from "@/components/misc/StatusAlert";
 import ConfirmationModal from "@/components/misc/ConfirmationModal";
 import { Switch } from "@heroui/switch";
 import { motion } from "framer-motion";
+import { Skeleton } from "@heroui/skeleton";
+import { useSelectedStore } from "@/context/SelectedStoreContext";
 
 export default function Stores() {
   const { 
@@ -21,8 +23,9 @@ export default function Stores() {
     onOpenChange
   } = useDisclosure();
   const [stores, setStores] = useState<Store[]>([]);
-  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set([]));
+  const { selectedStore, setSelectedStore } = useSelectedStore();
   const [showDelete, setShowDelete] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertTitle, setAlertTitle] = useState("");
@@ -45,17 +48,10 @@ export default function Stores() {
   }
 
   useLayoutEffect(() => {
-    fetchStores();
+    fetchStores().then(() => {
+      setIsLoading(false);
+    });
   }, []);
-
-  useEffect(() => {
-    const storedValue = localStorage.getItem("selectedStore");
-    setSelectedKeys(new Set([storedValue || "1"]));
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("selectedStore", Array.from(selectedKeys).join(", "));
-  }, [selectedKeys]);
 
   const postStore = async (name: string, address: string) => {
     try {
@@ -132,15 +128,16 @@ export default function Stores() {
 
       <div className="grid grid-cols- md:grid-cols-2 gap-6">
         <div className="border border-default-200 rounded-lg">
+          <Skeleton className="rounded-lg" isLoaded={!isLoading}>
           <Listbox
             aria-label="Lista de tiendas"
             selectionMode="single"
-            selectedKeys={selectedKeys}
+            selectedKeys={selectedStore}
             onSelectionChange={(keys) => {
               const newSelectedKey = new Set<string>(
                 Array.from(keys).map((key) => String(key)),
               );
-              setSelectedKeys(newSelectedKey);
+              setSelectedStore(newSelectedKey);
             }}
             emptyContent={"No tienes tiendas. Crea una tienda para empezar."}
             disallowEmptySelection   
@@ -183,10 +180,10 @@ export default function Stores() {
                   <span className="font-medium">{store.name}</span>
                   <span className="text-small text-default-500">{store.address}</span>
                 </div>
-
               </ListboxItem>
             ))}
           </Listbox>
+          </Skeleton>
         </div>
       </div>
 

@@ -8,6 +8,7 @@ import Products from "./menu/Products/Products";
 import POS from "./menu/POS/POS"
 import Stores from "./menu/Stores/Stores";
 import { useState, useMemo, useEffect, useLayoutEffect } from "react";
+import { useSelectedStore } from "@/context/SelectedStoreContext";
 
 interface SideMenuProps {
   setContent: (content: JSX.Element) => void;
@@ -18,13 +19,17 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
     new Set(typeof window !== "undefined" ? [localStorage.getItem("selectedKey") || "home"] : [])
   );
   const [sidebarVisible, setSidebarVisible] = useState(false);
+  const { selectedStoreString } = useSelectedStore();
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
 
   useEffect(() => {
-    const storedValue = localStorage.getItem("selectedKey") || "home";
+    let storedValue = localStorage.getItem("selectedKey") || "home";
+    if (selectedStoreString == "0") {
+      storedValue = "home";
+    }
     setSelectedKey(new Set([storedValue]));
   }, []);
 
@@ -80,6 +85,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
             disallowEmptySelection
             selectionMode="single"
             selectedKeys={selectedKey}
+            disabledKeys={selectedStoreString == "0" ? ["pdv", "products", "reports", "stats"] : []}
             onSelectionChange={(keys) => {
               const newSelectedKey = new Set<string>(
                 Array.from(keys).map((key) => String(key)),

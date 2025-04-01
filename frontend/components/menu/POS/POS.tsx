@@ -9,6 +9,7 @@ import { Button } from "@heroui/button";
 import { ProductPOS } from "@/types/product";
 import { useEffect, useLayoutEffect } from "react";
 import { Product } from "../Products/Products";
+import { useSelectedStore } from "@/context/SelectedStoreContext";
 
 export function convertToProductPOS(product: Product): ProductPOS {
   return {
@@ -33,10 +34,11 @@ export default function POS() {
   const [products, setProducts] = useState<ProductPOS[]>([]);
   const [barcode, setBarcode] = useState("");
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { selectedStoreString } = useSelectedStore();
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch(`http://localhost:8080/stores/${localStorage.getItem("selectedStore")}/products`, {
+      const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}/products`, {
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
           "Content-Type": "application/json",

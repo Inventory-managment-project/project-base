@@ -16,6 +16,7 @@ import { useState, useMemo, useCallback, useLayoutEffect } from "react";
 import { SearchIcon, ChevronDownIcon, PlusIcon, PencilIcon, Trash2Icon } from "lucide-react";
 import { SharedSelection } from "@heroui/system";
 import AddProductsModal from "./AddProductsModal";
+import { useSelectedStore } from "@/context/SelectedStoreContext";
 
 export const columns = [
   {name: "ID", uid: "id", sortable: true},
@@ -78,10 +79,11 @@ const Products = () => {
     direction: "ascending",
   });
   const [page, setPage] = useState(1);
+  const { selectedStoreString } = useSelectedStore();
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch(`http://localhost:8080/stores/${localStorage.getItem("selectedStore")}/products`, {
+      const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}/products`, {
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
           "Content-Type": "application/json",
@@ -297,7 +299,10 @@ const Products = () => {
       <TableBody emptyContent={"No se encontraron productos"} items={sortedItems}>
         {(item: Product) => (
           <TableRow key={item.id}>
-            {(columnKey: string | number) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+            {(columnKey: string | number) => 
+            <TableCell>
+              {renderCell(item, columnKey)}
+            </TableCell>}
           </TableRow>
         )}
       </TableBody>
