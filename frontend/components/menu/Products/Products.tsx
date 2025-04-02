@@ -16,6 +16,9 @@ import { useState, useMemo, useCallback, useLayoutEffect } from "react";
 import { SearchIcon, ChevronDownIcon, PlusIcon, PencilIcon, Trash2Icon } from "lucide-react";
 import { SharedSelection } from "@heroui/system";
 import AddProductsModal from "./AddProductsModal";
+import { useSelectedStore } from "@/context/SelectedStoreContext";
+import ConfirmationModal from "@/components/misc/ConfirmationModal";
+import StatusAlert from "@/components/misc/StatusAlert";
 
 export const columns = [
   {name: "ID", uid: "id", sortable: true},
@@ -78,10 +81,16 @@ const Products = () => {
     direction: "ascending",
   });
   const [page, setPage] = useState(1);
+  const { selectedStoreString } = useSelectedStore();
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertTitle, setAlertTitle] = useState("");
+  const [alertDescription, setAlertDescription] = useState("");
+  const [alertStatusCode, setAlertStatusCode] = useState(0);
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch(`http://localhost:8080/stores/${localStorage.getItem("selectedStore")}/products`, {
+      const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}/products`, {
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
           "Content-Type": "application/json",
@@ -93,6 +102,16 @@ const Products = () => {
       console.error("Error al obtener los productos:", error);
     }
   }
+
+  const handleShowAlert = (title : string, description : string, statusCode : number) => {
+    setAlertTitle(title);
+    setAlertDescription(description);
+    setAlertStatusCode(statusCode);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  };
 
   useLayoutEffect(() => {
     fetchProducts();
@@ -136,6 +155,33 @@ const Products = () => {
     });
   }, [sortDescriptor, items]);
 
+
+  const handleDeleteProduct = (productId: number, productName: string) => {
+    setProducts((prevProducts) => prevProducts.filter((p) => p.id !== productId));
+    handleShowAlert("Producto eliminado", `El producto ${productName} ha sido eliminado correctamente.`, 200);
+  };
+
+  const deleteProduct = async (productId: number, productName: string) => {
+    try {
+      const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}/product/id/${productId}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+          "Content-Type": "application/json",
+        }
+      });
+      const status = res.status;
+      if (status === 200) {
+        handleDeleteProduct(productId, productName);
+      } else {
+        handleShowAlert("Error al eliminar el producto", "No se pudo eliminar el producto. Inténtalo de nuevo.", 500);
+      }
+    } catch (error) {
+      console.error("Error al eliminar el producto:", error);
+      handleShowAlert("Error al eliminar el producto", "No se pudo eliminar el producto. Inténtalo de nuevo.", 500);
+    }
+  };
+
   const renderCell = useCallback((product : Product, columnKey : string|number) => {
     const cellValue = product[columnKey];
 
@@ -146,9 +192,21 @@ const Products = () => {
             <Button isIconOnly size="sm" variant="light">
               <PencilIcon className="text-default-500"/>
             </Button>
-            <Button isIconOnly size="sm" variant="light">
-              <Trash2Icon className="text-danger"/>
-            </Button>
+            <ConfirmationModal
+              onConfirm={() => {
+                deleteProduct(product.id, product.name); 
+              }}
+              header={
+              <div className="text-default-900">
+                Eliminar Producto:
+                <span className="text-secondary"> {product.name}</span>
+              </div>}
+              body={
+                <div className="text-default-500">
+                  ¿Estás seguro de que deseas eliminar el producto <span className="text-secondary-500">{product.name}</span>? Esta acción no se puede deshacer.
+                </div>
+              }
+            />
           </div>
         );
       default:
@@ -266,42 +324,53 @@ const Products = () => {
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
 
   return (
-    <Table
-      isHeaderSticky
-      aria-label="Tabla de productos"
-      bottomContent={bottomContent}
-      bottomContentPlacement="outside"
-      classNames={{
-        wrapper: "max-h-[445px] min-h-[445px]",
-      }}
-      selectedKeys={selectedKeys}
-      selectionMode="multiple"
-      sortDescriptor={sortDescriptor}
-      topContent={topContent}
-      topContentPlacement="outside"
-      onSelectionChange={(keys : SharedSelection) => setSelectedKeys(keys === "all" ? "all" : new Set(keys as Set<string>))}
-      onSortChange={setSortDescriptor}
-      onRowAction={() => {}}
-    >
-      <TableHeader columns={headerColumns}>
-        {(column: typeof columns[number]) => (
-          <TableColumn
-            key={column.uid}
-            align={column.uid === "actions" ? "center" : "start"}
-            allowsSorting={column.sortable}
-          >
-            {column.name}
-          </TableColumn>
-        )}
-      </TableHeader>
-      <TableBody emptyContent={"No se encontraron productos"} items={sortedItems}>
-        {(item: Product) => (
-          <TableRow key={item.id}>
-            {(columnKey: string | number) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+    <>
+      <Table
+        isHeaderSticky
+        aria-label="Tabla de productos"
+        bottomContent={bottomContent}
+        bottomContentPlacement="outside"
+        classNames={{
+          wrapper: "max-h-[445px] min-h-[445px]",
+        }}
+        selectedKeys={selectedKeys}
+        selectionMode="multiple"
+        sortDescriptor={sortDescriptor}
+        topContent={topContent}
+        topContentPlacement="outside"
+        onSelectionChange={(keys : SharedSelection) => setSelectedKeys(keys === "all" ? "all" : new Set(keys as Set<string>))}
+        onSortChange={setSortDescriptor}
+        onRowAction={() => {}}
+      >
+        <TableHeader columns={headerColumns}>
+          {(column: typeof columns[number]) => (
+            <TableColumn
+              key={column.uid}
+              align={column.uid === "actions" ? "center" : "start"}
+              allowsSorting={column.sortable}
+            >
+              {column.name}
+            </TableColumn>
+          )}
+        </TableHeader>
+        <TableBody emptyContent={"No se encontraron productos"} items={sortedItems}>
+          {(item: Product) => (
+            <TableRow key={item.id}>
+              {(columnKey: string | number) => 
+              <TableCell>
+                {renderCell(item, columnKey)}
+              </TableCell>}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+      <StatusAlert
+        show={showAlert}
+        title={alertTitle}
+        description={alertDescription}
+        statusCode={alertStatusCode}
+      />
+    </>
   );
 }
 

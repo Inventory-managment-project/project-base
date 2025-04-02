@@ -49,6 +49,9 @@ const Login = () => {
       const data = await response.json();
       if (response.ok) {
         console.log(data);
+        const theme = localStorage.getItem("theme");
+        localStorage.clear();
+        localStorage.setItem("theme", theme || "light");
         localStorage.setItem("authToken", data.token);
         router.push("/panel");
       } else {

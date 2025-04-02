@@ -57,7 +57,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
               <Button color="danger" variant="light" onPress={onClose}>
                 Cancelar
               </Button>
-              <Button color="primary" onPress={() => {
+              <Button color="secondary" onPress={() => {
                 handleSave();
                 onClose();
               }}>

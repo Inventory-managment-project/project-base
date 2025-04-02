@@ -9,6 +9,7 @@
     "lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix"
   },
   "dependencies": {
+    "@heroui/alert": "^2.2.16",
     "@heroui/button": "2.2.13",
     "@heroui/card": "^2.2.14",
     "@heroui/code": "2.2.10",
@@ -24,6 +25,7 @@
     "@heroui/pagination": "^2.2.14",
     "@heroui/radio": "^2.3.15",
     "@heroui/scroll-shadow": "^2.3.10",
+    "@heroui/skeleton": "^2.2.10",
     "@heroui/snippet": "2.2.14",
     "@heroui/switch": "2.2.12",
     "@heroui/system": "2.4.10",
@@ -35,7 +37,7 @@
     "framer-motion": "11.13.1",
     "intl-messageformat": "^10.5.0",
     "lucide-react": "^0.477.0",
-    "next": "15.0.4",
+    "next": "^15.2.3",
     "next-themes": "^0.4.4",
     "react": "18.3.1",
     "react-dom": "18.3.1"

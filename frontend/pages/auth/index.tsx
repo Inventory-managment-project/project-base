@@ -7,7 +7,7 @@ import Login from "@/components/auth/Login";
 import Register from "@/components/auth/Register";
 
 export default function Auth() {
-  const [selected, setSelected] = useState<number | string>(0);
+  const [selected, setSelected] = useState<number | string>();
 
   return (
     <AuthLayout>
@@ -19,7 +19,6 @@ export default function Auth() {
         size="md"
         color="secondary"
         onSelectionChange={(key) => {setSelected(key)}}
-        defaultSelectedKey={0}
       >
         <Tab key={0} title="Iniciar Sesión" />
         <Tab key={1} title="Registrarse" />
