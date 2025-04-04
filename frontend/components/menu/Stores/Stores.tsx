@@ -142,7 +142,7 @@ export default function Stores() {
               );
               setSelectedStore(newSelectedKey);
             }}
-            emptyContent={"No tienes tiendas. Crea una tienda para empezar."}
+            emptyContent={"No tienes tiendas. Crea una tienda para comenzar."}
             disallowEmptySelection   
           >
             {stores.map((store) => (

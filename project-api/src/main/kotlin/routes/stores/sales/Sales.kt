@@ -94,7 +94,8 @@ fun Route.sales() {
                     val salesId = saleService.addSale(sale)
                     call.respond(HttpStatusCode.Created, salesId)
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.BadRequest, mapOf("error" to ("Could add sale error")))
+                    call.application.environment.log.error("Could not add sale", e)
+                    call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Could not add sale: ${e.message}"))
                 }
             }
             get {

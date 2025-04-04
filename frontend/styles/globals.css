@@ -54,6 +54,11 @@ html, body, #__next, main {
   transform: transform 0.3s ease;
 }
 
+/* Hide the default clear and show/hide password button in input fields */
+input::-ms-reveal, input::-ms-clear {
+  display: none;
+}
+
 @media (max-width: 1280px) {
   .sidebar {
     width: 200px;
