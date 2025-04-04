@@ -11,7 +11,7 @@ import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/dropdown";
 import { Pagination } from "@heroui/pagination";
-import { useState, useMemo, useCallback, useLayoutEffect } from "react";
+import { useState, useMemo, useCallback, useLayoutEffect, useEffect } from "react";
 import { SearchIcon, ChevronDownIcon, SaveIcon, PencilIcon, XIcon } from "lucide-react";
 import { SharedSelection } from "@heroui/system";
 import AddProductsModal from "./AddProductsModal";
@@ -214,18 +214,34 @@ const Products = () => {
       ...item,
       _editing: editingRows[item.id] ?? false,
     })).sort((a : Product, b : Product) => {
-      const first = a[sortDescriptor.column];
-      const second = b[sortDescriptor.column];
+      let first = a[sortDescriptor.column];
+      if (typeof first === "string") {
+        first = first.toLowerCase();
+      }
+      let second = b[sortDescriptor.column];
+      if (typeof second === "string") {
+        second = second.toLowerCase();
+      }
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
   }, [sortDescriptor, items, editingRows, drafts]);
 
+  function isEqualDraft(draft: Partial<Product>, original: Product): boolean {
+    return Object.keys(draft).every((key) => {
+      return draft[key as keyof Product] === original[key as keyof Product];
+    });
+  }  
 
-  const handleDeleteProduct = (productId: number, productName: string) => {
-    setProducts((prevProducts) => prevProducts.filter((p) => p.id !== productId));
-    handleShowAlert("Producto eliminado", `El producto ${productName} ha sido eliminado correctamente.`, 200);
+  const handleDeleteProduct = async (productId: number, productName: string) => {
+    const deleteResponse = await deleteProduct(productId, productName);
+    if (deleteResponse === 200) {
+      setProducts((prevProducts) => prevProducts.filter((p) => p.id !== productId));
+      handleShowAlert("Producto eliminado", `El producto ${productName} ha sido eliminado correctamente.`, 200);
+    } else {
+      handleShowAlert("Error al eliminar el producto", "No se pudo eliminar el producto. Inténtalo de nuevo.", 500);
+    }
   };
 
   const deleteProduct = async (productId: number, productName: string) => {
@@ -238,16 +254,16 @@ const Products = () => {
         }
       });
       const status = res.status;
-      if (status === 200) {
-        handleDeleteProduct(productId, productName);
-      } else {
-        handleShowAlert("Error al eliminar el producto", "No se pudo eliminar el producto. Inténtalo de nuevo.", 500);
-      }
+      return status;
     } catch (error) {
       console.error("Error al eliminar el producto:", error);
-      handleShowAlert("Error al eliminar el producto", "No se pudo eliminar el producto. Inténtalo de nuevo.", 500);
+      return 500;
     }
   };
+
+  useEffect(() => {
+    console.log("Selected keys changed:", selectedKeys);
+  }, [selectedKeys]);
 
   const renderCell = useCallback((product: Product, columnKey: string | number) => {
     const cellValue = product[columnKey];
@@ -268,6 +284,10 @@ const Products = () => {
             <Input
               variant="faded"
               className="w-full"
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => {
+                if (e.key === " ") e.stopPropagation();
+              }}
               value={String(drafts[product.id]?.[columnKey] ?? "")}
               onChange={(e) => {
                 const newValue = e.target.value;
@@ -284,7 +304,7 @@ const Products = () => {
             <div className="relative flex justify-center items-center gap-2">
               {isEditing ? (
                 <>
-                  <Button isIconOnly size="sm" variant="light" onPress={() => saveEditRow(product.id)}>
+                  <Button isDisabled={isEqualDraft(drafts[product.id]!, product!)} isIconOnly size="sm" variant="light" onPress={() => saveEditRow(product.id)}>
                     <SaveIcon className="text-default-500" />
                   </Button>
                   <Button isIconOnly size="sm" variant="light" onPress={() => cancelEditRow(product.id)}>
@@ -298,7 +318,7 @@ const Products = () => {
               )}
               <ConfirmationModal
                 onConfirm={() => {
-                  deleteProduct(product.id, product.name);
+                  handleDeleteProduct(product.id, product.name);
                 }}
                 header={
                   <div className="text-default-900">
@@ -314,6 +334,10 @@ const Products = () => {
                 }
               />
             </div>
+          ) : columnKey === "stock" ? (
+            <span className={`${cellValue < product.minAllowStock && "text-red-500"}`}>
+              {parseFloat(cellValue).toFixed(2)}
+            </span>
           ) : (
             <span className="text-sm">{cellValue}</span>
           )}
@@ -441,6 +465,7 @@ const Products = () => {
         classNames={{
           wrapper: "max-h-[445px] min-h-[445px]",
         }}
+        color="secondary"
         selectedKeys={selectedKeys}
         selectionMode="multiple"
         sortDescriptor={sortDescriptor}

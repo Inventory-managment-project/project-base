@@ -67,7 +67,7 @@ export default function POS() {
   const handleScan = () => {
     if (!barcode.trim()) return;
     const foundProduct = productList.find(product => product.barcode === barcode.trim());
-  
+    console.log(products)
     if (foundProduct) {
       const existingProductIndex = products.findIndex(p => p.id === foundProduct.id);
   
@@ -88,7 +88,17 @@ export default function POS() {
   };
 
   const handleRemoveProduct = (id: number) => {
-    setProducts(products.filter(product => product.id !== id));
+    const productIndex = products.findIndex(p => p.id === id);
+    if (productIndex === -1) return;
+    const productsCopy = [...products];
+    const product = { ...productsCopy[productIndex] }
+    if (product.quantity > 1) {
+      product.quantity -= 1;
+      productsCopy[productIndex] = product;
+      setProducts(productsCopy);
+    } else {
+      setProducts(products.filter(product => product.id !== id));
+    }
   };
 
   const handleFinishSale = () => {
@@ -122,7 +132,7 @@ export default function POS() {
         <div className="flex flex-col gap-4">
           <TotalDisplay total={total} />
           <Button 
-            color="success" 
+            color="primary" 
             size="lg"
             onPress={onOpen}
             isDisabled={products.length === 0}
