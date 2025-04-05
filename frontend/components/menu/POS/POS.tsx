@@ -88,17 +88,7 @@ export default function POS() {
   };
 
   const handleRemoveProduct = (id: number) => {
-    const productIndex = products.findIndex(p => p.id === id);
-    if (productIndex === -1) return;
-    const productsCopy = [...products];
-    const product = { ...productsCopy[productIndex] }
-    if (product.quantity > 1) {
-      product.quantity -= 1;
-      productsCopy[productIndex] = product;
-      setProducts(productsCopy);
-    } else {
-      setProducts(products.filter(product => product.id !== id));
-    }
+    setProducts(products.filter(product => product.id !== id));
   };
 
   const handleFinishSale = () => {
@@ -126,7 +116,7 @@ export default function POS() {
             </Button>
           </div>
           <div className="mt-8">
-            <ProductList  products={products} onRemoveProduct={handleRemoveProduct} />
+            <ProductList  products={products} setProducts={setProducts} onRemoveProduct={handleRemoveProduct} />
           </div>
         </div>
         <div className="flex flex-col gap-4">
