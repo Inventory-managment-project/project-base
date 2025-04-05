@@ -23,13 +23,45 @@ import org.koin.ktor.ext.inject
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 import org.slf4j.event.Level
+import io.ktor.server.plugins.statuspages.*
+import io.ktor.serialization.*
+import io.ktor.server.response.*
+import kotlinx.serialization.SerializationException
+import io.ktor.server.plugins.contentnegotiation.*
 
 
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
 }
 
+fun Application.configureExceptionHandling() {
+    install(StatusPages) {
+        exception<ContentTransformationException> { call, cause ->
+            call.application.environment.log.error("ContentTransformationException", cause)
+            call.respond(
+                HttpStatusCode.BadRequest,
+                mapOf("error" to "Failed to parse body: ${cause.message ?: "Unknown error"}")
+            )
+        }
+        exception<SerializationException> { call, cause ->
+            call.application.environment.log.error("SerializationException", cause)
+            call.respond(
+                HttpStatusCode.BadRequest,
+                mapOf("error" to "Serialization error: ${cause.message ?: "Unknown error"}")
+            )
+        }
+        exception<Throwable> { call, cause ->
+            call.application.environment.log.error("Unhandled exception", cause)
+            call.respond(
+                HttpStatusCode.InternalServerError,
+                mapOf("error" to "Unexpected error: ${cause.message ?: "Unknown error"}")
+            )
+        }
+    }
+}
+
 fun Application.module() {
+    configureExceptionHandling()
     install(Koin) {
         slf4jLogger()
         modules(

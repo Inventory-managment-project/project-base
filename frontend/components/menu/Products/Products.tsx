@@ -8,17 +8,17 @@ import {
   TableCell
 } from "@heroui/table";
 import { Button } from "@heroui/button";
-import { Tooltip } from "@heroui/tooltip";
 import { Input } from "@heroui/input";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/dropdown";
 import { Pagination } from "@heroui/pagination";
-import { useState, useMemo, useCallback, useLayoutEffect } from "react";
-import { SearchIcon, ChevronDownIcon, PlusIcon, PencilIcon, Trash2Icon } from "lucide-react";
+import { useState, useMemo, useCallback, useLayoutEffect, useEffect } from "react";
+import { SearchIcon, ChevronDownIcon, SaveIcon, PencilIcon, XIcon } from "lucide-react";
 import { SharedSelection } from "@heroui/system";
 import AddProductsModal from "./AddProductsModal";
 import { useSelectedStore } from "@/context/SelectedStoreContext";
 import ConfirmationModal from "@/components/misc/ConfirmationModal";
 import StatusAlert from "@/components/misc/StatusAlert";
+import { AnimatePresence, motion } from "framer-motion";
 
 export const columns = [
   {name: "ID", uid: "id", sortable: true},
@@ -68,7 +68,7 @@ export function capitalize(s : string) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
 }
 
-const INITIAL_VISIBLE_COLUMNS = ["barcode", "name", "price", "stock", "actions"];
+const INITIAL_VISIBLE_COLUMNS = ["barcode", "name", "price", "retailPrice", "wholesalePrice", "stock", "actions"];
 
 const Products = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -88,6 +88,45 @@ const Products = () => {
   const [alertDescription, setAlertDescription] = useState("");
   const [alertStatusCode, setAlertStatusCode] = useState(0);
 
+  const [editingRows, setEditingRows] = useState<Record<number, boolean>>({});
+  const [drafts, setDrafts] = useState<Record<number, Partial<Product>>>({});
+  const toggleEditRow = (product: Product) => {
+    const { _editing, ...cleanProduct } = product;
+    setEditingRows((prev) => {
+      const isNowEditing = !prev[product.id];
+      if (isNowEditing) {
+        setDrafts((prevDrafts) => ({
+          ...prevDrafts,
+          [product.id]: { ...cleanProduct },
+        }));
+      }
+      return { ...prev, [product.id]: isNowEditing };
+    });
+  }
+  const cancelEditRow = (id: number) => {
+    setEditingRows((prev) => ({ ...prev, [id]: false }));
+    setDrafts((prev) => {
+      const newDrafts = { ...prev };
+      delete newDrafts[id];
+      return newDrafts;
+    });
+  };
+  const saveEditRow = async (id: number) => {
+    const draft = drafts[id];
+    if (!draft) return;
+    try {
+      await putProduct(draft as Product);
+      setEditingRows((prev) => ({ ...prev, [id]: false }));
+      setDrafts((prev) => {
+        const newDrafts = { ...prev };
+        delete newDrafts[id];
+        return newDrafts;
+      });
+    } catch (e) {
+      console.error("Error al guardar", e);
+    }
+  };
+
   const fetchProducts = async () => {
     try {
       const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}/products`, {
@@ -102,6 +141,31 @@ const Products = () => {
       console.error("Error al obtener los productos:", error);
     }
   }
+
+  const putProduct = async (product: Product) => {
+    try {
+      const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}/product`, {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(product),
+      });
+      const status = res.status;
+      if (status === 200) {
+        setProducts((prevProducts) =>
+          prevProducts.map((p) => (p.id === product.id ? { ...p, ...product } : p))
+        );
+        handleShowAlert("Producto actualizado", `El producto ${product.name} ha sido actualizado correctamente.`, 200);
+      } else {
+        handleShowAlert("Error al actualizar el producto", "No se pudo actualizar el producto. Inténtalo de nuevo.", 500);
+      }
+    } catch (error) {
+      console.error("Error al actualizar el producto:", error);
+      handleShowAlert("Error al actualizar el producto", "No se pudo actualizar el producto. Inténtalo de nuevo.", 500);
+    }
+  };
 
   const handleShowAlert = (title : string, description : string, statusCode : number) => {
     setAlertTitle(title);
@@ -143,22 +207,41 @@ const Products = () => {
     const end = start + rowsPerPage;
 
     return filteredItems.slice(start, end);
-  }, [page, filteredItems, rowsPerPage]);
+  }, [page, filteredItems, rowsPerPage, editingRows, drafts]);
 
   const sortedItems = useMemo(() => {
-    return [...items].sort((a : Product, b : Product) => {
-      const first = a[sortDescriptor.column];
-      const second = b[sortDescriptor.column];
+    return [...items].map((item) => ({
+      ...item,
+      _editing: editingRows[item.id] ?? false,
+    })).sort((a : Product, b : Product) => {
+      let first = a[sortDescriptor.column];
+      if (typeof first === "string") {
+        first = first.toLowerCase();
+      }
+      let second = b[sortDescriptor.column];
+      if (typeof second === "string") {
+        second = second.toLowerCase();
+      }
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
-  }, [sortDescriptor, items]);
+  }, [sortDescriptor, items, editingRows, drafts]);
 
+  function isEqualDraft(draft: Partial<Product>, original: Product): boolean {
+    return Object.keys(draft).every((key) => {
+      return draft[key as keyof Product] === original[key as keyof Product];
+    });
+  }  
 
-  const handleDeleteProduct = (productId: number, productName: string) => {
-    setProducts((prevProducts) => prevProducts.filter((p) => p.id !== productId));
-    handleShowAlert("Producto eliminado", `El producto ${productName} ha sido eliminado correctamente.`, 200);
+  const handleDeleteProduct = async (productId: number, productName: string) => {
+    const deleteResponse = await deleteProduct(productId, productName);
+    if (deleteResponse === 200) {
+      setProducts((prevProducts) => prevProducts.filter((p) => p.id !== productId));
+      handleShowAlert("Producto eliminado", `El producto ${productName} ha sido eliminado correctamente.`, 200);
+    } else {
+      handleShowAlert("Error al eliminar el producto", "No se pudo eliminar el producto. Inténtalo de nuevo.", 500);
+    }
   };
 
   const deleteProduct = async (productId: number, productName: string) => {
@@ -171,48 +254,97 @@ const Products = () => {
         }
       });
       const status = res.status;
-      if (status === 200) {
-        handleDeleteProduct(productId, productName);
-      } else {
-        handleShowAlert("Error al eliminar el producto", "No se pudo eliminar el producto. Inténtalo de nuevo.", 500);
-      }
+      return status;
     } catch (error) {
       console.error("Error al eliminar el producto:", error);
-      handleShowAlert("Error al eliminar el producto", "No se pudo eliminar el producto. Inténtalo de nuevo.", 500);
+      return 500;
     }
   };
 
-  const renderCell = useCallback((product : Product, columnKey : string|number) => {
-    const cellValue = product[columnKey];
+  useEffect(() => {
+    console.log("Selected keys changed:", selectedKeys);
+  }, [selectedKeys]);
 
-    switch (columnKey) {
-      case "actions":
-        return (
-          <div className="relative flex justify-center items-center gap-2">
-            <Button isIconOnly size="sm" variant="light">
-              <PencilIcon className="text-default-500"/>
-            </Button>
-            <ConfirmationModal
-              onConfirm={() => {
-                deleteProduct(product.id, product.name); 
+  const renderCell = useCallback((product: Product, columnKey: string | number) => {
+    const cellValue = product[columnKey];
+    const isEditing = product._editing;
+    const isEditable = columnKey !== "actions" && columnKey !== "id";
+    
+    return (
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={isEditing && isEditable ? 'input' : 'text'}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="w-full"
+        >
+          {isEditable && isEditing ? (
+            <Input
+              variant="faded"
+              className="w-full"
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => {
+                if (e.key === " ") e.stopPropagation();
               }}
-              header={
-              <div className="text-default-900">
-                Eliminar Producto:
-                <span className="text-secondary"> {product.name}</span>
-              </div>}
-              body={
-                <div className="text-default-500">
-                  ¿Estás seguro de que deseas eliminar el producto <span className="text-secondary-500">{product.name}</span>? Esta acción no se puede deshacer.
-                </div>
-              }
+              value={String(drafts[product.id]?.[columnKey] ?? "")}
+              onChange={(e) => {
+                const newValue = e.target.value;
+                setDrafts((prevDrafts) => ({
+                  ...prevDrafts,
+                  [product.id]: {
+                    ...prevDrafts[product.id],
+                    [columnKey]: newValue,
+                  },
+                }));
+              }}
             />
-          </div>
-        );
-      default:
-        return cellValue;
-    }
-  }, []);
+          ) : columnKey === "actions" ? (
+            <div className="relative flex justify-center items-center gap-2">
+              {isEditing ? (
+                <>
+                  <Button isDisabled={isEqualDraft(drafts[product.id]!, product!)} isIconOnly size="sm" variant="light" onPress={() => saveEditRow(product.id)}>
+                    <SaveIcon className="text-default-500" />
+                  </Button>
+                  <Button isIconOnly size="sm" variant="light" onPress={() => cancelEditRow(product.id)}>
+                    <XIcon className="text-default-500" />
+                  </Button>
+                </>
+              ) : (
+                <Button isIconOnly size="sm" variant="light" onPress={() => toggleEditRow(product)}>
+                  <PencilIcon className="text-default-500" />
+                </Button>
+              )}
+              <ConfirmationModal
+                onConfirm={() => {
+                  handleDeleteProduct(product.id, product.name);
+                }}
+                header={
+                  <div className="text-default-900">
+                    Eliminar Producto:
+                    <span className="text-secondary"> {product.name}</span>
+                  </div>
+                }
+                body={
+                  <div className="text-default-500">
+                    ¿Estás seguro de que deseas eliminar el producto{" "}
+                    <span className="text-secondary-500">{product.name}</span>? Esta acción no se puede deshacer.
+                  </div>
+                }
+              />
+            </div>
+          ) : columnKey === "stock" ? (
+            <span className={`${cellValue < product.minAllowStock && "text-red-500"}`}>
+              {parseFloat(cellValue).toFixed(2)}
+            </span>
+          ) : (
+            <span className="text-sm">{cellValue}</span>
+          )}
+        </motion.div>
+      </AnimatePresence>
+    );
+  }, [editingRows, drafts]);
 
   const onRowsPerPageChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
@@ -333,6 +465,7 @@ const Products = () => {
         classNames={{
           wrapper: "max-h-[445px] min-h-[445px]",
         }}
+        color="secondary"
         selectedKeys={selectedKeys}
         selectionMode="multiple"
         sortDescriptor={sortDescriptor}

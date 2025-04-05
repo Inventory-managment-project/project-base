@@ -5,6 +5,7 @@ import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { EyeClosedIcon, EyeIcon } from "lucide-react";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -16,6 +17,10 @@ const Register = () => {
   const [errorPassword, setErrorPassword] = useState("");
   const [errorPasswordConfirm, setErrorPasswordConfirm] = useState("");
   const [status, setStatus] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const toggleVisibility = () => setIsVisible(!isVisible);
+  const [isVisibleConfirm, setIsVisibleConfirm] = useState(false);
+  const toggleVisibilityConfirm = () => setIsVisibleConfirm(!isVisibleConfirm);
 
   const handleRegister = () => {
     setErrorEmail("");
@@ -122,26 +127,54 @@ const Register = () => {
         />
         <Divider className="w-[50%]"/>
         <Input
-          type="password"
+          type={isVisible ? "text" : "password"}
           label="Contraseña"
           variant="bordered"
           color="secondary"
           className="max-w-[300px] mt-4"
           isInvalid={errorPassword !== ""}
           errorMessage={errorPassword}
+          endContent={
+            <button
+              aria-label="toggle password visibility"
+              className="focus:outline-none"
+              type="button"
+              onClick={toggleVisibility}
+            >
+              {isVisible ? (
+                <EyeClosedIcon className="text-2xl text-secondary pointer-events-none" />
+              ) : (
+                <EyeIcon className="text-2xl text-secondary pointer-events-none" />
+              )}
+            </button>
+          }
           onChange={(e) => {
             setPassword(e.target.value);
             setErrorPassword("");
           }}
         />
         <Input
-          type="password"
+          type={isVisibleConfirm ? "text" : "password"}
           label="Confirmar Contraseña"
           variant="bordered"
           color="secondary"
           className="max-w-[300px] mt-4"
           isInvalid={errorPasswordConfirm !== ""}
           errorMessage={errorPasswordConfirm}
+          endContent={
+            <button
+              aria-label="toggle password visibility"
+              className="focus:outline-none"
+              type="button"
+              onClick={toggleVisibilityConfirm}
+            >
+              {isVisibleConfirm ? (
+                <EyeClosedIcon className="text-2xl text-secondary pointer-events-none" />
+              ) : (
+                <EyeIcon className="text-2xl text-secondary pointer-events-none" />
+              )}
+            </button>
+          }
           onChange={(e) => {
             setPasswordConfirm(e.target.value);
             setErrorPasswordConfirm("");
