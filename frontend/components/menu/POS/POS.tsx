@@ -102,17 +102,7 @@ export default function POS() {
   };
 
   const handleRemoveProduct = (id: number) => {
-    const productIndex = products.findIndex(p => p.id === id);
-    if (productIndex === -1) return;
-    const productsCopy = [...products];
-    const product = { ...productsCopy[productIndex] }
-    if (product.quantity > 1) {
-      product.quantity -= 1;
-      productsCopy[productIndex] = product;
-      setProducts(productsCopy);
-    } else {
-      setProducts(products.filter(product => product.id !== id));
-    }
+    setProducts(products.filter(product => product.id !== id));
   };
 
   const handleFinishSale = () => {
@@ -147,7 +137,7 @@ export default function POS() {
           
           <div className="mt-4 rounded-lg shadow-md p-4 max-h-[calc(100vh-280px)]">
             <h2 className="text-lg font-semibold mb-2 text-right">Productos en carrito</h2>
-            <ProductList products={products} onRemoveProduct={handleRemoveProduct} />
+            <ProductList products={products} setProducts={setProducts} onRemoveProduct={handleRemoveProduct} />
           </div>
         </div>
         <div className="bg-gray-100 dark:bg-zinc-900 p-6 flex flex-col border-l border-divider">
