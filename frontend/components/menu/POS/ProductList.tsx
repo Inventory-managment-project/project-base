@@ -21,7 +21,7 @@ export const ProductList = ({ products, setProducts, onRemoveProduct }: ProductL
   }
 
   return (
-    <ScrollShadow visibility="bottom" className="h-[75vh]">
+    <ScrollShadow visibility="bottom" className="h-[58vh]">
       <Table 
         aria-label="Products list"
         className="mt-4"
