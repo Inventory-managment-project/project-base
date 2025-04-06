@@ -10,6 +10,7 @@ import { ProductPOS } from "@/types/product";
 import { useEffect, useLayoutEffect } from "react";
 import { Product } from "../Products/Products";
 import { useSelectedStore } from "@/context/SelectedStoreContext";
+import { Divider } from "@heroui/divider";
 
 export function convertToProductPOS(product: Product): ProductPOS {
   return {
@@ -122,14 +123,14 @@ export default function POS() {
   const total = products.reduce((sum, product) => sum + (product.price * product.quantity), 0);
 
   return (
-    <div className="w-full h-full mx-auto bg-gray-50">
-      <div className="p-5 bg-white shadow-sm border-b">
-        <h1 className="text-2xl font-bold text-gray-800">Terminal de Venta</h1>
+    <div className="w-full h-full mx-auto">
+      <div className="p-4 shadow-sm">
+        <h1 className="text-2xl font-bold">Terminal de Venta</h1>
       </div>
-      
+      <Divider/>
       <div className="grid grid-cols-1 md:grid-cols-3 h-[calc(100%-80px)] gap-0">
-        <div className="md:col-span-2 p-5 border-r">
-          <div className="flex gap-2 bg-white p-4 shadow-sm rounded-lg">
+        <div className="md:col-span-2 p-5">
+          <div className="flex gap-2 p-4 shadow-md rounded-lg">
             <Input
               placeholder="Escanear código de barras"
               value={barcode}
@@ -144,14 +145,13 @@ export default function POS() {
             </Button>
           </div>
           
-          <div className="mt-6 bg-white rounded-lg shadow-sm p-4 overflow-y-auto max-h-[calc(100vh-280px)]">
-            <h2 className="text-lg font-semibold mb-3 text-gray-700">Productos en carrito</h2>
+          <div className="mt-4 rounded-lg shadow-md p-4 max-h-[calc(100vh-280px)]">
+            <h2 className="text-lg font-semibold mb-2 text-right">Productos en carrito</h2>
             <ProductList products={products} onRemoveProduct={handleRemoveProduct} />
           </div>
         </div>
-        
-        <div className="bg-gray-100 p-6 flex flex-col">
-          <div className="bg-white rounded-lg shadow-sm p-5 mb-4">
+        <div className="bg-gray-100 dark:bg-zinc-900 p-6 flex flex-col border-l border-divider">
+          <div className="rounded-lg bg-white dark:bg-black shadow-md p-5 mb-4">
             <TotalDisplay total={total} />
           </div>
           

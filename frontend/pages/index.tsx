@@ -5,8 +5,9 @@ import { button as buttonStyles } from "@heroui/theme";
 
 import { siteConfig } from "@/config/site";
 import { title, subtitle } from "@/components/misc/primitives";
-import { GithubIcon, ArrowRightIcon } from "@/components/misc/icons";
+import { GithubIcon } from "@/components/misc/icons";
 import LandingLayout from "@/layouts/landing";
+import { ArrowRightIcon } from "lucide-react";
 
 export default function IndexPage() {
   return (
