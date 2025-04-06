@@ -48,8 +48,10 @@ export type Product = {
   [key: string]: any;
 };
 
-function parseProducts(data: any[]): Product[] {
-  return data.map(item => ({
+function parseProducts(data: any): Product[] {
+  const productsArray = Array.isArray(data) ? data : data.products || data.data || [];
+  
+  return productsArray.map((item: any) => ({
     ...item,
     price: parseFloat(item.price),
     wholesalePrice: parseFloat(item.wholesalePrice),

@@ -1,18 +1,12 @@
-import { Card, CardBody } from "@heroui/card";
-
 interface TotalDisplayProps {
   total: number;
 }
 
-export const TotalDisplay = ({ total }: TotalDisplayProps) => {
+export function TotalDisplay({ total }: TotalDisplayProps) {
   return (
-    <Card className="bg-secondary-500">
-      <CardBody className="flex flex-col items-center justify-center py-8">
-        <span className="text-white text-xl mb-2">Total a Pagar</span>
-        <span className="text-white text-6xl font-bold">
-          ${total.toFixed(2)}
-        </span>
-      </CardBody>
-    </Card>
+    <div className="text-center">
+      <h3 className="text-lg font-medium text-gray-600 dark:text-gray-100">Total a Pagar</h3>
+      <p className="text-4xl font-bold text-gray-800 dark:text-white mt-2">${total.toFixed(2)}</p>
+    </div>
   );
-};
+}

@@ -10,8 +10,16 @@ interface ProductListProps {
 }
 
 export const ProductList = ({ products, onRemoveProduct }: ProductListProps) => {
+  if (products.length === 0) {
+    return (
+      <div className="text-center py-10 text-gray-500">
+        <p>No hay productos en el carrito</p>
+      </div>
+    );
+  }
+
   return (
-    <ScrollShadow visibility="bottom" className="h-[75vh]">
+    <ScrollShadow visibility="bottom" className="h-[58vh]">
       <Table 
         aria-label="Products list"
         className="mt-4"

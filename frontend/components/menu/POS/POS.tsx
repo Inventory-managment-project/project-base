@@ -10,6 +10,7 @@ import { ProductPOS } from "@/types/product";
 import { useEffect, useLayoutEffect } from "react";
 import { Product } from "../Products/Products";
 import { useSelectedStore } from "@/context/SelectedStoreContext";
+import { Divider } from "@heroui/divider";
 
 export function convertToProductPOS(product: Product): ProductPOS {
   return {
@@ -20,8 +21,10 @@ export function convertToProductPOS(product: Product): ProductPOS {
   };
 }
 
-function parseProducts(data: any[]): Product[] {
-  return data.map(item => ({
+function parseProducts(data: any): Product[] {
+  const productsArray = Array.isArray(data) ? data : data.products || data.data || [];
+  
+  return productsArray.map((item: any) => ({
     ...item,
     price: parseFloat(item.price),
     wholesalePrice: parseFloat(item.wholesalePrice),
@@ -45,9 +48,13 @@ export default function POS() {
         }
       });
       const data = await res.json();
+      
+      console.log("API Response:", data);
+      
       setProductList(parseProducts(data));
     } catch (error) {
       console.error("Error al obtener los productos:", error);
+      setProductList([]);
     }
   }
 
@@ -56,8 +63,15 @@ export default function POS() {
   }, []);
 
   useEffect(() => {
-    const savedProducts = localStorage.getItem("products") || "";
-    if (savedProducts) setProducts(JSON.parse(savedProducts));
+    const savedProducts = localStorage.getItem("products");
+    if (savedProducts) {
+      try {
+        setProducts(JSON.parse(savedProducts));
+      } catch (error) {
+        console.error("Error parsing saved products:", error);
+        localStorage.removeItem("products");
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -109,48 +123,61 @@ export default function POS() {
   const total = products.reduce((sum, product) => sum + (product.price * product.quantity), 0);
 
   return (
-    <div className="w-full h-full mx-auto p-4">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="md:col-span-2">
-          <div className="flex gap-2">
+    <div className="w-full h-full mx-auto">
+      <div className="p-4 shadow-sm">
+        <h1 className="text-2xl font-bold">Terminal de Venta</h1>
+      </div>
+      <Divider/>
+      <div className="grid grid-cols-1 md:grid-cols-3 h-[calc(100%-80px)] gap-0">
+        <div className="md:col-span-2 p-5">
+          <div className="flex gap-2 p-4 shadow-md rounded-lg">
             <Input
               placeholder="Escanear código de barras"
               value={barcode}
               onValueChange={setBarcode}
               onKeyPress={(e) => e.key === "Enter" && handleScan()}
               startContent={<BarcodeIcon className="text-default-400" />}
+              size="lg"
               className="flex-1"
             />
-            <Button color="secondary" onPress={handleScan}>
+            <Button color="secondary" size="lg" onPress={handleScan}>
               <PlusIcon className="h-5 w-5" />
             </Button>
           </div>
-          <div className="mt-8">
-            <ProductList  products={products} onRemoveProduct={handleRemoveProduct} />
+          
+          <div className="mt-4 rounded-lg shadow-md p-4 max-h-[calc(100vh-280px)]">
+            <h2 className="text-lg font-semibold mb-2 text-right">Productos en carrito</h2>
+            <ProductList products={products} onRemoveProduct={handleRemoveProduct} />
           </div>
         </div>
-        <div className="flex flex-col gap-4">
-          <TotalDisplay total={total} />
-          <Button 
-            color="primary" 
-            size="lg"
-            onPress={onOpen}
-            isDisabled={products.length === 0}
-            startContent={<CheckCircleIcon className="h-5 w-5" />}
-          >
-            Finalizar Venta
-          </Button>
-          {/*  
-          <Button 
-            color="danger" 
-            size="lg"
-            onPress={onOpen}
-            isDisabled={products.length === 0}
-            startContent={<CircleXIcon className="h-5 w-5" />}
-          >
-            Cancelar Venta
-          </Button>
-          */}
+        <div className="bg-gray-100 dark:bg-zinc-900 p-6 flex flex-col border-l border-divider">
+          <div className="rounded-lg bg-white dark:bg-black shadow-md p-5 mb-4">
+            <TotalDisplay total={total} />
+          </div>
+          
+          <div className="mt-auto flex flex-col gap-3">
+            <Button 
+              color="primary" 
+              size="lg"
+              onPress={onOpen}
+              isDisabled={products.length === 0}
+              startContent={<CheckCircleIcon className="h-5 w-5" />}
+              className="h-16 text-lg font-medium"
+            >
+              Finalizar Venta
+            </Button>
+            
+            <Button 
+              color="danger" 
+              variant="flat"
+              size="lg"
+              onPress={() => setProducts([])}
+              isDisabled={products.length === 0}
+              startContent={<CircleXIcon className="h-5 w-5" />}
+            >
+              Cancelar Venta
+            </Button>
+          </div>
         </div>
       </div>
 
