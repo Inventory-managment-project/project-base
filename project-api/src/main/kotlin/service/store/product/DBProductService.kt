@@ -1,7 +1,7 @@
 package mx.unam.fciencias.ids.eq1.service.store.product
 
 import mx.unam.fciencias.ids.eq1.model.store.product.Product
-import mx.unam.fciencias.ids.eq1.model.store.product.repository.ProductRepository
+import mx.unam.fciencias.ids.eq1.model.store.product.ProductRepository
 import org.koin.core.annotation.Factory
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
