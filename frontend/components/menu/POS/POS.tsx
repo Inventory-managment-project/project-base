@@ -178,13 +178,7 @@ export default function POS() {
       return " ".repeat(padding) + text;
     };
 
-    const logo = await figlet.textSync(storeDetails.name, {width: 40}, (err: Error | null, data: string) => {
-      if (err) {
-      console.error("Error generating logo:", err);
-      return "";
-      }
-      return data;
-    });
+    const logo = figlet.textSync(storeDetails.name, { width: 40 });
     const ticket = 
       "========================================\n" +
       logo.split("\n").map((line: string) => centralizeText(line)).join("\n") + "\n\n" +
@@ -244,6 +238,7 @@ export default function POS() {
               size="lg"
               className="flex-1"
             />
+            {/* handleScan */}
             <Button color="secondary" size="lg" onPress={() => printTicket(1)}>
               <PlusIcon className="h-5 w-5" />
             </Button>
