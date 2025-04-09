@@ -10,11 +10,11 @@ interface PaymentModalProps {
   isOpen: boolean;
   onOpenChange: () => void;
   total: number;
-  onFinishSale: () => void;
+  onFinishSale: (paymentMethod: string) => void;
 }
 
 export const PaymentModal = ({ isOpen, onOpenChange, total, onFinishSale }: PaymentModalProps) => {
-  const [paymentMethod, setPaymentMethod] = useState("cash");
+  const [paymentMethod, setPaymentMethod] = useState("CASH");
   const [cashReceived, setCashReceived] = useState("");
 
   const change = useMemo(() => {
@@ -24,7 +24,7 @@ export const PaymentModal = ({ isOpen, onOpenChange, total, onFinishSale }: Paym
 
   const handleFinish = () => {
     if (paymentMethod === "cash" && change < 0) return;
-    onFinishSale();
+    onFinishSale(paymentMethod);
     setCashReceived("");
     setPaymentMethod("cash");
   };
@@ -48,19 +48,19 @@ export const PaymentModal = ({ isOpen, onOpenChange, total, onFinishSale }: Paym
                 onValueChange={setPaymentMethod}
               >
                 <Radio 
-                  value="cash"
+                  value="CASH"
                 >
                   Efectivo
                   <BanknoteIcon className="text-default-500" />
                 </Radio>
                 <Radio 
-                  value="card"
+                  value="CARD"
                 >
                   Tarjeta
                   <CreditCardIcon className="text-default-500" />
                 </Radio>
                 <Radio 
-                  value="transfer"
+                  value="TRANSFER"
                 >
                   Transferencia
                   <LandmarkIcon className="text-default-500" />

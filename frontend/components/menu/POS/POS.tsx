@@ -11,6 +11,7 @@ import { useEffect, useLayoutEffect } from "react";
 import { Product } from "../Products/Products";
 import { useSelectedStore } from "@/context/SelectedStoreContext";
 import { Divider } from "@heroui/divider";
+import StatusAlert from "@/components/misc/StatusAlert";
 
 export function convertToProductPOS(product: Product): ProductPOS {
   return {
@@ -39,6 +40,20 @@ export default function POS() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { selectedStoreString } = useSelectedStore();
 
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertTitle, setAlertTitle] = useState("");
+  const [alertDescription, setAlertDescription] = useState("");
+  const [alertStatusCode, setAlertStatusCode] = useState(0);
+  const handleShowAlert = (title : string, description : string, statusCode : number) => {
+    setAlertTitle(title);
+    setAlertDescription(description);
+    setAlertStatusCode(statusCode);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  };
+
   const fetchProducts = async () => {
     try {
       const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}/products`, {
@@ -55,6 +70,38 @@ export default function POS() {
     } catch (error) {
       console.error("Error al obtener los productos:", error);
       setProductList([]);
+    }
+  }
+
+  const postSale = async (paymentMethod: string) => {
+    if (products.length === 0) return;
+
+    const saleData = {
+      id: 0,
+      total: 0,
+      paymentmethod: paymentMethod,
+      created: 1712244000000,
+      products: products.map(product => ({
+        first: product.id,
+        second: product.quantity
+      })),
+      subtotal: 0,
+    };
+    console.log("Sale Data:", JSON.stringify(saleData));
+
+    try {
+      const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}/sales`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(saleData),
+      });
+      return res.status;
+    } catch (error) {
+      console.error("Error al registrar la venta:", error);
+      return 500;
     }
   }
 
@@ -105,8 +152,15 @@ export default function POS() {
     setProducts(products.filter(product => product.id !== id));
   };
 
-  const handleFinishSale = () => {
-    setProducts([]);
+  const handleFinishSale = async (paymentMethod: string) => {
+    const status = await postSale(paymentMethod);
+    if (status === 201) {
+      handleShowAlert("Venta exitosa", "La venta se ha registrado correctamente.", 200);
+      setProducts([]);
+    } else {
+      handleShowAlert("Error", "No se pudo registrar la venta.", 500);
+    }
+    setBarcode("");
     onOpenChange();
   };
 
@@ -176,6 +230,12 @@ export default function POS() {
         onOpenChange={onOpenChange} 
         total={total}
         onFinishSale={handleFinishSale}
+      />
+      <StatusAlert
+        show={showAlert}
+        title={alertTitle}
+        description={alertDescription}
+        statusCode={alertStatusCode}
       />
     </div>
   );
