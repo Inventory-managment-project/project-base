@@ -15,9 +15,9 @@ import java.math.BigDecimal
  * @property storeId The ID of the store for which sales operations are performed.
  */
 @Factory
-class DBSaleService(private val storeId: Int) : SaleService, KoinComponent {
+class DBSaleService(storeId: Int) : SaleService, KoinComponent {
 
-    private val salesRepository: SalesRepository by inject { return@inject parametersOf(storeId) }
+    private val salesRepository: SalesRepository by inject {  parametersOf(storeId) }
 
     override suspend fun getSaleById(id: Int): Sale? {
         return salesRepository.getById(id)

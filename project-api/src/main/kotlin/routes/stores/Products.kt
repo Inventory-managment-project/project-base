@@ -12,13 +12,13 @@ import mx.unam.fciencias.ids.eq1.service.store.product.ProductService
 import org.koin.core.parameter.parametersOf
 import org.koin.ktor.ext.inject
 
-private suspend fun RoutingCall.getProductIdOrBadRequest(): Int? {
+private suspend inline fun RoutingCall.getProductIdOrBadRequest(): Int? {
     val storeId = this.parameters["productId"]?.toIntOrNull()
     if (storeId == null) this.respond(HttpStatusCode.NoContent, "Product not found")
     return storeId
 }
 
-private suspend fun RoutingCall.getProductBarcodeOrBadRequest(): String? {
+private suspend inline fun RoutingCall.getProductBarcodeOrBadRequest(): String? {
     val storeId = this.parameters["productId"]
     if (storeId == null) this.respond(HttpStatusCode.NoContent, "Product not found")
     return storeId

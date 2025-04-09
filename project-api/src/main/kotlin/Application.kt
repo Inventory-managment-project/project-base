@@ -69,6 +69,7 @@ fun Application.module() {
             StoreModule().module,
             DatabaseModule().module,
             AppModule(environment).module,
+            SalesModule().module,
         )
     }
 

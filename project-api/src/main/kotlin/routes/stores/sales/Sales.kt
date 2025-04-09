@@ -103,7 +103,7 @@ fun Route.sales() {
 
                 val storeId = call.getStoreIdOrBadRequest() ?: return@get
 
-                val saleService by call.application.inject<SaleService> { parametersOf(storeId) }
+                val saleService by call.inject<SaleService> { parametersOf(storeId) }
                 call.respond(saleService.getAllSales())
             }
             get("/{salesId}") {
@@ -112,7 +112,7 @@ fun Route.sales() {
                 val salesId = call.parameters["salesId"]?.toIntOrNull()
                     ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid sales ID")
 
-                val saleService by call.application.inject<SaleService> { parametersOf(storeId) }
+                val saleService by call.inject<SaleService> { parametersOf(storeId) }
                 val sale = saleService.getSaleById(salesId)
                     ?: return@get call.respond(HttpStatusCode.NotFound, "Sale not found")
 
@@ -127,12 +127,12 @@ fun Route.sales() {
                 // Get authenticated user
                 val userEmail = call.principal<JWTPrincipal>()?.payload?.getClaim("email")?.asString()
                     ?: return@put call.respond(HttpStatusCode.BadRequest)
-                val userService by call.application.inject<UserService>() { parametersOf(storeId) }
+                val userService by call.inject<UserService>() { parametersOf(storeId) }
                 val user = userService.getUserByEmail(userEmail)
                     ?: return@put call.respond(HttpStatusCode.Forbidden)
 
                 // Verify the store exists
-                val storeService by call.application.inject<StoreService>()
+                val storeService by call.inject<StoreService>()
 
                 val store = storeService.getStoreById(storeId)
                     ?: return@put call.respond(HttpStatusCode.NotFound, "Store not found")
@@ -143,7 +143,7 @@ fun Route.sales() {
                 }
 
                 val updatedSale = call.receive<Sale>()
-                val saleService by call.application.inject<SaleService> { parametersOf(storeId) }
+                val saleService by call.inject<SaleService> { parametersOf(storeId) }
 
                 val result = saleService.updateSale(updatedSale)
                 if (result) {
@@ -160,12 +160,12 @@ fun Route.sales() {
 
                 val userEmail = call.principal<JWTPrincipal>()?.payload?.getClaim("email")?.asString()
                     ?: return@delete call.respond(HttpStatusCode.BadRequest)
-                val userService by call.application.inject<UserService>() { parametersOf(storeId) }
+                val userService by call.inject<UserService>() { parametersOf(storeId) }
 
                 val user = userService.getUserByEmail(userEmail)
                     ?: return@delete call.respond(HttpStatusCode.Forbidden)
 
-                val storeService by call.application.inject<StoreService>()
+                val storeService by call.inject<StoreService>()
 
                 val store = storeService.getStoreById(storeId)
                     ?: return@delete call.respond(HttpStatusCode.NotFound, "Store not found")
@@ -174,7 +174,7 @@ fun Route.sales() {
                     return@delete call.respond(HttpStatusCode.Forbidden, "Not authorized to manage this store")
                 }
 
-                val saleService by call.application.inject<SaleService> { parametersOf(storeId) }
+                val saleService by call.inject<SaleService> { parametersOf(storeId) }
                 val result = saleService.deleteSale(salesId)
 
                 if (result) {
@@ -189,11 +189,11 @@ fun Route.sales() {
 
                 val userEmail = call.principal<JWTPrincipal>()?.payload?.getClaim("email")?.asString()
                     ?: return@get call.respond(HttpStatusCode.BadRequest)
-                val userService by call.application.inject<UserService>() { parametersOf(storeId) }
+                val userService by call.inject<UserService>() { parametersOf(storeId) }
                 val user = userService.getUserByEmail(userEmail)
                     ?: return@get call.respond(HttpStatusCode.Forbidden)
 
-                val storeService by call.application.inject<StoreService>()
+                val storeService by call.inject<StoreService>()
                 val store = storeService.getStoreById(storeId)
                     ?: return@get call.respond(HttpStatusCode.NotFound, "Store not found")
 
@@ -208,7 +208,7 @@ fun Route.sales() {
                     return@get call.respond(HttpStatusCode.BadRequest, "Both startDate and endDate are required")
                 }
 
-                val salesService by call.application.inject<SaleService> { parametersOf(storeId) }
+                val salesService by call.inject<SaleService> { parametersOf(storeId) }
                 val sales = salesService.getSalesByDateRange(startDate, endDate)
                 call.respond(sales)
 
