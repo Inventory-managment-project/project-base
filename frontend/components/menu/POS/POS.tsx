@@ -13,6 +13,10 @@ import { useSelectedStore } from "@/context/SelectedStoreContext";
 import { Divider } from "@heroui/divider";
 import StatusAlert from "@/components/misc/StatusAlert";
 
+import figlet from "figlet";
+import bulbhead from "figlet/importable-fonts/Bulbhead.js";
+figlet.parseFont("Standard", bulbhead);
+
 export function convertToProductPOS(product: Product): ProductPOS {
   return {
     id: product.id,
@@ -87,7 +91,6 @@ export default function POS() {
       })),
       subtotal: 0,
     };
-    console.log("Sale Data:", JSON.stringify(saleData));
 
     try {
       const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}/sales`, {
@@ -98,10 +101,10 @@ export default function POS() {
         },
         body: JSON.stringify(saleData),
       });
-      return res.status;
+      return res;
     } catch (error) {
       console.error("Error al registrar la venta:", error);
-      return 500;
+      return new Response(null, { status: 500 });
     }
   }
 
@@ -128,7 +131,6 @@ export default function POS() {
   const handleScan = () => {
     if (!barcode.trim()) return;
     const foundProduct = productList.find(product => product.barcode === barcode.trim());
-    console.log(products)
     if (foundProduct) {
       const existingProductIndex = products.findIndex(p => p.id === foundProduct.id);
   
@@ -152,10 +154,68 @@ export default function POS() {
     setProducts(products.filter(product => product.id !== id));
   };
 
+  const printTicket = async (id: number) => {
+    const getStoreDetails = async () => {
+      const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}`, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+          "Content-Type": "application/json",
+        }
+      });
+      const data = await res.json();
+      return data;
+    };
+    const storeDetails = await getStoreDetails();
+
+    const centralizeText = (text: string) => {
+      const maxLength = 40;
+      const padding = Math.floor((maxLength - text.length) / 2);
+      return " ".repeat(padding) + text + " ".repeat(maxLength - text.length - padding);
+    };
+    const rightAlignText = (text: string) => {
+      const maxLength = 40;
+      const padding = maxLength - text.length;
+      return " ".repeat(padding) + text;
+    };
+
+    const logo = await figlet.textSync(storeDetails.name, {width: 40}, (err: Error | null, data: string) => {
+      if (err) {
+      console.error("Error generating logo:", err);
+      return "";
+      }
+      return data;
+    });
+    const ticket = 
+      "========================================\n" +
+      logo.split("\n").map((line: string) => centralizeText(line)).join("\n") + "\n\n" +
+      centralizeText(storeDetails.address) + "\n" +
+      centralizeText("Tel: (000) 000-0000") + "\n" +
+      centralizeText(`www.${storeDetails.name}.com`) + "\n\n" +
+      "======================================== \n" +
+      rightAlignText(`Ticket N°: ${id}`) + "\n\n" + 
+      "Descripción\tCant\tPrecio\tTotal \n" +
+      "---------------------------------------- \n" +
+      "Producto/Servicio 1\t1\t$10.00\t$10.00 \n" +
+      "Producto/Servicio 2\t2\t$5.00\t$10.00 \n" +
+      "---------------------------------------- \n" +
+      rightAlignText(`Subtotal: $20.00`) + "\n" +
+      rightAlignText(`Descuento: $0.00`) + "\n" +
+      rightAlignText(`Total: $20.00`) + "\n" +
+      " \n" +
+      "Método de pago: Efectivo / Tarjeta \n" +
+      " \n" +
+      "======================================== \n" +
+      centralizeText("Gracias por su compra") + "\n" +
+      centralizeText(`${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}`);
+    console.log(ticket);
+  };
+
   const handleFinishSale = async (paymentMethod: string) => {
-    const status = await postSale(paymentMethod);
-    if (status === 201) {
+    const res = await postSale(paymentMethod) ?? new Response(null, { status: 500 });
+    const data = await res.json();
+    if (res.status === 201) {
       handleShowAlert("Venta exitosa", "La venta se ha registrado correctamente.", 200);
+      printTicket(data);
       setProducts([]);
     } else {
       handleShowAlert("Error", "No se pudo registrar la venta.", 500);
@@ -184,7 +244,7 @@ export default function POS() {
               size="lg"
               className="flex-1"
             />
-            <Button color="secondary" size="lg" onPress={handleScan}>
+            <Button color="secondary" size="lg" onPress={() => printTicket(1)}>
               <PlusIcon className="h-5 w-5" />
             </Button>
           </div>

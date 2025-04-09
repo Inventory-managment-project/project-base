@@ -14,7 +14,7 @@ interface PaymentModalProps {
 }
 
 export const PaymentModal = ({ isOpen, onOpenChange, total, onFinishSale }: PaymentModalProps) => {
-  const [paymentMethod, setPaymentMethod] = useState("CASH");
+  const [paymentMethod, setPaymentMethod] = useState<"CASH" | "CARD" | "TRANSFER">("CASH");
   const [cashReceived, setCashReceived] = useState("");
 
   const change = useMemo(() => {
@@ -23,10 +23,10 @@ export const PaymentModal = ({ isOpen, onOpenChange, total, onFinishSale }: Paym
   }, [cashReceived, total]);
 
   const handleFinish = () => {
-    if (paymentMethod === "cash" && change < 0) return;
+    if (paymentMethod === "CASH" && change < 0) return;
     onFinishSale(paymentMethod);
     setCashReceived("");
-    setPaymentMethod("cash");
+    setPaymentMethod("CASH");
   };
 
   return (
@@ -45,7 +45,7 @@ export const PaymentModal = ({ isOpen, onOpenChange, total, onFinishSale }: Paym
               <RadioGroup
                 label="Método de Pago"
                 value={paymentMethod}
-                onValueChange={setPaymentMethod}
+                onValueChange={(value) => setPaymentMethod(value as "CASH" | "CARD" | "TRANSFER")}
               >
                 <Radio 
                   value="CASH"
@@ -67,7 +67,7 @@ export const PaymentModal = ({ isOpen, onOpenChange, total, onFinishSale }: Paym
                 </Radio>
               </RadioGroup>
 
-              {paymentMethod === "cash" && (
+              {paymentMethod === "CASH" && (
                 <div className="mt-4 space-y-4">
                   <Input
                     type="number"
@@ -97,7 +97,7 @@ export const PaymentModal = ({ isOpen, onOpenChange, total, onFinishSale }: Paym
               <Button 
                 color="success" 
                 onPress={handleFinish}
-                isDisabled={paymentMethod === "cash" && change < 0}
+                isDisabled={paymentMethod === "CASH" && change < 0}
               >
                 Confirmar Pago
               </Button>
