@@ -3,7 +3,7 @@ import { ProductList } from "./ProductList";
 import { TotalDisplay } from "./TotalDisplay";
 import { PaymentModal } from "./PaymentModal";
 import { useState } from "react";
-import { BarcodeIcon, PlusIcon, CheckCircleIcon, CircleXIcon } from "lucide-react";
+import { BarcodeIcon, PlusIcon, CheckCircleIcon, CircleXIcon, SearchIcon } from "lucide-react";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { ProductPOS } from "@/types/product";
@@ -166,12 +166,17 @@ export default function POS() {
         handleScan();
       }
 
-      if (e.key >= '0' && e.key <= '9' && !isTypingInAnotherInput()) {
+      if (!isTypingInAnotherInput() && (/^[0-9]$/.test(e.key))) {
+        inputRef.current?.focus();
+      }
+
+      if (e.shiftKey && e.key.toLowerCase() === "f") {
+        e.preventDefault();
         inputRef.current?.focus();
       }
 
       if (products.length !== 0) {
-        if (e.key.toLowerCase() === "f" && e.shiftKey) {
+        if (e.key.toLowerCase() === "v" && e.shiftKey) {
           onOpen();
         }
 
@@ -330,6 +335,10 @@ export default function POS() {
               onValueChange={handleInputChange}
               ref={inputRef}
               startContent={<BarcodeIcon className="text-default-400" />}
+              endContent={<div className="flex items-center gap-2">
+                <Kbd keys={["shift"]}>F</Kbd>
+                <SearchIcon className="text-default-400" />
+              </div>}
               size="lg"
               className="flex-1"
             />
@@ -392,7 +401,7 @@ export default function POS() {
               className="h-16 text-lg font-medium"
             >
               Finalizar Venta
-              <Kbd keys={["shift"]}>F</Kbd>
+              <Kbd keys={["shift"]}>V</Kbd>
             </Button>
             
             <Button 
