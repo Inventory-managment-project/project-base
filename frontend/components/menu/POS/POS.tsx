@@ -67,9 +67,6 @@ export default function POS() {
         }
       });
       const data = await res.json();
-      
-      console.log("API Response:", data);
-      
       setProductList(parseProducts(data));
     } catch (error) {
       console.error("Error al obtener los productos:", error);
@@ -154,7 +151,9 @@ export default function POS() {
     setProducts(products.filter(product => product.id !== id));
   };
 
-  const printTicket = async (id: number) => {
+  const printTicket = async (id: number, discount: number, paymentMethod: "CASH" | "CARD" | "TRANSFER", cashReceived : string) => {
+    const MAX_LENGTH = 40;
+
     const getStoreDetails = async () => {
       const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}`, {
         headers: {
@@ -168,48 +167,53 @@ export default function POS() {
     const storeDetails = await getStoreDetails();
 
     const centralizeText = (text: string) => {
-      const maxLength = 40;
-      const padding = Math.floor((maxLength - text.length) / 2);
-      return " ".repeat(padding) + text + " ".repeat(maxLength - text.length - padding);
+      const padding = Math.floor((MAX_LENGTH - text.length) / 2);
+      return " ".repeat(padding) + text + " ".repeat(MAX_LENGTH - text.length - padding);
     };
     const rightAlignText = (text: string) => {
-      const maxLength = 40;
-      const padding = maxLength - text.length;
+      const padding = MAX_LENGTH - text.length;
       return " ".repeat(padding) + text;
     };
 
+    const subtotal = products.reduce((sum, product) => sum + (product.price * product.quantity), 0);
+    const total = subtotal - discount;
+
     const logo = figlet.textSync(storeDetails.name, { width: 40 });
     const ticket = 
-      "========================================\n" +
+      "=".repeat(MAX_LENGTH) + "\n" +
       logo.split("\n").map((line: string) => centralizeText(line)).join("\n") + "\n\n" +
       centralizeText(storeDetails.address) + "\n" +
       centralizeText("Tel: (000) 000-0000") + "\n" +
       centralizeText(`www.${storeDetails.name}.com`) + "\n\n" +
-      "======================================== \n" +
+      "=".repeat(MAX_LENGTH) + "\n" +
       rightAlignText(`Ticket N°: ${id}`) + "\n\n" + 
-      "Descripción\tCant\tPrecio\tTotal \n" +
-      "---------------------------------------- \n" +
-      "Producto/Servicio 1\t1\t$10.00\t$10.00 \n" +
-      "Producto/Servicio 2\t2\t$5.00\t$10.00 \n" +
-      "---------------------------------------- \n" +
-      rightAlignText(`Subtotal: $20.00`) + "\n" +
+      "Descripción".padEnd(14) + "Cant".padEnd(6) + "Precio".padEnd(10) + "Total\n" +
+      "-".repeat(MAX_LENGTH) + "\n" +
+      products.map(product => {
+        const total = (product.price * product.quantity).toFixed(2);
+        return `${product.name.length > 13 ? product.name.slice(0, 13).padEnd(15) : product.name.padEnd(15)}${product.quantity.toString().padEnd(5)}$${product.price.toFixed(2).padEnd(10)}$${total}`;
+      }).join("\n") + "\n" +
+      "-".repeat(MAX_LENGTH) + "\n" +
+      rightAlignText(`Subtotal: ${subtotal.toFixed(2)}`) + "\n" +
       rightAlignText(`Descuento: $0.00`) + "\n" +
-      rightAlignText(`Total: $20.00`) + "\n" +
+      rightAlignText(`Total: $${total.toFixed(2)}`) + "\n" +
       " \n" +
-      "Método de pago: Efectivo / Tarjeta \n" +
-      " \n" +
-      "======================================== \n" +
+      "Método de pago: " + (paymentMethod == "CASH" ? "Efectivo" : "Tarjeta") + "\n" +
+      (paymentMethod === "CASH" ? rightAlignText(`Efectivo: $${cashReceived}`) + "\n" : "") +
+      (paymentMethod === "CASH" ? rightAlignText(`Cambio: $${(parseFloat(cashReceived) - total).toFixed(2)}`) + "\n" : "") +
+      `${products.reduce((quantity, product) => quantity + product.quantity, 0)} producto(s)` + "\n" +
+      "=".repeat(MAX_LENGTH) + "\n" +
       centralizeText("Gracias por su compra") + "\n" +
       centralizeText(`${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}`);
     console.log(ticket);
   };
 
-  const handleFinishSale = async (paymentMethod: string) => {
+  const handleFinishSale = async (paymentMethod: "CASH" | "CARD" | "TRANSFER", cashReceived: string) => {
     const res = await postSale(paymentMethod) ?? new Response(null, { status: 500 });
     const data = await res.json();
     if (res.status === 201) {
       handleShowAlert("Venta exitosa", "La venta se ha registrado correctamente.", 200);
-      printTicket(data);
+      printTicket(data, 0, paymentMethod, cashReceived);
       setProducts([]);
     } else {
       handleShowAlert("Error", "No se pudo registrar la venta.", 500);
@@ -239,7 +243,7 @@ export default function POS() {
               className="flex-1"
             />
             {/* handleScan */}
-            <Button color="secondary" size="lg" onPress={() => printTicket(1)}>
+            <Button color="secondary" size="lg" onPress={() => printTicket(1, 0, "CASH", "0")}>
               <PlusIcon className="h-5 w-5" />
             </Button>
           </div>

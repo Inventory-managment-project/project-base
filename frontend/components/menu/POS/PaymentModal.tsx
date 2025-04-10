@@ -10,7 +10,7 @@ interface PaymentModalProps {
   isOpen: boolean;
   onOpenChange: () => void;
   total: number;
-  onFinishSale: (paymentMethod: string) => void;
+  onFinishSale: (paymentMethod: "CASH" | "CARD" | "TRANSFER", cashReceived: string) => void;
 }
 
 export const PaymentModal = ({ isOpen, onOpenChange, total, onFinishSale }: PaymentModalProps) => {
@@ -24,7 +24,7 @@ export const PaymentModal = ({ isOpen, onOpenChange, total, onFinishSale }: Paym
 
   const handleFinish = () => {
     if (paymentMethod === "CASH" && change < 0) return;
-    onFinishSale(paymentMethod);
+    onFinishSale(paymentMethod, cashReceived);
     setCashReceived("");
     setPaymentMethod("CASH");
   };
