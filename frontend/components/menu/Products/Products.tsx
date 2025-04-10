@@ -237,7 +237,7 @@ const Products = () => {
   }  
 
   const handleDeleteProduct = async (productId: number, productName: string) => {
-    const deleteResponse = await deleteProduct(productId, productName);
+    const deleteResponse = await deleteProduct(productId);
     if (deleteResponse === 200) {
       setProducts((prevProducts) => prevProducts.filter((p) => p.id !== productId));
       handleShowAlert("Producto eliminado", `El producto ${productName} ha sido eliminado correctamente.`, 200);
@@ -246,7 +246,7 @@ const Products = () => {
     }
   };
 
-  const deleteProduct = async (productId: number, productName: string) => {
+  const deleteProduct = async (productId: number) => {
     try {
       const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}/product/id/${productId}`, {
         method: "DELETE",
@@ -262,10 +262,6 @@ const Products = () => {
       return 500;
     }
   };
-
-  useEffect(() => {
-    console.log("Selected keys changed:", selectedKeys);
-  }, [selectedKeys]);
 
   const renderCell = useCallback((product: Product, columnKey: string | number) => {
     const cellValue = product[columnKey];
