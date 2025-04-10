@@ -201,7 +201,7 @@ export default function POS() {
       window.removeEventListener("keydown", handleKeyDown);
     };
       
-  }, [barcode, products, highlightedIndex]);
+  }, [barcode, products, highlightedIndex, showSuggestions, filteredSuggestions]);
 
   useEffect(() => {
     localStorage.setItem('products', JSON.stringify(products));
