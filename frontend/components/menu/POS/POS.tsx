@@ -44,11 +44,14 @@ export default function POS() {
   const [barcode, setBarcode] = useState("");
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { selectedStoreString } = useSelectedStore();
+  const [filteredSuggestions, setFilteredSuggestions] = useState<Product[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertTitle, setAlertTitle] = useState("");
   const [alertDescription, setAlertDescription] = useState("");
-  const [alertStatusCode, setAlertStatusCode] = useState(0);
+  const [alertStatusCode, setAlertStatusCode] = useState(-1);
   const handleShowAlert = (title : string, description : string, statusCode : number) => {
     setAlertTitle(title);
     setAlertDescription(description);
@@ -129,9 +132,39 @@ export default function POS() {
   };
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Enter") {
+      if (showSuggestions && filteredSuggestions.length > 0) {
+        if (e.key === "ArrowDown" || e.key === "Tab") {
+          e.preventDefault();
+          setHighlightedIndex((prev) => (prev + 1) % filteredSuggestions.length);
+        }
+      
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          setHighlightedIndex((prev) =>
+            prev <= 0 ? filteredSuggestions.length - 1 : prev - 1
+          );
+        }
+      }
+
+      if (e.key === "Enter" && highlightedIndex >= 0 && showSuggestions) {
+        e.preventDefault();
+        const selectedProduct = filteredSuggestions[highlightedIndex];
+        const existingIndex = products.findIndex(p => p.id === selectedProduct.id);
+        if (existingIndex !== -1) {
+          const updated = [...products];
+          updated[existingIndex].quantity += 1;
+          setProducts(updated);
+        } else {
+          const newProduct = convertToProductPOS(selectedProduct);
+          newProduct.quantity = 1;
+          setProducts([newProduct, ...products]);
+        }
+        setBarcode("");
+        setShowSuggestions(false);
+        setHighlightedIndex(0);
+      } else if (e.key === "Enter") {
         handleScan();
-      } 
+      }
 
       if (e.key >= '0' && e.key <= '9' && !isTypingInAnotherInput()) {
         inputRef.current?.focus();
@@ -151,6 +184,8 @@ export default function POS() {
 
       if (e.key === "Escape") {
         setBarcode("");
+        setFilteredSuggestions([]);
+        setShowSuggestions(false);
         inputRef.current?.blur();
       }
     };
@@ -161,7 +196,7 @@ export default function POS() {
       window.removeEventListener("keydown", handleKeyDown);
     };
       
-  }, [barcode, products]);
+  }, [barcode, products, highlightedIndex]);
 
   useEffect(() => {
     localStorage.setItem('products', JSON.stringify(products));
@@ -180,13 +215,27 @@ export default function POS() {
       } else {
         const newProduct: ProductPOS = convertToProductPOS(foundProduct);
         newProduct.quantity = 1;
-        setProducts([...products, newProduct]);
+        setProducts([newProduct, ...products]);
       }
     } else {
       console.warn(`Producto con código de barras ${barcode} no encontrado.`);
     }
-  
     setBarcode("");
+  };
+
+  const handleInputChange = (value: string) => {
+    setBarcode(value);
+    const isOnlyNumbers = /^\d+$/.test(value.trim());
+    if (value.trim().length > 1 && !isOnlyNumbers) {
+      const matches = productList.filter(product =>
+        product.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredSuggestions(matches.slice(0, 5)); 
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
+      setFilteredSuggestions([]);
+    }
   };
 
   const handleRemoveProduct = (id: number) => {
@@ -278,12 +327,46 @@ export default function POS() {
             <Input
               placeholder="Escanear código de barras"
               value={barcode}
-              onValueChange={setBarcode}
+              onValueChange={handleInputChange}
               ref={inputRef}
               startContent={<BarcodeIcon className="text-default-400" />}
               size="lg"
               className="flex-1"
             />
+            {showSuggestions && filteredSuggestions.length > 0 && (
+              <div className="absolute z-50 mt-12 w-[2/3] bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 rounded-lg shadow-lg overflow-auto max-h-64">
+                <div className="grid grid-cols-2 px-3 py-2 text-xs text-gray-500 font-semibold border-b dark:border-zinc-600">
+                  <span className="">Producto</span>
+                  <span className="text-right">Precio</span>
+                </div>
+                {filteredSuggestions.map((product, index) => (
+                  <div
+                    key={product.id}
+                    className={`grid grid-cols-2 items-center px-3 py-2 text-sm cursor-pointer transition-colors
+                      ${highlightedIndex === index ? "bg-blue-200 dark:bg-zinc-700" : "hover:bg-blue-100 dark:hover:bg-zinc-800"}`}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onMouseEnter={() => setHighlightedIndex(index)}
+                    onClick={() => {
+                      const existingIndex = products.findIndex(p => p.id === product.id);
+                      if (existingIndex !== -1) {
+                        const updated = [...products];
+                        updated[existingIndex].quantity += 1;
+                        setProducts(updated);
+                      } else {
+                        const newProduct = convertToProductPOS(product);
+                        newProduct.quantity = 1;
+                        setProducts([newProduct, ...products]);
+                      }
+                      setBarcode("");
+                      setShowSuggestions(false);
+                    }}
+                  >
+                    <span className="truncate">{product.name}</span>
+                    <span className="text-right">${product.retailPrice.toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
             <Button color="secondary" size="lg" onPress={handleScan}>
               <PlusIcon className="h-5 w-5" />
             </Button>
