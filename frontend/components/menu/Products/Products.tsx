@@ -17,8 +17,9 @@ import { SharedSelection } from "@heroui/system";
 import AddProductsModal from "./AddProductsModal";
 import { useSelectedStore } from "@/context/SelectedStoreContext";
 import ConfirmationModal from "@/components/misc/ConfirmationModal";
-import StatusAlert from "@/components/misc/StatusAlert";
 import { AnimatePresence, motion } from "framer-motion";
+import { useStatusAlerts } from "@/hooks/useStatusAlerts";
+import StatusAlertsStack from "@/components/misc/StatusAlertStack";
 
 export const columns = [
   {name: "ID", uid: "id", sortable: true},
@@ -85,10 +86,7 @@ const Products = () => {
   const [page, setPage] = useState(1);
   const { selectedStoreString } = useSelectedStore();
 
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertTitle, setAlertTitle] = useState("");
-  const [alertDescription, setAlertDescription] = useState("");
-  const [alertStatusCode, setAlertStatusCode] = useState(0);
+  const { alerts, triggerAlert } = useStatusAlerts();
 
   const [editingRows, setEditingRows] = useState<Record<number, boolean>>({});
   const [drafts, setDrafts] = useState<Record<number, Partial<Product>>>({});
@@ -159,24 +157,14 @@ const Products = () => {
         setProducts((prevProducts) =>
           prevProducts.map((p) => (p.id === product.id ? { ...p, ...product } : p))
         );
-        handleShowAlert("Producto actualizado", `El producto ${product.name} ha sido actualizado correctamente.`, 200);
+        triggerAlert("Producto actualizado", `El producto ${product.name} ha sido actualizado correctamente.`, 200);
       } else {
-        handleShowAlert("Error al actualizar el producto", "No se pudo actualizar el producto. Inténtalo de nuevo.", 500);
+        triggerAlert("Error al actualizar el producto", "No se pudo actualizar el producto. Inténtalo de nuevo.", 500);
       }
     } catch (error) {
       console.error("Error al actualizar el producto:", error);
-      handleShowAlert("Error al actualizar el producto", "No se pudo actualizar el producto. Inténtalo de nuevo.", 500);
+      triggerAlert("Error al actualizar el producto", "No se pudo actualizar el producto. Inténtalo de nuevo.", 500);
     }
-  };
-
-  const handleShowAlert = (title : string, description : string, statusCode : number) => {
-    setAlertTitle(title);
-    setAlertDescription(description);
-    setAlertStatusCode(statusCode);
-    setShowAlert(true);
-    setTimeout(() => {
-      setShowAlert(false);
-    }, 3000);
   };
 
   useLayoutEffect(() => {
@@ -240,9 +228,9 @@ const Products = () => {
     const deleteResponse = await deleteProduct(productId);
     if (deleteResponse === 200) {
       setProducts((prevProducts) => prevProducts.filter((p) => p.id !== productId));
-      handleShowAlert("Producto eliminado", `El producto ${productName} ha sido eliminado correctamente.`, 200);
+      triggerAlert("Producto eliminado", `El producto ${productName} ha sido eliminado correctamente.`, 200);
     } else {
-      handleShowAlert("Error al eliminar el producto", "No se pudo eliminar el producto. Inténtalo de nuevo.", 500);
+      triggerAlert("Error al eliminar el producto", "No se pudo eliminar el producto. Inténtalo de nuevo.", 500);
     }
   };
 
@@ -495,12 +483,7 @@ const Products = () => {
           )}
         </TableBody>
       </Table>
-      <StatusAlert
-        show={showAlert}
-        title={alertTitle}
-        description={alertDescription}
-        statusCode={alertStatusCode}
-      />
+      <StatusAlertsStack alerts={alerts} />
     </>
   );
 }

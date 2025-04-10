@@ -9,12 +9,13 @@ import type { Store } from "@/types/store";
 import { PlusIcon } from "lucide-react";
 import { useState, useLayoutEffect, useMemo, useEffect } from "react";
 import { title } from "@/components/misc/primitives";
-import StatusAlert from "@/components/misc/StatusAlert";
 import ConfirmationModal from "@/components/misc/ConfirmationModal";
 import { Switch } from "@heroui/switch";
 import { motion } from "framer-motion";
 import { Skeleton } from "@heroui/skeleton";
 import { useSelectedStore } from "@/context/SelectedStoreContext";
+import { useStatusAlerts } from "@/hooks/useStatusAlerts";
+import StatusAlertsStack from "@/components/misc/StatusAlertStack";
 
 export default function Stores() {
   const { 
@@ -27,10 +28,7 @@ export default function Stores() {
   const [showDelete, setShowDelete] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertTitle, setAlertTitle] = useState("");
-  const [alertDescription, setAlertDescription] = useState("");
-  const [alertStatusCode, setAlertStatusCode] = useState(0);
+  const { alerts, triggerAlert } = useStatusAlerts();
 
   const fetchStores = async () => {
     try {
@@ -73,15 +71,15 @@ export default function Stores() {
           owner: 1
         };
         updateLocalStores(newStore);
-        handleShowAlert("Tienda creada con éxito", `La tienda ${name} ha sido creada correctamente.`, 201);
+        triggerAlert("Tienda creada con éxito", `La tienda ${name} ha sido creada correctamente.`, 201);
       } else if (status === 400) {
-        handleShowAlert("Nombre de tienda duplicado", `Ya existe una tienda con el nombre ${name}.`, 400);
+        triggerAlert("Nombre de tienda duplicado", `Ya existe una tienda con el nombre ${name}.`, 400);
       } else {
-        handleShowAlert("Error al crear la tienda", "No se pudo crear la tienda. Inténtalo de nuevo.", 500);
+        triggerAlert("Error al crear la tienda", "No se pudo crear la tienda. Inténtalo de nuevo.", 500);
       }
     } catch (error) {
       console.error("Error al crear la tienda:", error);
-      handleShowAlert("Error al crear la tienda", "No se pudo crear la tienda. Inténtalo de nuevo.", 500);
+      triggerAlert("Error al crear la tienda", "No se pudo crear la tienda. Inténtalo de nuevo.", 500);
     }
   }
 
@@ -90,17 +88,7 @@ export default function Stores() {
       setSelectedStore(new Set("0"));
     }
     setStores((prevStores) => prevStores.filter((store) => store.id !== storeId));
-    handleShowAlert("Tienda eliminada", `La tienda ${storeName} ha sido eliminada correctamente.`, 200);
-  };
-
-  const handleShowAlert = (title : string, description : string, statusCode : number) => {
-    setAlertTitle(title);
-    setAlertDescription(description);
-    setAlertStatusCode(statusCode);
-    setShowAlert(true);
-    setTimeout(() => {
-      setShowAlert(false);
-    }, 3000);
+    triggerAlert("Tienda eliminada", `La tienda ${storeName} ha sido eliminada correctamente.`, 200);
   };
 
   const handleSaveStore = (name: string, address: string) => {
@@ -190,12 +178,7 @@ export default function Stores() {
         </div>
       </div>
 
-      <StatusAlert
-        show={showAlert}
-        title={alertTitle}
-        description={alertDescription}
-        statusCode={alertStatusCode}
-      />
+      <StatusAlertsStack alerts={alerts} />
 
       <StoreModal
         isOpen={isOpen}

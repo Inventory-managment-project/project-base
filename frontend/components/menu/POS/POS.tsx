@@ -11,8 +11,9 @@ import { useEffect, useLayoutEffect, useRef } from "react";
 import { Product } from "../Products/Products";
 import { useSelectedStore } from "@/context/SelectedStoreContext";
 import { Divider } from "@heroui/divider";
-import StatusAlert from "@/components/misc/StatusAlert";
 import { Kbd } from "@heroui/kbd";
+import { useStatusAlerts } from "@/hooks/useStatusAlerts";
+import StatusAlertsStack from "@/components/misc/StatusAlertStack";
 
 import figlet from "figlet";
 import bulbhead from "figlet/importable-fonts/Bulbhead.js";
@@ -48,19 +49,7 @@ export default function POS() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
 
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertTitle, setAlertTitle] = useState("");
-  const [alertDescription, setAlertDescription] = useState("");
-  const [alertStatusCode, setAlertStatusCode] = useState(-1);
-  const handleShowAlert = (title : string, description : string, statusCode : number) => {
-    setAlertTitle(title);
-    setAlertDescription(description);
-    setAlertStatusCode(statusCode);
-    setShowAlert(true);
-    setTimeout(() => {
-      setShowAlert(false);
-    }, 3000);
-  };
+  const { alerts, triggerAlert } = useStatusAlerts();
 
   const fetchProducts = async () => {
     try {
@@ -182,6 +171,7 @@ export default function POS() {
 
         if (e.key.toLowerCase() === "c" && e.shiftKey) {  
           inputRef.current?.blur();
+          triggerAlert("Venta cancelada", "La venta ha sido cancelada.", 400);
           setBarcode("");
           setProducts([]);
         }
@@ -308,11 +298,11 @@ export default function POS() {
     const res = await postSale(paymentMethod) ?? new Response(null, { status: 500 });
     const data = await res.json();
     if (res.status === 201) {
-      handleShowAlert("Venta exitosa", "La venta se ha registrado correctamente.", 200);
+      triggerAlert("Venta exitosa", `La venta ${data} se ha registrado correctamente.`, 200);
       printTicket(data, 0, paymentMethod, cashReceived);
       setProducts([]);
     } else {
-      handleShowAlert("Error", "No se pudo registrar la venta.", 500);
+      triggerAlert("Error", "No se pudo registrar la venta.", 500);
     }
     setBarcode("");
     onOpenChange();
@@ -425,12 +415,7 @@ export default function POS() {
         total={total}
         onFinishSale={handleFinishSale}
       />
-      <StatusAlert
-        show={showAlert}
-        title={alertTitle}
-        description={alertDescription}
-        statusCode={alertStatusCode}
-      />
+      <StatusAlertsStack alerts={alerts} />
     </div>
   );
 }
