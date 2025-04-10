@@ -7,14 +7,12 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@herou
 import { PlusIcon } from "lucide-react";
 import { Product } from "./Products";
 import { useSelectedStore } from "@/context/SelectedStoreContext";
-import StatusAlert from "@/components/misc/StatusAlert";
+import { useStatusAlerts } from "@/hooks/useStatusAlerts";
+import StatusAlertsStack from "@/components/misc/StatusAlertStack";
 
 export default function AddProductsModal({ onProductAdded }: { onProductAdded: (product: Product) => void }) {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertTitle, setAlertTitle] = useState("");
-  const [alertDescription, setAlertDescription] = useState("");
-  const [alertStatusCode, setAlertStatusCode] = useState(0);
+  const { alerts, triggerAlert, removeAlert } = useStatusAlerts();
 
   const [formData, setFormData] = useState<Partial<Product>>({
     name: "",
@@ -51,26 +49,16 @@ export default function AddProductsModal({ onProductAdded }: { onProductAdded: (
       if (status === 201) {
         const data = await res.json();
         product.id = data.id;
-        handleShowAlert("Producto creado con éxito", `El producto ${product.name} ha sido creado correctamente.`, 201);
+        triggerAlert("Producto creado con éxito", `El producto ${product.name} ha sido creado correctamente.`, 201);
         onProductAdded(product);
       } else {
-        handleShowAlert("Error al crear el producto", "No se pudo crear el producto. Inténtalo de nuevo.", 500);
+        triggerAlert("Error al crear el producto", "No se pudo crear el producto. Inténtalo de nuevo.", 500);
       }
     } catch (error) {
       console.error("Error al crear el producto:", error);
-      handleShowAlert("Error al crear el producto", "No se pudo crear el producto. Inténtalo de nuevo.", 500);
+      triggerAlert("Error al crear el producto", "No se pudo crear el producto. Inténtalo de nuevo.", 500);
     }
   }
-
-  const handleShowAlert = (title : string, description : string, statusCode : number) => {
-    setAlertTitle(title);
-    setAlertDescription(description);
-    setAlertStatusCode(statusCode);
-    setShowAlert(true);
-    setTimeout(() => {
-      setShowAlert(false);
-    }, 3000);
-  };
 
   const handleSubmit = (onClose: () => void) => {
     const invalidFields = {
@@ -106,7 +94,6 @@ export default function AddProductsModal({ onProductAdded }: { onProductAdded: (
       stock: formData.stock || 0,
       minAllowStock: formData.minAllowStock || 0
     };
-    console.log("New Product:", newProduct);
     postProduct(newProduct);
     onClose();
     setFormData({
@@ -254,12 +241,7 @@ export default function AddProductsModal({ onProductAdded }: { onProductAdded: (
           )}
         </ModalContent>
       </Modal>
-      <StatusAlert
-        show={showAlert}
-        title={alertTitle}
-        description={alertDescription}
-        statusCode={alertStatusCode}
-      />
+      <StatusAlertsStack alerts={alerts} onClose={removeAlert} />
     </div>
   );
 }
