@@ -330,7 +330,7 @@ export default function POS() {
         <div className="md:col-span-2 p-5">
           <div className="flex gap-2 p-4 shadow-md rounded-lg">
             <Input
-              placeholder="Escanear código de barras"
+              placeholder="Escanear código de barras o buscar producto"
               value={barcode}
               onValueChange={handleInputChange}
               ref={inputRef}
