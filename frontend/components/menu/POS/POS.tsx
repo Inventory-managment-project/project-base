@@ -123,40 +123,45 @@ export default function POS() {
   }, []);
 
   const inputRef = useRef<HTMLInputElement>(null);
-    useEffect(() => {
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === "Enter") {
-          handleScan();
-        } 
-  
-        if (e.key >= '0' && e.key <= '9') {
-          inputRef.current?.focus();
-        }
-        if (products.length != 0) {
-          if (e.key.toLowerCase() === "f" && e.shiftKey) {
-            onOpen();
-          }
+  const isTypingInAnotherInput = () => {
+    const tag = document.activeElement?.tagName;
+    return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (document.activeElement as HTMLElement)?.isContentEditable;
+  };
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        handleScan();
+      } 
 
-          if (e.key.toLowerCase() === "c" && e.shiftKey) {  
-            inputRef.current?.blur();
-            setBarcode("");
-            setProducts([]);
-          }
+      if (e.key >= '0' && e.key <= '9' && !isTypingInAnotherInput()) {
+        inputRef.current?.focus();
+      }
+
+      if (products.length !== 0) {
+        if (e.key.toLowerCase() === "f" && e.shiftKey) {
+          onOpen();
         }
 
-        if (e.key === "Escape") {
-          setBarcode("");
+        if (e.key.toLowerCase() === "c" && e.shiftKey) {  
           inputRef.current?.blur();
+          setBarcode("");
+          setProducts([]);
         }
-      };
-  
-      window.addEventListener("keydown", handleKeyDown);
-  
-      return () => {
-        window.removeEventListener("keydown", handleKeyDown);
-      };
+      }
+
+      if (e.key === "Escape") {
+        setBarcode("");
+        inputRef.current?.blur();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
       
-    }, [barcode]);
+  }, [barcode, products]);
 
   useEffect(() => {
     localStorage.setItem('products', JSON.stringify(products));
