@@ -242,8 +242,7 @@ export default function POS() {
               size="lg"
               className="flex-1"
             />
-            {/* handleScan */}
-            <Button color="secondary" size="lg" onPress={() => printTicket(1, 0, "CASH", "0")}>
+            <Button color="secondary" size="lg" onPress={handleScan}>
               <PlusIcon className="h-5 w-5" />
             </Button>
           </div>
