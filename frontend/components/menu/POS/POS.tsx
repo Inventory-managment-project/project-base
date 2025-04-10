@@ -7,11 +7,12 @@ import { BarcodeIcon, PlusIcon, CheckCircleIcon, CircleXIcon } from "lucide-reac
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { ProductPOS } from "@/types/product";
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { Product } from "../Products/Products";
 import { useSelectedStore } from "@/context/SelectedStoreContext";
 import { Divider } from "@heroui/divider";
 import StatusAlert from "@/components/misc/StatusAlert";
+import { Kbd } from "@heroui/kbd";
 
 import figlet from "figlet";
 import bulbhead from "figlet/importable-fonts/Bulbhead.js";
@@ -121,6 +122,42 @@ export default function POS() {
     }
   }, []);
 
+  const inputRef = useRef<HTMLInputElement>(null);
+    useEffect(() => {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Enter") {
+          handleScan();
+        } 
+  
+        if (e.key >= '0' && e.key <= '9') {
+          inputRef.current?.focus();
+        }
+        if (products.length != 0) {
+          if (e.key.toLowerCase() === "f" && e.shiftKey) {
+            onOpen();
+          }
+
+          if (e.key.toLowerCase() === "c" && e.shiftKey) {  
+            inputRef.current?.blur();
+            setBarcode("");
+            setProducts([]);
+          }
+        }
+
+        if (e.key === "Escape") {
+          setBarcode("");
+          inputRef.current?.blur();
+        }
+      };
+  
+      window.addEventListener("keydown", handleKeyDown);
+  
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+      
+    }, [barcode]);
+
   useEffect(() => {
     localStorage.setItem('products', JSON.stringify(products));
   }, [products]);
@@ -151,7 +188,7 @@ export default function POS() {
     setProducts(products.filter(product => product.id !== id));
   };
 
-  const printTicket = async (id: number, discount: number, paymentMethod: "CASH" | "CARD" | "TRANSFER", cashReceived : string) => {
+  const printTicket = async (id: number, discount: number, paymentMethod: "CASH" | "CARD", cashReceived : string) => {
     const MAX_LENGTH = 40;
 
     const getStoreDetails = async () => {
@@ -199,7 +236,7 @@ export default function POS() {
       rightAlignText(`Total: $${total.toFixed(2)}`) + "\n" +
       " \n" +
       "Método de pago: " + (paymentMethod == "CASH" ? "Efectivo" : "Tarjeta") + "\n" +
-      (paymentMethod === "CASH" ? rightAlignText(`Efectivo: $${cashReceived}`) + "\n" : "") +
+      (paymentMethod === "CASH" ? rightAlignText(`Efectivo: $${parseFloat(cashReceived).toFixed(2)}`) + "\n" : "") +
       (paymentMethod === "CASH" ? rightAlignText(`Cambio: $${(parseFloat(cashReceived) - total).toFixed(2)}`) + "\n" : "") +
       `${products.reduce((quantity, product) => quantity + product.quantity, 0)} producto(s)` + "\n" +
       "=".repeat(MAX_LENGTH) + "\n" +
@@ -208,7 +245,7 @@ export default function POS() {
     console.log(ticket);
   };
 
-  const handleFinishSale = async (paymentMethod: "CASH" | "CARD" | "TRANSFER", cashReceived: string) => {
+  const handleFinishSale = async (paymentMethod: "CASH" | "CARD", cashReceived: string) => {
     const res = await postSale(paymentMethod) ?? new Response(null, { status: 500 });
     const data = await res.json();
     if (res.status === 201) {
@@ -237,7 +274,7 @@ export default function POS() {
               placeholder="Escanear código de barras"
               value={barcode}
               onValueChange={setBarcode}
-              onKeyPress={(e) => e.key === "Enter" && handleScan()}
+              ref={inputRef}
               startContent={<BarcodeIcon className="text-default-400" />}
               size="lg"
               className="flex-1"
@@ -259,7 +296,7 @@ export default function POS() {
           
           <div className="mt-auto flex flex-col gap-3">
             <Button 
-              color="primary" 
+              color="primary"
               size="lg"
               onPress={onOpen}
               isDisabled={products.length === 0}
@@ -267,6 +304,7 @@ export default function POS() {
               className="h-16 text-lg font-medium"
             >
               Finalizar Venta
+              <Kbd keys={["shift"]}>F</Kbd>
             </Button>
             
             <Button 
@@ -278,6 +316,7 @@ export default function POS() {
               startContent={<CircleXIcon className="h-5 w-5" />}
             >
               Cancelar Venta
+              <Kbd keys={["shift"]}>C</Kbd>
             </Button>
           </div>
         </div>

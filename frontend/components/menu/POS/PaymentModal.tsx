@@ -1,20 +1,21 @@
 import { BanknoteIcon, CreditCardIcon, LandmarkIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { RadioGroup, Radio } from "@heroui/radio";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/modal";
 import { motion } from "framer-motion";
+import { Kbd } from "@heroui/kbd";
 
 interface PaymentModalProps {
   isOpen: boolean;
   onOpenChange: () => void;
   total: number;
-  onFinishSale: (paymentMethod: "CASH" | "CARD" | "TRANSFER", cashReceived: string) => void;
+  onFinishSale: (paymentMethod: "CASH" | "CARD", cashReceived: string) => void;
 }
 
 export const PaymentModal = ({ isOpen, onOpenChange, total, onFinishSale }: PaymentModalProps) => {
-  const [paymentMethod, setPaymentMethod] = useState<"CASH" | "CARD" | "TRANSFER">("CASH");
+  const [paymentMethod, setPaymentMethod] = useState<"CASH" | "CARD">("CASH");
   const [cashReceived, setCashReceived] = useState("");
 
   const change = useMemo(() => {
@@ -28,6 +29,38 @@ export const PaymentModal = ({ isOpen, onOpenChange, total, onFinishSale }: Paym
     setCashReceived("");
     setPaymentMethod("CASH");
   };
+
+  const togglePaymentMethod = () => {
+    setPaymentMethod((prev) => (prev === "CASH" ? "CARD" : "CASH"));
+  };
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isOpen && e.key === "Enter" && paymentMethod === "CASH" && change >= 0) {
+        handleFinish();
+      }
+      if (isOpen && e.key === "Enter" && paymentMethod === "CARD") {
+        handleFinish();
+      }
+
+      if (isOpen && e.key === "Tab") {
+        e.preventDefault();
+        togglePaymentMethod();
+      }
+
+      if (isOpen && paymentMethod === "CASH" && e.key >= '0' && e.key <= '9') {
+        inputRef.current?.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+    
+  }, [isOpen, paymentMethod, cashReceived]);
 
   return (
     <Modal 
@@ -45,7 +78,7 @@ export const PaymentModal = ({ isOpen, onOpenChange, total, onFinishSale }: Paym
               <RadioGroup
                 label="Método de Pago"
                 value={paymentMethod}
-                onValueChange={(value) => setPaymentMethod(value as "CASH" | "CARD" | "TRANSFER")}
+                onValueChange={(value) => setPaymentMethod(value as "CASH" | "CARD")}
               >
                 <Radio 
                   value="CASH"
@@ -59,17 +92,12 @@ export const PaymentModal = ({ isOpen, onOpenChange, total, onFinishSale }: Paym
                   Tarjeta
                   <CreditCardIcon className="text-default-500" />
                 </Radio>
-                <Radio 
-                  value="TRANSFER"
-                >
-                  Transferencia
-                  <LandmarkIcon className="text-default-500" />
-                </Radio>
               </RadioGroup>
 
               {paymentMethod === "CASH" && (
                 <div className="mt-4 space-y-4">
                   <Input
+                    ref={inputRef}
                     type="number"
                     label="Efectivo Recibido"
                     placeholder="Ingrese la cantidad"
@@ -91,11 +119,12 @@ export const PaymentModal = ({ isOpen, onOpenChange, total, onFinishSale }: Paym
               )}
             </ModalBody>
             <ModalFooter>
-              <Button color="danger" variant="light" onPress={onClose}>
+              <Button color="danger" endContent={<Kbd>Esc</Kbd>} variant="light" onPress={onClose}>
                 Cancelar
               </Button>
               <Button 
                 color="success" 
+                endContent={<Kbd>Enter</Kbd>}
                 onPress={handleFinish}
                 isDisabled={paymentMethod === "CASH" && change < 0}
               >
