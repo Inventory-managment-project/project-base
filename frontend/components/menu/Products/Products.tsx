@@ -86,7 +86,7 @@ const Products = () => {
   const [page, setPage] = useState(1);
   const { selectedStoreString } = useSelectedStore();
 
-  const { alerts, triggerAlert } = useStatusAlerts();
+  const { alerts, triggerAlert, removeAlert } = useStatusAlerts();
 
   const [editingRows, setEditingRows] = useState<Record<number, boolean>>({});
   const [drafts, setDrafts] = useState<Record<number, Partial<Product>>>({});
@@ -365,6 +365,8 @@ const Products = () => {
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
+          <Button onPress={()=>triggerAlert("asd", "asd", 300)} variant="flat" className="hidden sm:flex">test</Button>
+          <Button onPress={()=>triggerAlert("asd", "asd", 400)} variant="flat" className="hidden sm:flex">test</Button>
           <div className="flex flex-row items-center justify-between gap-3">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
@@ -483,7 +485,7 @@ const Products = () => {
           )}
         </TableBody>
       </Table>
-      <StatusAlertsStack alerts={alerts} />
+      <StatusAlertsStack alerts={alerts} onClose={removeAlert}/>
     </>
   );
 }

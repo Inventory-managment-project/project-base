@@ -49,7 +49,7 @@ export default function POS() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
 
-  const { alerts, triggerAlert } = useStatusAlerts();
+  const { alerts, triggerAlert, removeAlert } = useStatusAlerts();
 
   const fetchProducts = async () => {
     try {
@@ -415,7 +415,7 @@ export default function POS() {
         total={total}
         onFinishSale={handleFinishSale}
       />
-      <StatusAlertsStack alerts={alerts} />
+      <StatusAlertsStack alerts={alerts} onClose={removeAlert} />
     </div>
   );
 }

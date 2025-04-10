@@ -7,10 +7,12 @@ type AlertProps = {
     title: string;
     description: string;
     statusCode: number;
+    count: number;
   }[];
+  onClose: (id: number) => void;
 };
 
-export default function StatusAlertsStack({ alerts }: AlertProps) {
+export default function StatusAlertsStack({ alerts, onClose }: AlertProps) {
   const getColor = (statusCode: number) => {
     if (statusCode.toString().startsWith("1")) return "primary";
     if (statusCode.toString().startsWith("2")) return "success";
@@ -33,9 +35,10 @@ export default function StatusAlertsStack({ alerts }: AlertProps) {
           >
             <Alert
               color={getColor(alert.statusCode)}
-              title={alert.title}
+              title={`${alert.title}${alert.count > 1 ? ` (x${alert.count})` : ""}`}
               description={alert.description}
               variant="faded"
+              onClose={() => onClose(alert.id)}
             />
           </motion.div>
         ))}

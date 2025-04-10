@@ -28,7 +28,7 @@ export default function Stores() {
   const [showDelete, setShowDelete] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { alerts, triggerAlert } = useStatusAlerts();
+  const { alerts, triggerAlert, removeAlert } = useStatusAlerts();
 
   const fetchStores = async () => {
     try {
@@ -178,7 +178,7 @@ export default function Stores() {
         </div>
       </div>
 
-      <StatusAlertsStack alerts={alerts} />
+      <StatusAlertsStack alerts={alerts} onClose={removeAlert}/>
 
       <StoreModal
         isOpen={isOpen}

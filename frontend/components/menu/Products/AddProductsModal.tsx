@@ -12,7 +12,7 @@ import StatusAlertsStack from "@/components/misc/StatusAlertStack";
 
 export default function AddProductsModal({ onProductAdded }: { onProductAdded: (product: Product) => void }) {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
-  const { alerts, triggerAlert } = useStatusAlerts();
+  const { alerts, triggerAlert, removeAlert } = useStatusAlerts();
 
   const [formData, setFormData] = useState<Partial<Product>>({
     name: "",
@@ -241,7 +241,7 @@ export default function AddProductsModal({ onProductAdded }: { onProductAdded: (
           )}
         </ModalContent>
       </Modal>
-      <StatusAlertsStack alerts={alerts} />
+      <StatusAlertsStack alerts={alerts} onClose={removeAlert} />
     </div>
   );
 }
