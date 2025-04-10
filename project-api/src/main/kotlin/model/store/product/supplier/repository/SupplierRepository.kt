@@ -1,4 +1,4 @@
-package mx.unam.fciencias.ids.eq1.model.store.product.supplier
+package mx.unam.fciencias.ids.eq1.model.store.product.supplier.repository
 
 import mx.unam.fciencias.ids.eq1.model.store.product.supplier.Supplier
 import mx.unam.fciencias.ids.eq1.model.store.product.supplier.CreateSupplierRequest
@@ -7,7 +7,7 @@ import mx.unam.fciencias.ids.eq1.model.store.product.supplier.UpdateSupplierRequ
 /**
  * Repository interface defining operations for supplier data management.
  */
-interface SupplierRepository {
+interface SupplierRepository{
     /**
      * Retrieves a supplier by its ID.
      */

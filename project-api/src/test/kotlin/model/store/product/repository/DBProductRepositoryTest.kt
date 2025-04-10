@@ -6,7 +6,7 @@ import mx.unam.fciencias.ids.eq1.db.store.product.ProductTable
 import mx.unam.fciencias.ids.eq1.db.user.UserTable
 import mx.unam.fciencias.ids.eq1.model.store.CreateStoreRequest
 import mx.unam.fciencias.ids.eq1.model.store.product.Product
-import mx.unam.fciencias.ids.eq1.model.store.product.DBProductRepository
+import mx.unam.fciencias.ids.eq1.model.store.product.repository.DBProductRepository
 import mx.unam.fciencias.ids.eq1.model.store.repository.DBStoreRepository
 import mx.unam.fciencias.ids.eq1.model.user.User
 import mx.unam.fciencias.ids.eq1.model.user.repository.DBUserRepository
@@ -24,7 +24,7 @@ import java.math.BigDecimal
 import java.time.Instant
 import kotlin.test.*
 
-class DBProductRepositoryTest {
+class DBProductRepositoryTest{
 
     private lateinit var database: Database
     private lateinit var productRepository: DBProductRepository

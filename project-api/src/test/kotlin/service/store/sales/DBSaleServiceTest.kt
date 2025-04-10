@@ -1,4 +1,4 @@
 package service.store.sales
 
-class DBSaleServiceTest {
+class DBSaleServiceTest{
 }

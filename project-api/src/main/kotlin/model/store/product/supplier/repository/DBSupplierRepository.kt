@@ -1,6 +1,5 @@
-package mx.unam.fciencias.ids.eq1.model.store.product.supplier
+package mx.unam.fciencias.ids.eq1.model.store.product.supplier.repository
 
-import mx.unam.fciencias.ids.eq1.db.store.StoreTable
 import mx.unam.fciencias.ids.eq1.db.store.product.supplier.SupplierDAO
 import mx.unam.fciencias.ids.eq1.db.store.product.supplier.SupplierDAO.Companion.supplierDaoToModel
 import mx.unam.fciencias.ids.eq1.db.store.product.supplier.SupplierTable
@@ -8,7 +7,6 @@ import mx.unam.fciencias.ids.eq1.db.utils.suspendTransaction
 import mx.unam.fciencias.ids.eq1.model.store.product.supplier.Supplier
 import mx.unam.fciencias.ids.eq1.model.store.product.supplier.CreateSupplierRequest
 import mx.unam.fciencias.ids.eq1.model.store.product.supplier.UpdateSupplierRequest
-import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.and
@@ -16,7 +14,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.annotation.Factory
 
 @Factory
-class DBSupplierRepository(
+class DBSupplierRepository (
     private val database: Database,
     private val storeId: Int
 ) : SupplierRepository {

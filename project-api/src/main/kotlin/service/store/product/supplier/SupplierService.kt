@@ -5,7 +5,7 @@ import mx.unam.fciencias.ids.eq1.model.store.product.supplier.Supplier
 import mx.unam.fciencias.ids.eq1.model.store.product.supplier.CreateSupplierRequest
 import mx.unam.fciencias.ids.eq1.model.store.product.supplier.UpdateSupplierRequest
 
-interface SupplierService {
+interface SupplierService{
     /**
      * Retrieves all suppliers.
      */

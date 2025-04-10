@@ -6,12 +6,12 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 
-class SupplierDAO (id: EntityID<Int>) : IntEntity(id) {
+class SupplierDAO (id: EntityID<Int>) : IntEntity(id){
     companion object : IntEntityClass<SupplierDAO>(SupplierTable) {
         fun supplierDaoToModel(dao: SupplierDAO) = Supplier(
             dao.supplierId,
             dao.name,
-            dao.contactName.toString(),
+            dao.contactName,
             dao.contactPhone,
             dao.email,
             dao.address,

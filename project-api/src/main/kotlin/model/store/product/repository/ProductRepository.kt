@@ -1,4 +1,4 @@
-package mx.unam.fciencias.ids.eq1.model.store.product
+package mx.unam.fciencias.ids.eq1.model.store.product.repository
 
 import mx.unam.fciencias.ids.eq1.model.store.product.Product
 

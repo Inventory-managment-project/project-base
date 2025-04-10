@@ -5,7 +5,7 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.CurrentTimestamp
 import org.jetbrains.exposed.sql.javatime.timestamp
 
-object SupplierTable : IntIdTable("providers") {
+object SupplierTable : IntIdTable("providers"){
     val storeId = reference("id_store", StoreTable)
     val supplierId = integer("id_provider")
     val name = varchar("name", 255)
