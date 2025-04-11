@@ -25,7 +25,7 @@ import java.math.BigDecimal
 import java.time.Instant
 import kotlin.test.*
 
-class DBProductRepositoryTest {
+class DBProductRepositoryTest{
 
     private lateinit var database: Database
     private lateinit var productRepository: DBProductRepository
