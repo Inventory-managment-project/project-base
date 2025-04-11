@@ -14,17 +14,17 @@ interface ProductListProps {
 export const ProductList = ({ products, setProducts, onRemoveProduct }: ProductListProps) => {
   if (products.length === 0) {
     return (
-      <div className="text-center py-10 text-gray-500">
+      <div className="text-center py-10 h-[50vh] md:h-[58vh] text-gray-500">
         <p>No hay productos en el carrito</p>
       </div>
     );
   }
 
   return (
-    <ScrollShadow visibility="bottom" className="h-[58vh]">
+    <ScrollShadow visibility="bottom" className="h-[50vh] md:h-[58vh]">
       <Table 
         aria-label="Products list"
-        className="mt-4"
+        className="mt-0: md:mt-4"
         removeWrapper
         isHeaderSticky
       >

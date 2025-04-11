@@ -101,9 +101,9 @@ export default function Stores() {
 
   return (
     <div className="w-full h-full mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-center md:justify-between flex-wrap md:flex-nowrap items-center mb-6">
         <h1 className={title()}>Mis Tiendas</h1>
-        <div>
+        <div className="mt-5 md:mt-0">
           <Switch size="lg" className="mr-5" color="danger" isSelected={showDelete} onChange={() => setShowDelete(!showDelete)}>
             Eliminar
           </Switch>

@@ -19,7 +19,7 @@ export const Navbar = () => {
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
       <NavbarContent
-        className="hidden sm:flex basis-1/5 sm:basis-full"
+        className="sm:flex basis-1/5 sm:basis-full"
         justify="start"
       >
         <Button color="secondary" variant="bordered" onPress={()=>{router.push("/auth")}}>Identificate</Button>
