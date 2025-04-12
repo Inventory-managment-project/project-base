@@ -35,7 +35,7 @@ const Login = () => {
 
   const sendPostRequest = async (email: string, password: string) => {
     try {
-      const response = await fetch("http://localhost:8080/login", {
+      const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

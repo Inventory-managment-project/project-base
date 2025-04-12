@@ -53,7 +53,7 @@ export default function POS() {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}/products`, {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + `/stores/${selectedStoreString}/products`, {
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
           "Content-Type": "application/json",
@@ -83,7 +83,7 @@ export default function POS() {
     };
 
     try {
-      const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}/sales`, {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + `/stores/${selectedStoreString}/sales`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
@@ -241,7 +241,7 @@ export default function POS() {
     const MAX_LENGTH = 40;
 
     const getStoreDetails = async () => {
-      const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}`, {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + `/stores/${selectedStoreString}`, {
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
           "Content-Type": "application/json",

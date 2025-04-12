@@ -32,7 +32,7 @@ export default function Stores() {
 
   const fetchStores = async () => {
     try {
-      const res = await fetch("http://localhost:8080/stores", {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/stores", {
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
           "Content-Type": "application/json",
@@ -53,7 +53,7 @@ export default function Stores() {
 
   const postStore = async (name: string, address: string) => {
     try {
-      const res = await fetch("http://localhost:8080/createStore", {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/createStore", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
