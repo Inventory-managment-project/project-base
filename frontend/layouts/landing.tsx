@@ -13,7 +13,7 @@ export default function LandingLayout({
     <div className="relative flex flex-col h-screen">
       <Head />
       <Navbar />
-      <main className="container mx-auto w-full h-full px-6 flex-grow pt-16">
+      <main className="mx-auto w-full h-full flex-grow">
         {children}
       </main>
     </div>
