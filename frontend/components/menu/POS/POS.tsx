@@ -53,7 +53,7 @@ export default function POS() {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}/products`, {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + `/stores/${selectedStoreString}/products`, {
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
           "Content-Type": "application/json",
@@ -83,7 +83,7 @@ export default function POS() {
     };
 
     try {
-      const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}/sales`, {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + `/stores/${selectedStoreString}/sales`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
@@ -241,7 +241,7 @@ export default function POS() {
     const MAX_LENGTH = 40;
 
     const getStoreDetails = async () => {
-      const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}`, {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + `/stores/${selectedStoreString}`, {
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
           "Content-Type": "application/json",
@@ -312,12 +312,12 @@ export default function POS() {
 
   return (
     <div className="w-full h-full mx-auto">
-      <div className="p-4 shadow-sm">
+      <div className="p-4 shadow-sm hidden md:block">
         <h1 className="text-2xl font-bold">Terminal de Venta</h1>
       </div>
-      <Divider/>
+      <Divider className="hidden md:block"/>
       <div className="grid grid-cols-1 md:grid-cols-3 h-[calc(100%-80px)] gap-0">
-        <div className="md:col-span-2 p-5">
+        <div className="md:col-span-2 pb-6 md:p-5">
           <div className="flex gap-2 p-4 shadow-md rounded-lg">
             <Input
               placeholder="Escanear código de barras o buscar producto"
@@ -371,24 +371,24 @@ export default function POS() {
             </Button>
           </div>
           
-          <div className="mt-4 rounded-lg shadow-md p-4 max-h-[calc(100vh-280px)]">
-            <h2 className="text-lg font-semibold mb-2 text-right">Productos en carrito</h2>
+          <div className="mt-4 rounded-lg dark:bg-zinc-900 shadow-md p-4 max-h-[calc(100vh-280px)]">
+            <h2 className="text-lg font-semibold mb-2 text-right hidden md:block">Productos en carrito</h2>
             <ProductList products={products} setProducts={setProducts} onRemoveProduct={handleRemoveProduct} />
           </div>
         </div>
-        <div className="bg-gray-100 dark:bg-zinc-900 p-6 flex flex-col border-l border-divider">
-          <div className="rounded-lg bg-white dark:bg-black shadow-md p-5 mb-4">
+        <div className="md:bg-gray-100 md:dark:bg-zinc-900 p-0 md:p-6 flex flex-col md:border-l border-divider">
+          <div className="rounded-lg bg-white dark:bg-zinc-900 md:dark:bg-black shadow-md p-5 mb-4">
             <TotalDisplay total={total} />
           </div>
           
-          <div className="mt-auto flex flex-col gap-3">
+          <div className="mt-auto flex flex-row-reverse justify-between md:justify-center md:flex-col gap-3">
             <Button 
               color="primary"
               size="lg"
               onPress={onOpen}
               isDisabled={products.length === 0}
-              startContent={<CheckCircleIcon className="h-5 w-5" />}
-              className="h-16 text-lg font-medium"
+              startContent={<CheckCircleIcon className="h-5 w-5 hidden md:block" />}
+              className="h-16 text-lg font-medium w-[48%] md:w-full"
             >
               Finalizar Venta
               <Kbd keys={["shift"]}>V</Kbd>
@@ -396,11 +396,12 @@ export default function POS() {
             
             <Button 
               color="danger" 
+              className="w-[48%] md:w-full h-16 md:h-12"
               variant="flat"
               size="lg"
               onPress={() => setProducts([])}
               isDisabled={products.length === 0}
-              startContent={<CircleXIcon className="h-5 w-5" />}
+              startContent={<CircleXIcon className="h-5 w-5 hidden md:block" />}
             >
               Cancelar Venta
               <Kbd keys={["shift"]}>C</Kbd>

@@ -42,33 +42,7 @@ Para iniciar el servidor de desarrollo local, usa:
 yarn dev
 ```
 
-## 6. Cambiar la Ip del middleware
-
-La validación de token no funcionará con la misma IP si se corre en el docker o si se corre local, entonces, en el archivo middleware.ts al comienzo se encuentra API_AUTH_URL, comentar o descomentar según corresponda. Para evitar problemas en presentaciones, evitar no commitear cambios de este archivo.
-
-```javascript
-//production - docker
-//const API_AUTH_URL = "http://172.18.0.4:8080/validate";
-
-//dev 
-const API_AUTH_URL = "http://localhost:8080/validate";
-```
-> Para desarrollo en local.
-
-```javascript
-//production - docker
-const API_AUTH_URL = "http://172.18.0.4:8080/validate";
-
-//dev 
-//const API_AUTH_URL = "http://localhost:8080/validate";
-```
-> Para utilizar en el docker.
-
-> [!CAUTION]
-> No se deben subir cambios de este archivo, sólo modificar para uso local.
-
-
-## 7. Ejecutar el servidor de desarrollo
+## 6. Ejecutar el backend + db
 
 Inicializar el Backend y la base de datos
 

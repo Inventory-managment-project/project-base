@@ -90,6 +90,9 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
               const newSelectedKey = new Set<string>(
                 Array.from(keys).map((key) => String(key)),
               );
+              setTimeout(() => {
+                setSidebarVisible(false);
+              }, 300);
               setSelectedKey(newSelectedKey);
             }}
           >
@@ -192,19 +195,18 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
        <button onClick={toggleSidebar} className="toggle-btn group h-15 w-15">
           <div className="grid justify-items-center gap-1.5">
           <span
-                    className={`h-1 w-8 rounded-full bg-black transition dark:bg-white 
-                    ${sidebarVisible && 'rotate-45 translate-y-2.5' }`}
-                ></span>
-
-                <span
-                    className={`h-1 w-8 rounded-full bg-black transition dark:bg-white 
-                    ${sidebarVisible && 'scale-x-0' }`}
-                ></span>
-
-                <span
-                    className={`h-1 w-8 rounded-full bg-black transition dark:bg-white 
-                    ${sidebarVisible && '-rotate-45 -translate-y-2.5' }`}
-                ></span>          </div>
+            className={`h-1 w-8 rounded-full bg-black transition dark:bg-white 
+            ${sidebarVisible && 'rotate-45 translate-y-2.5' }`}
+          />
+          <span
+            className={`h-1 w-8 rounded-full bg-black transition dark:bg-white 
+            ${sidebarVisible && 'scale-x-0' }`}
+          />
+          <span
+            className={`h-1 w-8 rounded-full bg-black transition dark:bg-white 
+            ${sidebarVisible && '-rotate-45 -translate-y-2.5' }`}
+          />        
+          </div>
         </button>
     </div>
   );

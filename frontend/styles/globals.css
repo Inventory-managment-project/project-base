@@ -10,12 +10,11 @@ html, body, #__next, main {
   overflow: hidden;
 }
 
-.sidebar {
+.sidebar, .sidebar-nav {
   width: 15%;
   height: 100%;
   border-right: 1px solid #e0e0e0;
   transition: transform 0.3s ease;
-  backdrop-filter: blur(10px);
   position: absolute;
   z-index: 100;
 }
@@ -42,7 +41,7 @@ html, body, #__next, main {
   object-fit: contain;
 }
 
-.toggle-btn {
+.toggle-btn, .toggle-btn-nav {
   display: block;
   position: absolute;
   top: 15px;
@@ -54,25 +53,48 @@ html, body, #__next, main {
   transform: transform 0.3s ease;
 }
 
+.toggle-btn-nav {
+  right: 30px;
+  left: auto;
+}
+
+.sidebar-nav {
+  border-left: 1px solid #e0e0e0;
+  border-right: none !important;
+}
+
+.sidebar-visible-nav {
+  transform: translateX(38%);
+}
+
+.sidebar-hidden-nav {
+  transform: translateX(140%);
+}
+
 /* Hide the default clear and show/hide password button in input fields */
 input::-ms-reveal, input::-ms-clear {
   display: none;
 }
 
 @media (max-width: 1280px) {
-  .sidebar {
-    width: 200px;
+  .sidebar, .sidebar-nav {
+    width: 300px;
   }
 
   .content {
     width: 100%;
   }
+
+  kbd {
+    visibility: hidden;
+    position: absolute;
+  }
 }
 
-html.dark .sidebar {
-  background-color: rgba(0, 0, 0, 0.5);
+html[data-theme="dark"] .sidebar, html[data-theme="dark"] .sidebar-nav {
+  background-color: black;
 }
 
-html.light .sidebar {
-  background-color: rgba(255, 255, 255, 0.8);
+html[data-theme="light"] .sidebar, html[data-theme="light"] .sidebar-nav {
+  background-color: white;
 }

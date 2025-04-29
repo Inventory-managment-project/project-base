@@ -4,7 +4,7 @@ import { Button } from "@heroui/button";
 const Logout = () => {
   const handleLogout = async () => {
     try {
-      const res = await fetch("http://localhost:8080/logout", {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/logout", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
@@ -23,9 +23,9 @@ const Logout = () => {
   };
 
   return (
-    <div className="flex flex-col select-none w-[50%] gap-4 justify-start items-center">
+    <div className="flex flex-col select-none sm:w-[50%] w-full gap-4 justify-center text-center sm:justify-start items-center">
       <h1 className={title()}>Cerrar Sesión</h1>
-      <div className="flex flex-row justify-between w-full">
+      <div className="flex flex-row flex-wrap sm:flex-nowrap sm:justify-between justify-center text-center sm:text-start w-full">
         <p className={subtitle()}>¿Estás seguro que quieres cerrar sesión?</p>
         <Button color="danger" onPress={handleLogout}>Confirmar</Button>
       </div>

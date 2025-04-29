@@ -25,7 +25,7 @@ export default function Auth() {
       </Tabs>
       </div>
       {selected == 0 && (
-      <motion.div className="flex flex-row items-center justify-center h-full w-full gap-4 py-8 md:py-10"
+      <motion.div className="flex flex-row items-center justify-center h-full w-full md:gap-4 py-8 md:py-10"
       initial={{ y: 50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -34,14 +34,14 @@ export default function Auth() {
         <Image
         isBlurred
         alt="Logo"
-        className="m-5"
+        className="m-0 md:m-5 hidden md:block"
         src="/logo.png"
         width={240}
         />
       </motion.div>
       )}
       {selected == 1 && (
-      <motion.div className="flex flex-row-reverse items-center justify-center h-full w-full gap-4 py-8 md:py-10"
+      <motion.div className="flex flex-row-reverse items-center justify-center h-full w-full md:gap-4 py-8 md:py-10"
       initial={{ y: 50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -50,7 +50,7 @@ export default function Auth() {
         <Image
         isBlurred
         alt="Logo"
-        className="m-5"
+        className="m-0 md:m-5 hidden md:block"
         src="/logo.png"
         width={240}
         />

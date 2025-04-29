@@ -3,7 +3,7 @@ ktor:
     modules:
       - mx.unam.fciencias.ids.eq1.ApplicationKt.module
   deployment:
-    port: 8080
+    port: 8181
     connectionGroupSize: 2
     workerGroupSize: 5
     callGroupSize: 10
@@ -14,7 +14,7 @@ ktor:
     maxChunkSize: 42
 jwt:
   secret: "secret"
-  issuer: "http://0.0.0.0:8080/"
-  audience: "http://0.0.0.0:8080/login"
+  issuer: "http://0.0.0.0:8181/"
+  audience: "http://0.0.0.0:8181/login"
   realm: "Access to 'app'"
 

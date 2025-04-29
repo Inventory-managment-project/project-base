@@ -129,7 +129,7 @@ const Products = () => {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}/products`, {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + `/stores/${selectedStoreString}/products`, {
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
           "Content-Type": "application/json",
@@ -144,7 +144,7 @@ const Products = () => {
 
   const putProduct = async (product: Product) => {
     try {
-      const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}/product`, {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + `/stores/${selectedStoreString}/product`, {
         method: "PUT",
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
@@ -236,7 +236,7 @@ const Products = () => {
 
   const deleteProduct = async (productId: number) => {
     try {
-      const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}/product/id/${productId}`, {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + `/stores/${selectedStoreString}/product/id/${productId}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
@@ -365,8 +365,6 @@ const Products = () => {
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
-          <Button onPress={()=>triggerAlert("asd", "asd", 300)} variant="flat" className="hidden sm:flex">test</Button>
-          <Button onPress={()=>triggerAlert("asd", "asd", 400)} variant="flat" className="hidden sm:flex">test</Button>
           <div className="flex flex-row items-center justify-between gap-3">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">

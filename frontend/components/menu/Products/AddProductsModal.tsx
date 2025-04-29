@@ -37,7 +37,7 @@ export default function AddProductsModal({ onProductAdded }: { onProductAdded: (
 
   const postProduct = async (product: Product) => {
     try {
-      const res = await fetch(`http://localhost:8080/stores/${selectedStoreString}/product`, {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + `/stores/${selectedStoreString}/product`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
