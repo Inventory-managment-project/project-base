@@ -34,7 +34,6 @@ export const Navbar = () => {
             <p className="font-bold text-xl text-inherit tracking-[.25em]">DFC</p>
           </div>
         </NavbarBrand>
-        {/* <ul className="hidden lg:flex gap-4 justify-start ml-2"> */}
         <ul className="hidden lg:flex gap-4 justify-start ml-2">
           {siteConfig.navItems.map((item) => (
             <NavbarItem key={item.href}>

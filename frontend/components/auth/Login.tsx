@@ -5,11 +5,9 @@ import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { EyeClosedIcon, EyeIcon } from "lucide-react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
 const Login = () => {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorEmail, setErrorEmail] = useState("");
@@ -53,7 +51,7 @@ const Login = () => {
         localStorage.clear();
         localStorage.setItem("theme", theme || "light");
         localStorage.setItem("authToken", data.token);
-        router.push("/panel");
+        window.location.href = "/panel";
       } else {
         console.error(data);
         setErrorPassword("Email o contraseña incorrectos");
