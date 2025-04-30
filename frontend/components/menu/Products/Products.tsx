@@ -91,6 +91,11 @@ const Products = () => {
   const { alerts, triggerAlert, removeAlert } = useStatusAlerts();
 
   const [isLoading, setIsLoading] = useState(true);
+  useLayoutEffect(() => {
+    fetchProducts().then(() => {
+      setIsLoading(false);
+    });
+  }, []);
 
   const [editingRows, setEditingRows] = useState<Record<number, boolean>>({});
   const [drafts, setDrafts] = useState<Record<number, Partial<Product>>>({});
