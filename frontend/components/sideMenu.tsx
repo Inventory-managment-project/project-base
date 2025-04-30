@@ -92,7 +92,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
               );
               setTimeout(() => {
                 setSidebarVisible(false);
-              }, 300);
+              }, 350);
               setSelectedKey(newSelectedKey);
             }}
           >

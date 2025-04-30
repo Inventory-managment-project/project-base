@@ -12,14 +12,16 @@ import { Input } from "@heroui/input";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/dropdown";
 import { Pagination } from "@heroui/pagination";
 import { useState, useMemo, useCallback, useLayoutEffect, useEffect } from "react";
-import { SearchIcon, ChevronDownIcon, SaveIcon, PencilIcon, XIcon } from "lucide-react";
+import { SearchIcon, ChevronDownIcon, SaveIcon, PencilIcon, XIcon, UploadIcon, PlusIcon } from "lucide-react";
 import { SharedSelection } from "@heroui/system";
 import AddProductsModal from "./AddProductsModal";
+import ImportProductsModal from "./ImportProductsModal";
 import { useSelectedStore } from "@/context/SelectedStoreContext";
 import ConfirmationModal from "@/components/misc/ConfirmationModal";
 import { AnimatePresence, motion } from "framer-motion";
 import { useStatusAlerts } from "@/hooks/useStatusAlerts";
 import StatusAlertsStack from "@/components/misc/StatusAlertStack";
+import { CircularProgress } from "@heroui/progress";
 
 export const columns = [
   {name: "ID", uid: "id", sortable: true},
@@ -87,6 +89,8 @@ const Products = () => {
   const { selectedStoreString } = useSelectedStore();
 
   const { alerts, triggerAlert, removeAlert } = useStatusAlerts();
+
+  const [isLoading, setIsLoading] = useState(true);
 
   const [editingRows, setEditingRows] = useState<Record<number, boolean>>({});
   const [drafts, setDrafts] = useState<Record<number, Partial<Product>>>({});
@@ -393,7 +397,10 @@ const Products = () => {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <AddProductsModal onProductAdded={(newProduct) => setProducts((prevProducts) => [...prevProducts, newProduct])} />
+            <div className="flex">
+              <AddProductsModal onProductAdded={(newProduct) => setProducts((prevProducts) => [...prevProducts, newProduct])} />
+              <ImportProductsModal onProductAdded={(newProduct) => setProducts((prevProducts) => [...prevProducts, newProduct])} />
+            </div>
           </div>
         </div>
         <div className="flex justify-end items-center">
@@ -484,6 +491,11 @@ const Products = () => {
         </TableBody>
       </Table>
       <StatusAlertsStack alerts={alerts} onClose={removeAlert}/>
+      {isLoading && (
+        <div className="absolute z-20 inset-0 flex items-center justify-center backdrop-blur-sm">
+          <CircularProgress isIndeterminate size="lg" color="secondary" />
+        </div>
+      )}
     </>
   );
 }

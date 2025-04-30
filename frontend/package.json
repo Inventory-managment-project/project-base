@@ -23,6 +23,7 @@
     "@heroui/navbar": "2.2.12",
     "@heroui/number-input": "^2.0.6",
     "@heroui/pagination": "^2.2.14",
+    "@heroui/progress": "^2.2.15",
     "@heroui/radio": "^2.3.15",
     "@heroui/scroll-shadow": "^2.3.10",
     "@heroui/skeleton": "^2.2.10",
@@ -34,6 +35,7 @@
     "@heroui/theme": "2.4.9",
     "@react-aria/visually-hidden": "3.8.19",
     "@types/figlet": "^1.7.0",
+    "@types/papaparse": "^5.3.15",
     "clsx": "2.1.1",
     "figlet": "^1.8.0",
     "framer-motion": "11.13.1",
@@ -41,6 +43,7 @@
     "lucide-react": "^0.477.0",
     "next": "^15.2.3",
     "next-themes": "^0.4.4",
+    "papaparse": "^5.5.2",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
