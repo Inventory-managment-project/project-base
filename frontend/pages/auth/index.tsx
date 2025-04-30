@@ -15,6 +15,7 @@ export default function Auth() {
       <div className="w-full flex flex-row justify-center items-center">
        <Tabs
         aria-label="Tabs form"
+        className="mb-6 lg:mb-0"
         selectedKey={selected}
         size="md"
         color="secondary"
