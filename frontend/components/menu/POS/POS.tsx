@@ -14,6 +14,7 @@ import { Divider } from "@heroui/divider";
 import { Kbd } from "@heroui/kbd";
 import { useStatusAlerts } from "@/hooks/useStatusAlerts";
 import StatusAlertsStack from "@/components/misc/StatusAlertStack";
+import { CircularProgress } from "@heroui/progress";
 
 import figlet from "figlet";
 import bulbhead from "figlet/importable-fonts/Bulbhead.js";
@@ -50,6 +51,13 @@ export default function POS() {
   const [highlightedIndex, setHighlightedIndex] = useState(0);
 
   const { alerts, triggerAlert, removeAlert } = useStatusAlerts();
+
+  const [isLoading, setIsLoading] = useState(true);
+  useLayoutEffect(() => {
+    fetchProducts().then(() => {
+      setIsLoading(false);
+    });
+  }, []);
 
   const fetchProducts = async () => {
     try {
@@ -417,6 +425,11 @@ export default function POS() {
         onFinishSale={handleFinishSale}
       />
       <StatusAlertsStack alerts={alerts} onClose={removeAlert} />
+      {isLoading && (
+        <div className="absolute z-20 inset-0 flex items-center justify-center backdrop-blur-sm">
+          <CircularProgress isIndeterminate size="lg" color="secondary" />
+        </div>
+      )}
     </div>
   );
 }

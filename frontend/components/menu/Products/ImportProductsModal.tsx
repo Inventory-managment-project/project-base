@@ -8,12 +8,14 @@ import { useSelectedStore } from "@/context/SelectedStoreContext";
 import { useStatusAlerts } from "@/hooks/useStatusAlerts";
 import StatusAlertsStack from "@/components/misc/StatusAlertStack";
 import Papa from "papaparse";
+import { CircularProgress } from "@heroui/progress";
 
 export default function ImportProductsModal({ onProductAdded }: { onProductAdded: (product: Product) => void }) {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
   const { alerts, triggerAlert, removeAlert } = useStatusAlerts();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { selectedStoreString } = useSelectedStore();
+  const [progress, setProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
 
   const postProduct = async (product: Product) => {
@@ -30,10 +32,9 @@ export default function ImportProductsModal({ onProductAdded }: { onProductAdded
       if (status === 201) {
         const data = await res.json();
         product.id = data.id;
-        triggerAlert("Producto creado con éxito", `El producto ${product.name} ha sido creado correctamente.`, 201);
         onProductAdded(product);
       } else {
-        triggerAlert("Error al crear el producto", "No se pudo crear el producto. Inténtalo de nuevo.", 500);
+        throw new Error("Error al crear el producto");
       }
     } catch (error) {
       console.error("Error al crear el producto:", error);
@@ -57,6 +58,7 @@ export default function ImportProductsModal({ onProductAdded }: { onProductAdded
       skipEmptyLines: true,
       complete: async (results) => {
         const products = results.data as Product[];
+        setProgress(0);
         setIsUploading(true);
         try {
           await Promise.all(products.map(async (product) => {
@@ -73,7 +75,7 @@ export default function ImportProductsModal({ onProductAdded }: { onProductAdded
               stock: product.stock,
               minAllowStock: product.minStock
             };
-            console.log("Subiendo producto:", newProduct);
+            setProgress((prev) => Math.min(prev + (100 / products.length), 100));
             await postProduct(newProduct);
           }));
         }
@@ -82,7 +84,12 @@ export default function ImportProductsModal({ onProductAdded }: { onProductAdded
           triggerAlert("Error al procesar el archivo CSV", "No se pudo procesar el archivo. Inténtalo de nuevo.", 500);
         }
         finally {
+          setProgress(100);
           setIsUploading(false);
+          setTimeout(() => {
+            setProgress(0);
+          }, 2000);
+          triggerAlert("Productos importados con éxito", "Los productos han sido importados correctamente.", 200);
         }
       },
       error: (error) => {
@@ -171,6 +178,17 @@ export default function ImportProductsModal({ onProductAdded }: { onProductAdded
         </ModalContent>
       </Modal>
       <StatusAlertsStack alerts={alerts} onClose={removeAlert} />
+      {isUploading && (
+        <div className="absolute z-20 inset-0 flex items-center justify-center backdrop-blur-sm">
+          <CircularProgress
+            aria-label="Loading..."
+            color="warning"
+            showValueLabel={true}
+            size="lg"
+            value={progress}
+          />
+        </div>
+      )}
     </div>
   );
 }
