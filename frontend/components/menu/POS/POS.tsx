@@ -14,6 +14,7 @@ import { Divider } from "@heroui/divider";
 import { Kbd } from "@heroui/kbd";
 import { useStatusAlerts } from "@/hooks/useStatusAlerts";
 import StatusAlertsStack from "@/components/misc/StatusAlertStack";
+import { CircularProgress } from "@heroui/progress";
 
 import figlet from "figlet";
 import bulbhead from "figlet/importable-fonts/Bulbhead.js";
@@ -50,6 +51,13 @@ export default function POS() {
   const [highlightedIndex, setHighlightedIndex] = useState(0);
 
   const { alerts, triggerAlert, removeAlert } = useStatusAlerts();
+
+  const [isLoading, setIsLoading] = useState(true);
+  useLayoutEffect(() => {
+    fetchProducts().then(() => {
+      setIsLoading(false);
+    });
+  }, []);
 
   const fetchProducts = async () => {
     try {
@@ -318,7 +326,7 @@ export default function POS() {
       <Divider className="hidden md:block"/>
       <div className="grid grid-cols-1 md:grid-cols-3 h-[calc(100%-80px)] gap-0">
         <div className="md:col-span-2 pb-6 md:p-5">
-          <div className="flex gap-2 p-4 shadow-md rounded-lg">
+          <div className="flex gap-2 p-2 lg:p-4 lg:shadow-md rounded-lg">
             <Input
               placeholder="Escanear código de barras o buscar producto"
               value={barcode}
@@ -417,6 +425,11 @@ export default function POS() {
         onFinishSale={handleFinishSale}
       />
       <StatusAlertsStack alerts={alerts} onClose={removeAlert} />
+      {isLoading && (
+        <div className="absolute z-20 inset-0 flex items-center justify-center backdrop-blur-sm">
+          <CircularProgress isIndeterminate size="lg" color="secondary" />
+        </div>
+      )}
     </div>
   );
 }

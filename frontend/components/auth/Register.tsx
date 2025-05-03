@@ -5,7 +5,7 @@ import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { EyeClosedIcon, EyeIcon } from "lucide-react";
+import { EyeClosedIcon, EyeIcon, RefreshCcwIcon } from "lucide-react";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -64,9 +64,9 @@ const Register = () => {
       if (response.ok) {
         console.log(data);
         setStatus(1);
-      } else {
+      } else if (response.status === 409) {
+        setErrorEmail("El email ya está en uso");
         console.error(data);
-        setStatus(2);
       }
     } catch (error) {
       setStatus(2);
@@ -199,12 +199,15 @@ const Register = () => {
         </CardBody>
       )}
       {status == 2 && (
-        <CardBody  className="flex items-center">
-          <div className="inline-block max-w-xl text-center justify-center">
+        <CardBody  className="flex-row items-center justify-evenly">
+          <div className="flex-col w-[80%] text-center justify-center">
             <span className="">Ha ocurrido un&nbsp;</span>
             <span className="text-red-600">error.&nbsp;</span>
             <span className="">Intente de nuevo más tarde.&nbsp;</span>
           </div>
+          <Button isIconOnly aria-label="Reintentar" color="secondary" variant="faded" onPress={() => {setStatus(0)}} >
+            <RefreshCcwIcon />
+          </Button>
         </CardBody>
       )}
     </Card>

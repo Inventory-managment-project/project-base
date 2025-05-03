@@ -6,34 +6,60 @@ function decodeBase64(str: string) {
 }
 
 export async function middleware(req: NextRequest) {
+  const url = req.nextUrl.clone();
   const rawToken = req.cookies.get("token")?.value;
   const token = rawToken ? decodeBase64(rawToken) : "";
 
-  if (!token || token === "") {
-    return NextResponse.redirect(new URL("/auth", req.url));
+  const isAuthPath = url.pathname === "/auth";
+  const isProtectedPath = url.pathname.startsWith("/panel");
+
+  if (!token && isProtectedPath) {
+    url.pathname = "/auth";
+    return NextResponse.redirect(url);
   }
 
-  try {
-    const response = await fetch(process.env.NEXT_PUBLIC_DOCKER_API_URL + "/validate", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token: token }),
-    });
+  if (token) {
+    try {
+      const response = await fetch(process.env.NEXT_PUBLIC_DOCKER_API_URL + "/validate", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: token }),
+      });
+      const isValid = response.ok;
 
-    if (!response.ok) {
-      return NextResponse.redirect(new URL("/auth", req.url));
+      if (isAuthPath && isValid) {
+        url.pathname = "/panel";
+        return NextResponse.redirect(url);
+      }
+      if (!isValid) {
+        const res = NextResponse.next();
+        res.cookies.set("token", "", { maxAge: 0, path: "/" });
+
+        if (isProtectedPath) {
+          url.pathname = "/auth";
+          return NextResponse.redirect(url);
+        }
+
+        return res;
+      }
+    } catch (err) {
+      console.error("Error durante validación:", err);
+      const res = NextResponse.next();
+      res.cookies.set("token", "", { maxAge: 0, path: "/" });
+
+      if (isProtectedPath) {
+        url.pathname = "/auth";
+        return NextResponse.redirect(url);
+      }
+      return res;
     }
-  } catch (error) {
-    console.error("Error durante la validación del token:", error);
-    return NextResponse.redirect(new URL("/auth", req.url));
   }
-
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/panel/:path*"]
+  matcher: ["/panel/:path*", "/auth"],
 };

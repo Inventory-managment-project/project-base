@@ -119,8 +119,8 @@ export default function AddProductsModal({ onProductAdded }: { onProductAdded: (
 
   return (
     <div className="flex flex-col items-center">
-      <Button color="secondary" endContent={<PlusIcon />} onPress={onOpen}>
-        Agregar
+      <Button color="secondary" className="rounded-none rounded-l-xl" startContent={<PlusIcon />} onPress={onOpen}>
+        <div className="hidden lg:block">Agregar</div>
       </Button>
       <Modal 
         isOpen={isOpen} 

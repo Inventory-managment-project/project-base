@@ -108,6 +108,10 @@ fun Route.authenticationRouting(environment: ApplicationEnvironment) {
                 createdAt = Instant.now().epochSecond,
             )
             if (emailRegex.matcher(newUser.email).matches()) {
+                if (userService.getUserByEmail(newUser.email) != null) {
+                    call.respond(HttpStatusCode.Conflict, mapOf("message" to "Email already exists"))
+                    return@post
+                }
                 if (userService.addUser(user)) {
                     call.respond(HttpStatusCode.Created, mapOf("message" to "User created"))
                 } else {
