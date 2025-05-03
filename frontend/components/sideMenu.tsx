@@ -7,8 +7,10 @@ import Setting from "./menu/Settings";
 import Products from "./menu/Products/Products";
 import POS from "./menu/POS/POS"
 import Stores from "./menu/Stores/Stores";
+import Notifications from "./menu/Notifications";
 import { useState, useMemo, useEffect, useLayoutEffect } from "react";
 import { useSelectedStore } from "@/context/SelectedStoreContext";
+import { NotificationBadge } from "@/components/misc/NotificationBadge";
 
 interface SideMenuProps {
   setContent: (content: JSX.Element) => void;
@@ -53,6 +55,11 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
       case "products":
         setContent(
           <Products />
+        );
+        break;
+      case "notifications":
+        setContent(
+          <Notifications />
         );
         break;
       case "settings":
@@ -163,7 +170,10 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
                   </IconWrapper>
                 }
               >
-                Notificaciones
+                <div className="flex items-center justify-between w-full">
+                  <span>Notificaciones</span>
+                  <NotificationBadge className="ml-2" />
+                </div>
               </ListboxItem>
             </ListboxSection>
             <ListboxSection title="Administración" showDivider>

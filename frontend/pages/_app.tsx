@@ -4,6 +4,7 @@ import { HeroUIProvider } from "@heroui/system";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { useRouter } from "next/router";
 import { SelectedStoreProvider } from "@/context/SelectedStoreContext";
+import { NotificationsProvider } from "@/context/NotificationsContext";
 
 import { fontSans, fontMono } from "@/config/fonts";
 import "@/styles/globals.css";
@@ -15,7 +16,9 @@ export default function App({ Component, pageProps }: AppProps) {
     <HeroUIProvider navigate={router.push}>
       <NextThemesProvider>
         <SelectedStoreProvider>
-          <Component {...pageProps} />
+          <NotificationsProvider>
+            <Component {...pageProps} />
+          </NotificationsProvider>
         </SelectedStoreProvider>
       </NextThemesProvider>
     </HeroUIProvider>
