@@ -61,7 +61,8 @@ export default function ImportProductsModal({ onProductAdded }: { onProductAdded
         setProgress(0);
         setIsUploading(true);
         try {
-          await Promise.all(products.map(async (product) => {
+          for (let i = 0; i < products.length; i++) {
+            const product = products[i];
             const newProduct: Product = {
               id: Math.floor(Math.random() * 1000) + 1, 
               createdAt: Date.now(),
@@ -75,9 +76,9 @@ export default function ImportProductsModal({ onProductAdded }: { onProductAdded
               stock: product.stock,
               minAllowStock: product.minStock
             };
-            setProgress((prev) => Math.min(prev + (100 / products.length), 100));
             await postProduct(newProduct);
-          }));
+            setProgress(Math.round(((i + 1) / products.length) * 100));
+          };
         }
         catch (error) {
           console.error("Error al procesar el archivo CSV:", error);
