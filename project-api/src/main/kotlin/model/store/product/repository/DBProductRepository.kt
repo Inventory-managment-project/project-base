@@ -57,7 +57,7 @@ class DBProductRepository(
             this.storeId = EntityID(this@DBProductRepository.storeID, ProductTable)
         }
         val productPrice = CompositeID {
-            it[ProductPriceTable.productId] = product.id
+            it[ProductPriceTable.productId] = productDao.id
             it[ProductPriceTable.timestamp] = Instant.now()
         }
         ProductPriceDAO.new(productPrice) {
