@@ -18,27 +18,27 @@ export default function ImportProductsModal({ onProductAdded }: { onProductAdded
   const [progress, setProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
 
-  const postProduct = async (product: Product) => {
+  const postProducts = async (products: Product[]) => {
     try {
-      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + `/stores/${selectedStoreString}/product`, {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + `/stores/${selectedStoreString}/products`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(product),
+        body: JSON.stringify(products),
       });
       const status = res.status;
       if (status === 201) {
-        const data = await res.json();
-        product.id = data.id;
-        onProductAdded(product);
+        for (let product of products) {
+          onProductAdded(product);
+        }
       } else {
-        throw new Error("Error al crear el producto");
+        throw new Error("Error al agregar los productos");
       }
     } catch (error) {
-      console.error("Error al crear el producto:", error);
-      triggerAlert("Error al crear el producto", "No se pudo crear el producto. Inténtalo de nuevo.", 500);
+      console.error("Error al agregar los productos:", error);
+      triggerAlert("Error al agregar los productos", "No se pudieron crear los productos. Inténtalo de nuevo.", 500);
     }
   }
 
@@ -58,6 +58,7 @@ export default function ImportProductsModal({ onProductAdded }: { onProductAdded
       skipEmptyLines: true,
       complete: async (results) => {
         const products = results.data as Product[];
+        const parsedProducts: Product[] = [];
         setProgress(0);
         setIsUploading(true);
         try {
@@ -76,16 +77,17 @@ export default function ImportProductsModal({ onProductAdded }: { onProductAdded
               stock: product.stock,
               minAllowStock: product.minStock
             };
-            await postProduct(newProduct);
-            setProgress(Math.round(((i + 1) / products.length) * 100));
+            parsedProducts.push(newProduct);
+            setProgress(Math.round(((i + 1) / products.length) * 99));
           };
+          await postProducts(parsedProducts);
+          setProgress(100);
         }
         catch (error) {
           console.error("Error al procesar el archivo CSV:", error);
           triggerAlert("Error al procesar el archivo CSV", "No se pudo procesar el archivo. Inténtalo de nuevo.", 500);
         }
         finally {
-          setProgress(100);
           setIsUploading(false);
           setTimeout(() => {
             setProgress(0);
