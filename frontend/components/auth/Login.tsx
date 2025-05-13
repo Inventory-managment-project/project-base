@@ -3,7 +3,7 @@ import { Divider } from "@heroui/divider";
 import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
-import { EyeClosedIcon, EyeIcon } from "lucide-react";
+import { EyeClosedIcon, EyeIcon, RefreshCcwIcon } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 
@@ -142,6 +142,9 @@ const Login = () => {
             <span className="text-red-600">error.&nbsp;</span>
             <span className="">Intente de nuevo más tarde.&nbsp;</span>
           </div>
+          <Button isIconOnly aria-label="Reintentar" color="secondary" variant="faded" onPress={() => {setStatus(0)}} >
+            <RefreshCcwIcon />
+          </Button>
         </CardBody>
       )}
     </Card>
