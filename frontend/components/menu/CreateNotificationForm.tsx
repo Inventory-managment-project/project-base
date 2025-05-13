@@ -52,7 +52,7 @@ const CreateNotificationForm: React.FC = () => {
           />
           
           <div className="flex flex-col">
-            <label className="mb-2 text-sm font-medium">Tipo de notificación</label>
+            <p className="mb-2 text-sm font-medium">Tipo de notificación</p>
             <div className="flex space-x-2">
               {["info", "success", "warning", "error"].map((option) => (
                 <Button
