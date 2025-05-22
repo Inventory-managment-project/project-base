@@ -25,5 +25,6 @@ class SupplierDAO (id: EntityID<Int>) : IntEntity(id){
     var address by SupplierTable.address
     var contactName by SupplierTable.contactName
     var contactPhone by SupplierTable.contactPhone
-    var createdAt by UserTable.createdAt
+    var createdAt by SupplierTable.createdAt
+    var storeId by SupplierTable.storeId
 }
