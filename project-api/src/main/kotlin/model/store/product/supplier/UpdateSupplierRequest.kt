@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 data class UpdateSupplierRequest(
     val id: Int,
     val name: String,
-    val contactName: String,
+    val contactName: String?,
     val contactPhone: String,
-    val email: String,
-    val address: String
+    val email: String?,
+    val address: String?
 )
