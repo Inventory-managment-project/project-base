@@ -16,8 +16,8 @@ fun Route.reportRoutes() {
             val reportService: ReportService by inject()
 
             get("/sales/products") {
-                val storeId = getStoreIdOrBadRequest() ?: return@get
-                if (!verifyUserIsOwner(storeId)) {
+                val storeId = call.getStoreIdOrBadRequest() ?: return@get
+                if (!call.verifyUserIsOwner()) {
                     call.respond(HttpStatusCode.Unauthorized, "Not authorized")
                     return@get
                 }
@@ -35,8 +35,8 @@ fun Route.reportRoutes() {
             }
 
             get("/sales/date-range") {
-                val storeId = getStoreIdOrBadRequest() ?: return@get
-                if (!verifyUserIsOwner(storeId)) {
+                val storeId = call.getStoreIdOrBadRequest() ?: return@get
+                if (!call.verifyUserIsOwner()) {
                     call.respond(HttpStatusCode.Unauthorized, "Not authorized")
                     return@get
                 }
