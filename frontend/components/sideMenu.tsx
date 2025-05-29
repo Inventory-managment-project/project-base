@@ -11,6 +11,7 @@ import Notifications from "./menu/Notifications";
 import { useState, useMemo, useEffect, useLayoutEffect } from "react";
 import { useSelectedStore } from "@/context/SelectedStoreContext";
 import { NotificationBadge } from "@/components/misc/NotificationBadge";
+import Reports from "./menu/Reports/Reports";
 
 interface SideMenuProps {
   setContent: (content: JSX.Element) => void;
@@ -72,6 +73,11 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
         <Logout />
       );
       break;
+      case "reports":
+        setContent(
+          <Reports />
+        );
+        break;
       default:
         setContent(
           <div>La función {selectedValue} estará disponible pronto.</div>,
@@ -222,4 +228,17 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
   );
 }
 
-export default SideMenu; 
+export default SideMenu;
+
+// In the Listbox, add the Reports item:
+<ListboxItem
+  key="reports"
+  startContent={
+     <IconWrapper className="bg-success/10 text-success">
+       <ChartBar className="text-lg" />
+     </IconWrapper>
+  }
+  endContent={<ChevronRight className="text-default-400" />}
+>
+  Reports
+</ListboxItem>

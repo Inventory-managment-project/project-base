@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@heroui/chip": "^2.2.15",
+    "@heroui/react": "^2.7.8"
+  }
+}

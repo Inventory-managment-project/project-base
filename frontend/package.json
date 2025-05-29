@@ -12,6 +12,7 @@
     "@heroui/alert": "^2.2.16",
     "@heroui/button": "2.2.13",
     "@heroui/card": "^2.2.14",
+    "@heroui/chip": "^2.2.15",
     "@heroui/code": "2.2.10",
     "@heroui/dropdown": "^2.3.16",
     "@heroui/image": "^2.2.10",
