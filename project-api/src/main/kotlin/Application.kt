@@ -15,6 +15,8 @@ import mx.unam.fciencias.ids.eq1.plugins.configureSerialization
 import mx.unam.fciencias.ids.eq1.routes.authentication.authenticationRouting
 import mx.unam.fciencias.ids.eq1.routes.stores.storeRoutes
 import mx.unam.fciencias.ids.eq1.routes.users.users
+import routes.retailAnalyticsRoutes
+import service.RetailAnalyticsService
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -111,11 +113,12 @@ fun Application.module() {
     configureSerialization()
 
     //Routes
+    val retailAnalyticsService = RetailAnalyticsService()
 
     routing {
         users()
         storeRoutes()
         authenticationRouting(environment)
-
+        retailAnalyticsRoutes(retailAnalyticsService)
     }
 }

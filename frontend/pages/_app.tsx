@@ -5,6 +5,7 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { useRouter } from "next/router";
 import { SelectedStoreProvider } from "@/context/SelectedStoreContext";
 import { NotificationsProvider } from "@/context/NotificationsContext";
+import { AnalyticsProvider } from '../components/AnalyticsProvider';
 
 import { fontSans, fontMono } from "@/config/fonts";
 import "@/styles/globals.css";
@@ -17,7 +18,12 @@ export default function App({ Component, pageProps }: AppProps) {
       <NextThemesProvider>
         <SelectedStoreProvider>
           <NotificationsProvider>
-            <Component {...pageProps} />
+            <AnalyticsProvider 
+              apiUrl={process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}
+              enabled={process.env.NODE_ENV === 'production'}
+            >
+              <Component {...pageProps} />
+            </AnalyticsProvider>
           </NotificationsProvider>
         </SelectedStoreProvider>
       </NextThemesProvider>
