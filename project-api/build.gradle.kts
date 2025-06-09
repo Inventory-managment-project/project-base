@@ -23,6 +23,8 @@ repositories {
 dependencies {
     implementation("org.jetbrains.lets-plot:lets-plot-kotlin-jvm:4.10.0")
     implementation("org.jetbrains.lets-plot:lets-plot-batik:4.6.1")
+    implementation("org.apache.xmlgraphics:batik-transcoder:1.17")
+    implementation("org.apache.xmlgraphics:batik-codec:1.17")
     implementation(libs.ktor.server.core.jvm)
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.auth)

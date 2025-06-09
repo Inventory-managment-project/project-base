@@ -1,18 +1,17 @@
-package mx.unam.fciencias.ids.eq1.model.analitycs
+package mx.unam.fciencias.ids.eq1.model.analytics
 
-import kotlinx.serialization.Serializable
+import java.time.LocalDate
 
 /**
- * Configuración para personalizar el análisis
+ * Configuración para análisis de datos
  */
-@Serializable
 data class Analytics(
-    val type: AnalyticsType,
-    val period: TimePeriod,
-    val startDate: Long, // Epoch timestamp
-    val endDate: Long,   // Epoch timestamp
-    val limit: Int = 10, // Número de resultados (para listados)
-    val includeCategories: List<Int>? = null,
-    val excludeCategories: List<Int>? = null,
-    val storeId: Int
+    val storeId: Int,
+    val startDate: LocalDate,
+    val endDate: LocalDate,
+    val limit: Int? = null,
+    val includeCategories: List<String>? = null,
+    val excludeCategories: List<String>? = null,
+    val minQuantity: Int? = null,
+    val maxResults: Int? = null
 )

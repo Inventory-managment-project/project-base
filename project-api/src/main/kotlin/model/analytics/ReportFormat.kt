@@ -1,11 +1,8 @@
-package mx.unam.fciencias.ids.eq1.model.analitycs
+package mx.unam.fciencias.ids.eq1.model.analytics
 
 /**
- * Formato en el que se pueden exportar los análisis
+ * Formato de reporte
  */
 enum class ReportFormat {
-    PDF,
-    EXCEL,
-    CSV,
-    JSON
+    PDF, EXCEL, JSON, CSV
 }

@@ -1,8 +1,7 @@
 package mx.unam.fciencias.ids.eq1.model.analytics.repository
 
-import mx.unam.fciencias.ids.eq1.model.analitycs.Analytics
 import mx.unam.fciencias.ids.eq1.model.analytics.*
-import mx.unam.fciencias.ids.eq1.model.analitycs.ReportFormat
+import mx.unam.fciencias.ids.eq1.model.analytics.ReportFormat
 
 /**
  * Repositorio para obtener análisis basados en datos de ventas

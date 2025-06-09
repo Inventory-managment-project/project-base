@@ -1,24 +1,20 @@
 package mx.unam.fciencias.ids.eq1.model.analytics
 
-import kotlinx.serialization.Serializable
-import mx.unam.fciencias.ids.eq1.model.analitycs.TimePeriod
-
+import mx.unam.fciencias.ids.eq1.db.store.sales.PAYMENTMETHOD
+import java.math.BigDecimal
+import java.time.LocalDate
 /**
- * Análisis de ventas por período
+ * Análisis completo de ventas
  */
-@Serializable
 data class SalesAnalytics(
-    val period: TimePeriod,
-    val startDate: Long,
-    val endDate: Long,
-    val totalSales: Double,
-    val totalProfit: Double,
-    val totalLoss: Double,
-    val totalItems: Int,
-    val averageTicketValue: Double,
+    val totalSales: Int,
+    val totalRevenue: BigDecimal,
+    val averageSaleValue: BigDecimal,
     val bestSellingProducts: List<ProductAnalytics>,
     val worstSellingProducts: List<ProductAnalytics>,
-    val salesByCategory: Map<String, Double>,
-    val profitByCategory: Map<String, Double>,
-    val salesTrend: List<DailySaleData>
+    val salesByPaymentMethod: Map<PAYMENTMETHOD, Int>,
+    val revenueByPaymentMethod: Map<PAYMENTMETHOD, BigDecimal>,
+    val dailySales: List<DailySaleData>,
+    val categoryPerformance: Map<String, CategoryPerformance>,
+    val period: AnalyticsPeriod
 )

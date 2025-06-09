@@ -1,14 +1,15 @@
 package mx.unam.fciencias.ids.eq1.model.analytics
 
-import kotlinx.serialization.Serializable
+import java.math.BigDecimal
+import java.time.LocalDate
 
 /**
- * Datos de venta por día para gráficos de tendencia
+ * Datos de ventas diarias
  */
-@Serializable
 data class DailySaleData(
-    val date: Long,
-    val sales: Double,
-    val profit: Double,
-    val transactions: Int
+    val date: LocalDate,
+    val totalSales: Int,
+    val totalRevenue: BigDecimal,
+    val averageSaleValue: BigDecimal,
+    val uniqueProducts: Int
 )

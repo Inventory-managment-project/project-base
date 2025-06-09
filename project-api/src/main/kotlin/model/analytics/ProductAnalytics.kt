@@ -1,17 +1,20 @@
 package mx.unam.fciencias.ids.eq1.model.analytics
 
-import kotlinx.serialization.Serializable
+import java.math.BigDecimal
 
 /**
- * Representa un producto en análisis de ventas
+ * Análisis de producto individual
  */
-@Serializable
 data class ProductAnalytics(
     val productId: Int,
-    val name: String,
-    val quantitySold: Int,
-    val revenue: Double,
-    val profit: Double,
-    val costValue: Double,
-    val salesPercentage: Double // Porcentaje sobre el total de ventas
+    val productName: String,
+    val category: String?,
+    val totalQuantitySold: Int,
+    val totalRevenue: BigDecimal,
+    val averagePrice: BigDecimal,
+    val profitMargin: BigDecimal,
+    val stockLevel: Int,
+    val salesFrequency: Double, // Ventas por día
+    val rankByRevenue: Int,
+    val rankByQuantity: Int
 )
