@@ -9,12 +9,12 @@ import mx.unam.fciencias.ids.eq1.service.users.UserService
 import io.ktor.server.response.*
 import mx.unam.fciencias.ids.eq1.routes.getRequestEmailOrRespondBadRequest
 import mx.unam.fciencias.ids.eq1.routes.getStoreIdOrBadRequest
-import mx.unam.fciencias.ids.eq1.routes.stores.sales.sales
+import mx.unam.fciencias.ids.eq1.routes.stores.sales.salesRoutes
 import mx.unam.fciencias.ids.eq1.service.store.StoreService
 import org.koin.ktor.ext.inject
 
 /**
- * Defines routes for managing stores and their associated data. [products] and [sales] routes live inside here in `/store`.
+ * Defines routes for managing stores and their associated data. [productsRoutes] and [salesRoutes] routes live inside here in `/store`.
  *
  * **Authentication:** Requires JWT authentication with the "auth-jwt" scheme.
  *
@@ -64,8 +64,9 @@ fun Route.storeRoutes() {
             }
         }
         route("/stores") {
-            products()
-            sales()
+            productsRoutes()
+            salesRoutes()
+            suppliersRoutes()
             route("/{storeId}") {
                 get {
                     val storeId = call.getStoreIdOrBadRequest() ?: return@get

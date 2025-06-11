@@ -91,7 +91,7 @@ private suspend inline fun RoutingCall.getProductBarcodeOrBadRequest(): String? 
  *     - 200 OK: Successfully updated product.
  *     - 409 Conflict: If the update operation fails.
  */
-fun Route.products() {
+fun Route.productsRoutes() {
     authenticate("auth-jwt") {
         route("/{storeId}/products") {
             get {
