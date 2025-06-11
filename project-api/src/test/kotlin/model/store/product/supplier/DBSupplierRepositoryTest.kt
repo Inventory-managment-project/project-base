@@ -1,10 +1,9 @@
 package model.store.product.supplier
 
 import kotlinx.coroutines.runBlocking
-import mx.unam.fciencias.ids.eq1.db.store.StoreTable
-import mx.unam.fciencias.ids.eq1.db.store.product.supplier.SupplierTable
-import mx.unam.fciencias.ids.eq1.db.user.UserTable
 import mx.unam.fciencias.ids.eq1.model.store.CreateStoreRequest
+import mx.unam.fciencias.ids.eq1.model.store.product.Product
+import mx.unam.fciencias.ids.eq1.model.store.product.repository.DBProductRepository
 import mx.unam.fciencias.ids.eq1.model.store.product.supplier.CreateSupplierRequest
 import mx.unam.fciencias.ids.eq1.model.store.product.supplier.UpdateSupplierRequest
 import mx.unam.fciencias.ids.eq1.model.store.product.supplier.repository.DBSupplierRepository
@@ -13,7 +12,6 @@ import mx.unam.fciencias.ids.eq1.model.user.User
 import mx.unam.fciencias.ids.eq1.model.user.repository.DBUserRepository
 import mx.unam.fciencias.ids.eq1.model.user.repository.UserRepository
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -22,15 +20,18 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import java.time.Instant
+import java.util.*
 import kotlin.test.*
 
 class DBSupplierRepositoryTest {
 
     private lateinit var database: Database
     private lateinit var supplierRepository: DBSupplierRepository
+    private lateinit var productRepository: DBProductRepository
     private lateinit var storeRepository: DBStoreRepository
     private lateinit var userRepository: UserRepository
     private val storeId = 1
+    val dbName = "test-${UUID.randomUUID()}"
 
     private val users = listOf(
         User(
@@ -65,16 +66,13 @@ class DBSupplierRepositoryTest {
     @BeforeEach
     fun setUp() {
         database = Database.connect(
-            url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1",
+            url = "jdbc:h2:mem:$dbName;DB_CLOSE_DELAY=-1",
             driver = "org.h2.Driver"
         )
 
-        transaction(database) {
-            SchemaUtils.create(SupplierTable)
-        }
-
         userRepository = DBUserRepository(database)
         storeRepository = DBStoreRepository(database)
+        productRepository = DBProductRepository(database, storeId)
         supplierRepository = DBSupplierRepository(database, storeId)
 
         runBlocking {
@@ -94,9 +92,7 @@ class DBSupplierRepositoryTest {
     @AfterEach
     fun tearDown() {
         transaction(database) {
-            SchemaUtils.drop(SupplierTable)
-            SchemaUtils.drop(StoreTable)
-            SchemaUtils.drop(UserTable)
+            exec("DROP ALL OBJECTS") // H2 Specific Syntax
         }
         stopKoin()
     }
@@ -111,7 +107,7 @@ class DBSupplierRepositoryTest {
             address = "123 Supplier St."
         )
 
-        val result = supplierRepository.add(supplierRequest, storeId)
+        val result = supplierRepository.add(supplierRequest)
         assertTrue(result != -1, "Supplier should be added successfully")
 
         val allSuppliers = supplierRepository.getAll()
@@ -133,7 +129,7 @@ class DBSupplierRepositoryTest {
             address = "456 Supplier Ave."
         )
 
-        val supplierId = supplierRepository.add(supplierRequest, storeId)
+        val supplierId = supplierRepository.add(supplierRequest)
 
         val foundSupplier = supplierRepository.getById(supplierId)
         assertNotNull(foundSupplier)
@@ -153,7 +149,7 @@ class DBSupplierRepositoryTest {
             address = "Old Address"
         )
 
-        val supplierId = supplierRepository.add(supplierRequest, storeId)
+        val supplierId = supplierRepository.add(supplierRequest)
 
         val updateRequest = UpdateSupplierRequest(
             id = supplierId,
@@ -186,7 +182,7 @@ class DBSupplierRepositoryTest {
             address = "Original Address"
         )
 
-        val supplierId = supplierRepository.add(supplierRequest, storeId)
+        val supplierId = supplierRepository.add(supplierRequest)
 
         // Only update name and phone
         val partialUpdateRequest = UpdateSupplierRequest(
@@ -220,7 +216,7 @@ class DBSupplierRepositoryTest {
             address = "Delete Address"
         )
 
-        val supplierId = supplierRepository.add(supplierRequest, storeId)
+        val supplierId = supplierRepository.add(supplierRequest)
 
         val deleteResult = supplierRepository.delete(supplierId)
         assertTrue(deleteResult, "Delete should succeed")
@@ -256,9 +252,9 @@ class DBSupplierRepositoryTest {
             address = "Distribution Address"
         )
 
-        supplierRepository.add(supplier1, storeId)
-        supplierRepository.add(supplier2, storeId)
-        supplierRepository.add(supplier3, storeId)
+        supplierRepository.add(supplier1)
+        supplierRepository.add(supplier2)
+        supplierRepository.add(supplier3)
 
         // Test partial name match
         val abcSuppliers = supplierRepository.getByName("ABC")
@@ -295,19 +291,16 @@ class DBSupplierRepositoryTest {
             address = "Address 2"
         )
 
-        supplierRepository.add(supplier1, storeId)
-        supplierRepository.add(supplier2, storeId)
+        supplierRepository.add(supplier1)
+        supplierRepository.add(supplier2)
 
-        // Test partial contact match
         val smithSuppliers = supplierRepository.getByContact("Smith")
         assertEquals(2, smithSuppliers.size)
 
-        // Test specific contact match
         val johnSuppliers = supplierRepository.getByContact("John")
         assertEquals(1, johnSuppliers.size)
         assertEquals("John Smith", johnSuppliers[0].contactName)
 
-        // Test no match
         val noMatchSuppliers = supplierRepository.getByContact("Williams")
         assertTrue(noMatchSuppliers.isEmpty())
     }
@@ -322,54 +315,42 @@ class DBSupplierRepositoryTest {
             address = "Existing Address"
         )
 
-        val supplierId = supplierRepository.add(supplierRequest, storeId)
+        val supplierId = supplierRepository.add(supplierRequest)
 
         assertTrue(supplierRepository.existsById(supplierId))
         assertFalse(supplierRepository.existsById(999))
     }
 
+
     @Test
-    fun `test getByStoreId`() = runBlocking {
-        // Add suppliers to the first store
-        val supplier1 = CreateSupplierRequest(
-            name = "First Store Supplier",
-            contactName = "Contact 1",
-            contactPhone = "111-222-3333",
-            email = "s1@email.com",
-            address = "Address 1"
+    fun `test product-supplier linking`() = runBlocking {
+        val product = Product(
+            id = 999,
+            name = "Product Name",
+            description = "Description",
+            price = 20.0.toBigDecimal(),
+            wholesalePrice = 3.14.toBigDecimal(),
+            retailPrice = 3.14.toBigDecimal(),
+            stock = 10.toBigDecimal(),
+            minAllowStock = 1,
+            barcode = "123",
+            storeId = storeId,
+            createdAt = System.currentTimeMillis()
         )
 
-        val supplier2 = CreateSupplierRequest(
-            name = "First Store Supplier 2",
-            contactName = "Contact 2",
-            contactPhone = "444-555-6666",
-            email = "s2@email.com",
-            address = "Address 2"
-        )
+        val add = productRepository.add(product)
 
-        supplierRepository.add(supplier1, storeId)
-        supplierRepository.add(supplier2, storeId)
 
-        // Create a second store repository and add suppliers to it
-        val secondStoreId = 2
-        val secondStoreSupplierRepo = DBSupplierRepository(database, secondStoreId)
+        val supplierId = supplierRepository.add(CreateSupplierRequest("SupplierX", "XContact", "321", "x@email.com", "X St"))
+        assertTrue(supplierRepository.addProductSupply(supplierId, 1))
 
-        val supplier3 = CreateSupplierRequest(
-            name = "Second Store Supplier",
-            contactName = "Contact 3",
-            contactPhone = "777-888-9999",
-            email = "s3@email.com",
-            address = "Address 3"
-        )
+        val products = supplierRepository.getAllProductsSupplier(supplierId)
+        assertEquals(1, products.size)
+        assertEquals("Product Name", products[0].name)
 
-        secondStoreSupplierRepo.add(supplier3, secondStoreId)
+        assertTrue(supplierRepository.suppliesProducts(supplierId, 1))
 
-        // Test getting suppliers for first store
-        val firstStoreSuppliers = supplierRepository.getByStoreId(storeId)
-        assertEquals(2, firstStoreSuppliers.size)
-
-        // Test getting suppliers for second store
-        val secondStoreSuppliers = supplierRepository.getByStoreId(secondStoreId)
-        assertEquals(1, secondStoreSuppliers.size)
+        assertTrue(supplierRepository.removeProductSupply(supplierId, add))
+        assertFalse(supplierRepository.suppliesProducts(supplierId, 1))
     }
 }
