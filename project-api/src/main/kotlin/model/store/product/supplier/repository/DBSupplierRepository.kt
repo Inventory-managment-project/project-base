@@ -1,17 +1,25 @@
 package mx.unam.fciencias.ids.eq1.model.store.product.supplier.repository
 
 import mx.unam.fciencias.ids.eq1.db.store.StoreTable
+import mx.unam.fciencias.ids.eq1.db.store.product.ProductDAO
+import mx.unam.fciencias.ids.eq1.db.store.product.ProductDAO.Companion.productDaoToModel
+import mx.unam.fciencias.ids.eq1.db.store.product.ProductSupplierTable
+import mx.unam.fciencias.ids.eq1.db.store.product.ProductTable
 import mx.unam.fciencias.ids.eq1.db.store.product.supplier.SupplierDAO
 import mx.unam.fciencias.ids.eq1.db.store.product.supplier.SupplierDAO.Companion.supplierDaoToModel
 import mx.unam.fciencias.ids.eq1.db.store.product.supplier.SupplierTable
 import mx.unam.fciencias.ids.eq1.db.utils.suspendTransaction
+import mx.unam.fciencias.ids.eq1.model.store.product.Product
 import mx.unam.fciencias.ids.eq1.model.store.product.supplier.Supplier
 import mx.unam.fciencias.ids.eq1.model.store.product.supplier.CreateSupplierRequest
 import mx.unam.fciencias.ids.eq1.model.store.product.supplier.UpdateSupplierRequest
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.annotation.Factory
 import java.time.Instant
@@ -32,6 +40,7 @@ class DBSupplierRepository (
     init {
         transaction(database) {
             SchemaUtils.create(SupplierTable)
+            SchemaUtils.create(ProductSupplierTable)
         }
     }
 
@@ -61,25 +70,25 @@ class DBSupplierRepository (
     /**
      * Adds a new supplier to the store
      * @param supplier The supplier data to add
-     * @param storeId The store ID to associate the supplier with
      * @return The ID of the newly created supplier, or -1 if creation failed
      */
-    override suspend fun add(supplier: CreateSupplierRequest, storeId: Int): Int = suspendTransaction(database) {
+    override suspend fun add(supplier: CreateSupplierRequest): Int = suspendTransaction(database) {
         try {
+            val maxId = SupplierDAO.find { SupplierTable.storeId eq storeId }
+                .maxOfOrNull { it.supplierId } ?: 0
+
             val supplierDao = SupplierDAO.new {
-                // Generate a new ID by finding the maximum existing ID and incrementing it
-                supplierId = (SupplierDAO.find { SupplierTable.storeId eq storeId }
-                    .maxOfOrNull { it.supplierId } ?: 0) + 1
+                supplierId = maxId + 1
                 name = supplier.name
                 contactName = supplier.contactName
                 contactPhone = supplier.contactPhone
                 email = supplier.email
                 address = supplier.address
-                this.storeId = EntityID(storeId, StoreTable)
+                storeId = EntityID(this@DBSupplierRepository.storeId, StoreTable)
                 createdAt = Instant.now()
             }
             supplierDao.supplierId
-        } catch (e: Exception) {
+        } catch (_ : Exception) {
             -1
         }
     }
@@ -109,12 +118,19 @@ class DBSupplierRepository (
      * @return true if the supplier was successfully deleted, false otherwise
      */
     override suspend fun delete(id: Int): Boolean = suspendTransaction(database) {
-        SupplierDAO
+        val supplierDao = SupplierDAO
             .find { (SupplierTable.storeId eq storeId) and (SupplierTable.supplierId eq id) }
             .singleOrNull()
-            ?.apply {
-                delete()
-            } != null
+
+        if (supplierDao != null) {
+            ProductSupplierTable.deleteWhere {
+                ProductSupplierTable.supplierId eq supplierDao.id
+            }
+            supplierDao.delete()
+            true
+        } else {
+            false
+        }
     }
 
     /**
@@ -150,14 +166,62 @@ class DBSupplierRepository (
             .empty()
     }
 
-    /**
-     * Retrieves all suppliers for a specific store
-     * @param storeId The store ID to retrieve suppliers for
-     * @return A list of suppliers for the specified store
-     */
-    override suspend fun getByStoreId(storeId: Int): List<Supplier> = suspendTransaction(database) {
+    override suspend fun getAllProductsSupplier(id: Int): List<Product> = suspendTransaction(database) {
         SupplierDAO
-            .find { SupplierTable.storeId eq storeId }
-            .map(::supplierDaoToModel)
+            .find { (SupplierTable.storeId eq storeId) and (SupplierTable.supplierId eq id) }
+            .singleOrNull()
+            ?.suppliedProducts
+            ?.map(::productDaoToModel)
+            ?: emptyList()
+    }
+
+    override suspend fun suppliesProducts(supplerID: Int, productID: Int): Boolean = suspendTransaction(database) {
+        val productInternalID = ProductDAO
+            .find { (ProductTable.storeId eq storeId)  and (ProductTable.productId eq productID) }
+            .singleOrNull()
+            ?.id
+            ?: return@suspendTransaction false
+        SupplierDAO
+            .find { (SupplierTable.storeId eq storeId) and (SupplierTable.supplierId eq supplerID) }
+            .singleOrNull()
+            ?.suppliedProducts
+            ?.any { it.productId == productInternalID.value }
+            ?: false
+    }
+
+    override suspend fun addProductSupply(supplierID: Int, productID: Int): Boolean = suspendTransaction(database) {
+        try {
+            val supplierInternalID = SupplierDAO
+                .find { (SupplierTable.storeId eq storeId)  and (SupplierTable.supplierId eq supplierID) }
+                .singleOrNull()
+                ?.id
+                ?: return@suspendTransaction false
+            val productInternalID = ProductDAO
+                .find { (ProductTable.storeId eq storeId)  and (ProductTable.productId eq productID) }
+                .singleOrNull()
+                ?.id
+                ?: return@suspendTransaction false
+            ProductSupplierTable.insert {
+                it[supplierId] = supplierInternalID
+                it[productId] = productInternalID
+            }
+            true
+        } catch ( _: Exception) {
+            false
+        }
+    }
+
+    override suspend fun removeProductSupply(supplierID: Int, productID: Int): Boolean = suspendTransaction(database) {
+        val product = SupplierDAO
+            .find { (SupplierTable.storeId eq storeId)  and (SupplierTable.supplierId eq supplierID) }
+            .singleOrNull()
+            ?.suppliedProducts
+            ?.firstOrNull { it.id.value == productID }
+        if (product != null) {
+            ProductSupplierTable.deleteWhere {
+                ProductSupplierTable.supplierId eq supplierID and (ProductSupplierTable.productId eq productID)
+            }
+            true
+        }  else false
     }
 }

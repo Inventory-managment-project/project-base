@@ -1,5 +1,6 @@
 package mx.unam.fciencias.ids.eq1.model.store.product.supplier.repository
 
+import mx.unam.fciencias.ids.eq1.model.store.product.Product
 import mx.unam.fciencias.ids.eq1.model.store.product.supplier.Supplier
 import mx.unam.fciencias.ids.eq1.model.store.product.supplier.CreateSupplierRequest
 import mx.unam.fciencias.ids.eq1.model.store.product.supplier.UpdateSupplierRequest
@@ -21,7 +22,7 @@ interface SupplierRepository{
     /**
      * Adds a new supplier.
      */
-    suspend fun add(supplier: CreateSupplierRequest, storeId: Int): Int
+    suspend fun add(supplier: CreateSupplierRequest): Int
 
     /**
      * Updates an existing supplier.
@@ -51,5 +52,8 @@ interface SupplierRepository{
     /**
      * Retrieves suppliers by store ID.
      */
-    suspend fun getByStoreId(storeId: Int): List<Supplier>
+    suspend fun addProductSupply(supplierID: Int, productID: Int): Boolean
+    suspend fun suppliesProducts(supplerID: Int, productID: Int): Boolean
+    suspend fun getAllProductsSupplier(id: Int): List<Product>
+    suspend fun removeProductSupply(supplierID: Int, productID: Int): Boolean
 }

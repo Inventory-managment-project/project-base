@@ -68,7 +68,7 @@ import org.koin.ktor.ext.inject
  *     - 200 OK: List of sales in the specified date range.
  *     - 400 Bad Request: If required parameters are missing.
  */
-fun Route.sales() {
+fun Route.salesRoutes() {
     authenticate("auth-jwt") {
         route("/{storeId}/sales") {
             post {
