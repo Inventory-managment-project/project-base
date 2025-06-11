@@ -1,6 +1,7 @@
 package mx.unam.fciencias.ids.eq1.db.store.product.supplier
 
-import mx.unam.fciencias.ids.eq1.db.user.UserTable
+import mx.unam.fciencias.ids.eq1.db.store.product.ProductDAO
+import mx.unam.fciencias.ids.eq1.db.store.product.ProductSupplierTable
 import mx.unam.fciencias.ids.eq1.model.store.product.supplier.Supplier
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
@@ -27,4 +28,6 @@ class SupplierDAO (id: EntityID<Int>) : IntEntity(id){
     var contactPhone by SupplierTable.contactPhone
     var createdAt by SupplierTable.createdAt
     var storeId by SupplierTable.storeId
+
+    val suppliedProducts by ProductDAO via ProductSupplierTable
 }
