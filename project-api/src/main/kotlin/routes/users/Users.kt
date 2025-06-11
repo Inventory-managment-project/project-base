@@ -39,7 +39,7 @@ import org.koin.ktor.ext.inject
  * "Not Found"
  * ```
  */
-fun Route.users() {
+fun Route.usersRoutes() {
     authenticate("auth-jwt") {
         route("/user") {
             get {

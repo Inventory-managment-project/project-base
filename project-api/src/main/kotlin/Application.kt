@@ -14,7 +14,7 @@ import mx.unam.fciencias.ids.eq1.plugins.configureAuthentication
 import mx.unam.fciencias.ids.eq1.plugins.configureSerialization
 import mx.unam.fciencias.ids.eq1.routes.authentication.authenticationRouting
 import mx.unam.fciencias.ids.eq1.routes.stores.storeRoutes
-import mx.unam.fciencias.ids.eq1.routes.users.users
+import mx.unam.fciencias.ids.eq1.routes.users.usersRoutes
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -24,10 +24,8 @@ import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 import org.slf4j.event.Level
 import io.ktor.server.plugins.statuspages.*
-import io.ktor.serialization.*
 import io.ktor.server.response.*
 import kotlinx.serialization.SerializationException
-import io.ktor.server.plugins.contentnegotiation.*
 
 
 fun main(args: Array<String>) {
@@ -113,7 +111,7 @@ fun Application.module() {
     //Routes
 
     routing {
-        users()
+        usersRoutes()
         storeRoutes()
         authenticationRouting(environment)
 

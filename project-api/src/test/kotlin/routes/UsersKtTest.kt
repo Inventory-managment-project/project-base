@@ -12,12 +12,12 @@ import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import mx.unam.fciencias.ids.eq1.db.user.UserTable
 import mx.unam.fciencias.ids.eq1.model.user.CreateUserRequest
-import mx.unam.fciencias.ids.eq1.model.user.User
+import mx.unam.fciencias.ids.eq1.model.user.PublicUser
 import mx.unam.fciencias.ids.eq1.model.user.repository.DBUserRepository
 import mx.unam.fciencias.ids.eq1.model.user.repository.UserRepository
 import mx.unam.fciencias.ids.eq1.plugins.configureAuthentication
 import mx.unam.fciencias.ids.eq1.routes.authentication.authenticationRouting
-import mx.unam.fciencias.ids.eq1.routes.users.users
+import mx.unam.fciencias.ids.eq1.routes.users.usersRoutes
 import mx.unam.fciencias.ids.eq1.security.hashing.HashingService
 import mx.unam.fciencias.ids.eq1.security.hashing.SHA256HashingService
 import mx.unam.fciencias.ids.eq1.security.request.AuthRequest
@@ -108,7 +108,7 @@ class UsersKtTest : KoinTest {
             configureAuthentication(environment)
             routing {
                 authenticationRouting(environment)
-                users()
+                usersRoutes()
             }
         }
 
@@ -152,11 +152,11 @@ class UsersKtTest : KoinTest {
             return@getOrElse assertFails("No Auth Token found") {}
         }.toString()
 
-        response = client.post("/user") {
+        response = client.get("/user") {
             bearerAuth(token)
         }
         assertEquals(HttpStatusCode.OK, response.status)
-        val userResponse = response.body<User>()
+        val userResponse = response.body<PublicUser>()
         assertEquals("testUser", userResponse.name)
         assertEquals("test@test.com", userResponse.email)
     }
