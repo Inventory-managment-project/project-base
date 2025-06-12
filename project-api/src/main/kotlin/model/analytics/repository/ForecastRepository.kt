@@ -1,22 +1,20 @@
 package mx.unam.fciencias.ids.eq1.model.analytics.repository
 
-import mx.unam.fciencias.ids.eq1.db.store.StoreTable
-import mx.unam.fciencias.ids.eq1.db.store.product.ProductDAO
-import mx.unam.fciencias.ids.eq1.db.store.product.ProductTable
-import mx.unam.fciencias.ids.eq1.db.store.sales.SalesDAO
-import mx.unam.fciencias.ids.eq1.db.store.sales.SalesDetailsTable
-import mx.unam.fciencias.ids.eq1.db.store.sales.SalesTable
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import mx.unam.fciencias.ids.eq1.db.utils.suspendTransaction
-import mx.unam.fciencias.ids.eq1.model.analytics.*
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import mx.unam.fciencias.ids.eq1.model.analytics.Analytics
+import mx.unam.fciencias.ids.eq1.model.analytics.ProductAnalytics
+import mx.unam.fciencias.ids.eq1.model.analytics.RiskLevel
+import mx.unam.fciencias.ids.eq1.model.analytics.SalesForecast
+import org.jetbrains.exposed.sql.Database
 import org.koin.core.annotation.Factory
-import java.math.BigDecimal
-import java.math.RoundingMode
 import java.time.Instant
-import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 import kotlin.math.max
+
 /**
  * Repositorio para generar pronósticos y evitar pérdidas
  */
@@ -27,10 +25,11 @@ class ForecastRepository(
 ) {
 
     suspend fun generateSalesForecast(config: Analytics): List<SalesForecast> = suspendTransaction(database) {
-        val products = getBestSellingProducts(config)
+        var products : List<ProductAnalytics> = emptyList()
+        runBlocking { launch { products = getBestSellingProducts(config) } }
         val daysInPeriod = java.time.temporal.ChronoUnit.DAYS.between(
-            Instant.ofEpochMilli(config.startDate).atZone(ZoneId.systemDefault()).toLocalDate(),
-            Instant.ofEpochMilli(config.endDate).atZone(ZoneId.systemDefault()).toLocalDate()
+            Instant.ofEpochMilli(config.startDate.atStartOfDay().toInstant(ZoneId.systemDefault() as ZoneOffset?).toEpochMilli()).atZone(ZoneId.systemDefault()).toLocalDate(),
+            Instant.ofEpochMilli(config.endDate.atStartOfDay().toInstant(ZoneId.systemDefault() as ZoneOffset?).toEpochMilli()).atZone(ZoneId.systemDefault()).toLocalDate()
         )
 
         products.map { product ->
@@ -60,5 +59,10 @@ class ForecastRepository(
         }
     }
 
-    private fun Transaction.getBestSellingProducts(config: Analytics) {}
+    private suspend fun getBestSellingProducts(config: Analytics): List<ProductAnalytics> {
+        // Use the existing analyticsRepository to get the best selling products
+        // which already returns ProductAnalytics with all required fields
+        val salesAnalytics = analyticsRepository.getSalesAnalytics(config)
+        return salesAnalytics.bestSellingProducts
+    }
 }
