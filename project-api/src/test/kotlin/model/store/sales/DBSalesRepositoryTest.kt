@@ -39,7 +39,7 @@ class DBSalesRepositoryTest {
 
     private val users = listOf(
         User(
-            id = 1,
+            id = 1 ,
             name = "testUser",
             email = "test@test.com",
             hashedPassword = "testPassword",
