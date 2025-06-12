@@ -27,6 +27,8 @@ import org.slf4j.event.Level
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 import kotlinx.serialization.SerializationException
+import org.koin.ksp.generated.mx_unam_fciencias_ids_eq1_di_StoreModule
+import org.koin.ksp.generated.mx_unam_fciencias_ids_eq1_di_UserModule
 
 
 fun main(args: Array<String>) {
@@ -64,8 +66,8 @@ fun Application.module() {
     install(Koin) {
         slf4jLogger()
         modules(
-            UserModule().module,
-            StoreModule().module,
+            mx_unam_fciencias_ids_eq1_di_UserModule,
+            mx_unam_fciencias_ids_eq1_di_StoreModule,
             DatabaseModule().module,
             AppModule(environment).module,
             SalesModule().module,

@@ -5,12 +5,13 @@ import model.store.sales.repository.DBSalesRepository
 import mx.unam.fciencias.ids.eq1.db.store.StoreTable
 import mx.unam.fciencias.ids.eq1.db.store.product.ProductPriceTable
 import mx.unam.fciencias.ids.eq1.db.store.product.ProductTable
+import mx.unam.fciencias.ids.eq1.db.store.sales.PAYMENTMETHOD
 import mx.unam.fciencias.ids.eq1.db.store.sales.SalesTable
 import mx.unam.fciencias.ids.eq1.db.store.sales.SalesDetailsTable
 import mx.unam.fciencias.ids.eq1.db.user.UserTable
 import mx.unam.fciencias.ids.eq1.model.store.CreateStoreRequest
 import mx.unam.fciencias.ids.eq1.model.store.product.Product
-import mx.unam.fciencias.ids.eq1.model.store.sales.Sales
+import mx.unam.fciencias.ids.eq1.model.store.sales.Sale
 import mx.unam.fciencias.ids.eq1.model.store.product.repository.DBProductRepository
 import mx.unam.fciencias.ids.eq1.model.store.repository.DBStoreRepository
 import mx.unam.fciencias.ids.eq1.model.user.User
@@ -136,10 +137,10 @@ class DBSalesRepositoryTest {
 
     @Test
     fun `test add and retrieve sale`() = runBlocking {
-        val sales = Sales(
+        val sales = Sale(
             id = 0, // Use 0 for new sales
             products = listOf(Pair(1, BigDecimal(2)), Pair(2, BigDecimal(1))),
-            paymentmethod = "CASH",
+            paymentmethod = PAYMENTMETHOD.CASH,
             total = BigDecimal(70.0),
             created = Instant.now().epochSecond,
             subtotal = BigDecimal(70.0)
@@ -150,7 +151,7 @@ class DBSalesRepositoryTest {
 
         val savedSale = saleRepository.getById(result)
         assertNotNull(savedSale, "Saved sale should not be null")
-        assertEquals("CASH", savedSale.paymentmethod, "Payment method should match")
+        assertEquals(PAYMENTMETHOD.CASH, savedSale.paymentmethod, "Payment method should match")
         assertEquals(2, savedSale.products.size, "Should have 2 products, but got: ${savedSale.products.size}")
 
         // Debug info
@@ -171,10 +172,10 @@ class DBSalesRepositoryTest {
         val initialStock = initialProduct.stock
         println("Initial stock for product 1: $initialStock")
 
-        val sale = Sales(
+        val sale = Sale(
             id = 0,
             products = listOf(Pair(1, BigDecimal(5))),
-            paymentmethod = "CASH",
+            paymentmethod = PAYMENTMETHOD.CASH,
             total = BigDecimal(100.0),
             created = Instant.now().epochSecond,
             subtotal = BigDecimal(100.0)
@@ -197,10 +198,10 @@ class DBSalesRepositoryTest {
     @Test
     fun `test update sale`() = runBlocking {
         // First, add a sale to update
-        val originalSale = Sales(
+        val originalSale = Sale(
             id = 0,
             products = listOf(Pair(1, BigDecimal(2)), Pair(2, BigDecimal(1))),
-            paymentmethod = "CASH",
+            paymentmethod = PAYMENTMETHOD.CASH,
             total = BigDecimal(70.0),
             created = Instant.now().epochSecond,
             subtotal = BigDecimal(70.0)
@@ -210,10 +211,10 @@ class DBSalesRepositoryTest {
         assertTrue(saleId != -1, "Original sale should be added successfully")
 
         // Now update the sale with different products and payment method
-        val updatedSale = Sales(
+        val updatedSale = Sale(
             id = saleId,
             products = listOf(Pair(1, BigDecimal(3)), Pair(2, BigDecimal(2))), // Different quantities
-            paymentmethod = "CARD", // Different payment method
+            paymentmethod = PAYMENTMETHOD.CASH, // Different payment method
             total = BigDecimal(120.0), // This will be recalculated
             created = Instant.now().epochSecond,
             subtotal = BigDecimal(120.0)
@@ -225,7 +226,7 @@ class DBSalesRepositoryTest {
         // Retrieve the updated sale and verify changes
         val retrievedSale = saleRepository.getById(saleId)
         assertNotNull(retrievedSale, "Updated sale should exist")
-        assertEquals("CARD", retrievedSale.paymentmethod, "Payment method should be updated to CARD")
+        assertEquals(PAYMENTMETHOD.CARD, retrievedSale.paymentmethod, "Payment method should be updated to CARD")
         assertEquals(2, retrievedSale.products.size, "Should still have 2 products")
 
         // Verify the products and quantities are updated
@@ -250,10 +251,10 @@ class DBSalesRepositoryTest {
 
     @Test
     fun `test update non-existent sale`() = runBlocking {
-        val nonExistentSale = Sales(
+        val nonExistentSale = Sale(
             id = 999, // Non-existent ID
             products = listOf(Pair(1, BigDecimal(1))),
-            paymentmethod = "CASH",
+            paymentmethod = PAYMENTMETHOD.CASH,
             total = BigDecimal(20.0),
             created = Instant.now().epochSecond,
             subtotal = BigDecimal(20.0)
@@ -266,10 +267,10 @@ class DBSalesRepositoryTest {
     @Test
     fun `test update sale with invalid product`() = runBlocking {
         // First add a valid sale
-        val originalSale = Sales(
+        val originalSale = Sale(
             id = 0,
             products = listOf(Pair(1, BigDecimal(1))),
-            paymentmethod = "CASH",
+            paymentmethod = PAYMENTMETHOD.CASH,
             total = BigDecimal(20.0),
             created = Instant.now().epochSecond,
             subtotal = BigDecimal(20.0)
@@ -279,10 +280,10 @@ class DBSalesRepositoryTest {
         assertTrue(saleId != -1, "Original sale should be added successfully")
 
         // Try to update with non-existent product
-        val updatedSale = Sales(
+        val updatedSale = Sale(
             id = saleId,
             products = listOf(Pair(999, BigDecimal(1))), // Non-existent product ID
-            paymentmethod = "CARD",
+            paymentmethod = PAYMENTMETHOD.CASH,
             total = BigDecimal(0.0),
             created = Instant.now().epochSecond,
             subtotal = BigDecimal(0.0)
@@ -294,7 +295,7 @@ class DBSalesRepositoryTest {
         // Verify the sale was updated but with empty products
         val retrievedSale = saleRepository.getById(saleId)
         assertNotNull(retrievedSale, "Sale should still exist")
-        assertEquals("CARD", retrievedSale.paymentmethod, "Payment method should be updated")
+        assertEquals(PAYMENTMETHOD.CARD, retrievedSale.paymentmethod, "Payment method should be updated")
         assertEquals(0, retrievedSale.products.size, "Should have no products due to invalid product ID")
 
         // Fix: Compare BigDecimal values properly for zero
