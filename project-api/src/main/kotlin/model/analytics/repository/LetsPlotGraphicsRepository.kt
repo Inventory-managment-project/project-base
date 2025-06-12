@@ -24,7 +24,7 @@ class LetsPlotGraphicsRepository(
 ) : GraphicsRepository {
 
     init {
-        // Remove setupHtml() as it's not needed for image export
+        // Remove setupHtml() as it's not needed for  image export
         // LetsPlot.setupHtml() is only for HTML/browser output
     }
 
