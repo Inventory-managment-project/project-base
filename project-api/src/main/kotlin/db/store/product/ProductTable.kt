@@ -11,7 +11,7 @@ object ProductTable  : IntIdTable("products") {
     val name = varchar("name", 255)
     val barcode = varchar("barcode", 255).nullable()
     val description = varchar("description", 255).nullable()
-    val stock = decimal("stock", 14, 4)
+    val stock = decimal("stock", 14, 7)
     val minAllowStock = integer("minAllowStock")
     val createdAt = timestamp("created_at").defaultExpression(CurrentTimestamp)
     val active = bool("active").default(true)

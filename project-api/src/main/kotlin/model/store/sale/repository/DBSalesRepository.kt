@@ -19,6 +19,7 @@ import org.koin.core.annotation.Factory
 import java.math.BigDecimal
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.and
 
 @Factory
@@ -51,11 +52,7 @@ class DBSalesRepository (
                 builder[storeId] = EntityID(storeID, StoreTable)
                 builder[SalesDetailsTable.salesId] = (SalesDAO.find { storeId eq storeID }
                     .maxOfOrNull { it.salesId } ?: 0) + 1
-                builder[total] = sale.products.fold(BigDecimal(0.0)) { acc, pair ->
-                    acc + (ProductDAO.find { (ProductTable.productId eq pair.first) and (ProductTable.storeId eq storeID) }
-                        .firstOrNull()
-                        ?.prices?.firstOrNull()?.retailPrice ?: BigDecimal(0.0))
-                }
+                builder[total] = sale.total
                 builder[paymentMethod] = sale.paymentmethod
             }
             sale.products.forEach { product ->
@@ -79,10 +76,10 @@ class DBSalesRepository (
             }.firstOrNull() ?: return@suspendTransaction false
 
             // Restaurar stock de productos anteriores
-            SalesDetailsTable.select { SalesDetailsTable.salesId eq existingSale.id }.forEach { row ->
+            SalesDetailsTable.selectAll().where { SalesDetailsTable.salesId eq existingSale.id }.forEach { row ->
                 val productId = row[SalesDetailsTable.productId]
                 val quantity = row[SalesDetailsTable.quantity]
-                ProductDAO.findByIdAndUpdate(productId) { it.stock += quantity }
+                ProductDAO.findByIdAndUpdate(productId.value) { it.stock += quantity }
             }
 
             // Eliminar detalles anteriores
@@ -92,7 +89,7 @@ class DBSalesRepository (
             val newTotal = sale.products.fold(BigDecimal(0.0)) { acc, pair ->
                 acc + (ProductDAO.find { (ProductTable.productId eq pair.first) and (ProductTable.storeId eq storeID) }
                     .firstOrNull()
-                    ?.prices?.firstOrNull()?.retailPrice ?: BigDecimal(0.0)) * BigDecimal(pair.second)
+                    ?.prices?.firstOrNull()?.retailPrice ?: BigDecimal(0.0)) * pair.second
             }
 
             SalesTable.update({ SalesTable.id eq existingSale.id }) {
@@ -116,7 +113,7 @@ class DBSalesRepository (
                 }
             }
             true
-        } catch (e: Exception) { false }
+        } catch (_ : Exception) { false }
     }
 
     override suspend fun delete(id: Int): Boolean = suspendTransaction(database) {
@@ -126,15 +123,16 @@ class DBSalesRepository (
             }.firstOrNull() ?: return@suspendTransaction false
 
             // Restaurar stock
-            SalesDetailsTable.select { SalesDetailsTable.salesId eq sale.id }.forEach { row ->
+            SalesDetailsTable.selectAll()
+                .where { SalesDetailsTable.salesId eq sale.id }.forEach { row ->
                 val productId = row[SalesDetailsTable.productId]
                 val quantity = row[SalesDetailsTable.quantity]
-                ProductDAO.findByIdAndUpdate(productId) { it.stock += quantity }
+                ProductDAO.findByIdAndUpdate(productId.value) { it.stock += quantity }
             }
 
             // Eliminar detalles y venta
             SalesDetailsTable.deleteWhere { salesId eq sale.id }
-            SalesTable.deleteWhere { id eq sale.id }
+            SalesTable.deleteWhere { SalesTable.id eq sale.id.value }
             true
         } catch (e: Exception) { false }
     }
@@ -144,11 +142,12 @@ class DBSalesRepository (
             // Restaurar todo el stock
             SalesTable
                 .join(SalesDetailsTable, JoinType.INNER, SalesTable.id, SalesDetailsTable.salesId)
-                .select { SalesTable.storeId eq storeID }
+                .selectAll()
+                .where { SalesTable.storeId eq storeID }
                 .forEach { row ->
                     val productId = row[SalesDetailsTable.productId]
                     val quantity = row[SalesDetailsTable.quantity]
-                    ProductDAO.findByIdAndUpdate(productId) { it.stock += quantity }
+                    ProductDAO.findByIdAndUpdate(productId.value) { it.stock += quantity }
                 }
 
             // Eliminar todas las ventas de la tienda
@@ -168,15 +167,16 @@ class DBSalesRepository (
     override suspend fun getByDateRange(startDate: Long, endDate: Long): List<Sale> = suspendTransaction(database) {
         SalesDAO.find {
             (SalesTable.storeId eq storeID) and
-                    (SalesTable.createdAt.between(startDate, endDate))
+                    (SalesTable.created.between(startDate, endDate))
         }.map(::salesDaoToModel)
     }
 
     override suspend fun getTotalRevenue(startDate: Long, endDate: Long): BigDecimal = suspendTransaction(database) {
         SalesTable
-            .select {
+            .selectAll()
+            .where {
                 (SalesTable.storeId eq storeID) and
-                        (SalesTable.createdAt.between(startDate, endDate))
+                        (SalesTable.created.between(startDate, endDate))
             }
             .sumOf { it[SalesTable.total] }
     }
@@ -187,7 +187,8 @@ class DBSalesRepository (
         }.firstOrNull() ?: return@suspendTransaction emptyList()
 
         val saleIds = SalesDetailsTable
-            .select { SalesDetailsTable.productId eq productDAO.id }
+            .selectAll()
+            .where { SalesDetailsTable.productId eq productDAO.id }
             .map { it[SalesDetailsTable.salesId] }
 
         SalesDAO.find { SalesTable.id inList saleIds }.map(::salesDaoToModel)

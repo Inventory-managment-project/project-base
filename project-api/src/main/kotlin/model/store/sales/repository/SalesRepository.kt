@@ -1,7 +1,7 @@
 package mx.unam.fciencias.ids.eq1.model.store.sales.repository
 
 import mx.unam.fciencias.ids.eq1.db.store.sales.PAYMENTMETHOD
-import mx.unam.fciencias.ids.eq1.model.store.sales.Sales
+import mx.unam.fciencias.ids.eq1.model.store.sales.Sale
 import java.math.BigDecimal
 
 /**
@@ -12,22 +12,22 @@ interface SalesRepository {
     /**
      * Retrieves a sale by its ID.
      */
-    suspend fun getById(id: Int): Sales?
+    suspend fun getById(id: Int): Sale?
 
     /**
      * Retrieves all sales.
      */
-    suspend fun getAll(): List<Sales>
+    suspend fun getAll(): List<Sale>
 
     /**
      * Adds a new sale.
      */
-    suspend fun add(sale: Sales): Int
+    suspend fun add(sale: Sale): Int
 
     /**
      * Updates an existing sale.
      */
-    suspend fun update(sale: Sales): Boolean
+    suspend fun update(sale: Sale): Boolean
 
     /**
      * Deletes a sale by ID.
@@ -42,12 +42,12 @@ interface SalesRepository {
     /**
      * Retrieves sales by payment method.
      */
-    suspend fun getByPaymentMethod(paymentMethod: PAYMENTMETHOD): List<Sales>
+    suspend fun getByPaymentMethod(paymentMethod: PAYMENTMETHOD): List<Sale>
 
     /**
      * Retrieves sales within a date range.
      */
-    suspend fun getByDateRange(startDate: Long, endDate: Long): List<Sales>
+    suspend fun getByDateRange(startDate: Long, endDate: Long): List<Sale>
 
     /**
      * Calculates total revenue for a specific period.
@@ -57,5 +57,5 @@ interface SalesRepository {
     /**
      * Retrieves sales that contain a specific product.
      */
-    suspend fun getSalesByProductId(productId: Int): List<Sales>
+    suspend fun getSalesByProductId(productId: Int): List<Sale>
 }

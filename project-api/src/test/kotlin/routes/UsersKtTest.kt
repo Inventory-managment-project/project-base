@@ -12,6 +12,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import mx.unam.fciencias.ids.eq1.db.user.UserTable
 import mx.unam.fciencias.ids.eq1.model.user.CreateUserRequest
+import mx.unam.fciencias.ids.eq1.model.user.PublicUser
 import mx.unam.fciencias.ids.eq1.model.user.User
 import mx.unam.fciencias.ids.eq1.model.user.repository.DBUserRepository
 import mx.unam.fciencias.ids.eq1.model.user.repository.UserRepository
@@ -152,11 +153,11 @@ class UsersKtTest : KoinTest {
             return@getOrElse assertFails("No Auth Token found") {}
         }.toString()
 
-        response = client.post("/user") {
+        response = client.get("/user") {
             bearerAuth(token)
         }
         assertEquals(HttpStatusCode.OK, response.status)
-        val userResponse = response.body<User>()
+        val userResponse = response.body<PublicUser>()
         assertEquals("testUser", userResponse.name)
         assertEquals("test@test.com", userResponse.email)
     }

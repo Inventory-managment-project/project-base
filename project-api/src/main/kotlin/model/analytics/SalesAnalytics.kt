@@ -16,5 +16,4 @@ data class SalesAnalytics(
     val revenueByPaymentMethod: Map<PAYMENTMETHOD, BigDecimal>,
     val dailySales: List<DailySaleData>,
     val categoryPerformance: Map<String, CategoryPerformance>,
-    val period: AnalyticsPeriod
 )
