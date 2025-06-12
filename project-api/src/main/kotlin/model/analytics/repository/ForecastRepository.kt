@@ -16,7 +16,7 @@ import java.time.ZoneOffset
 import kotlin.math.max
 
 /**
- * Repositorio para generar pronósticos y evitar pérdidas
+ * Repositorio para generar pronósticos  y evitar pérdidas
  */
 @Factory
 class ForecastRepository(

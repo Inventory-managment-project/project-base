@@ -20,7 +20,7 @@ import java.awt.RenderingHints
 @Factory
 class LetsPlotGraphicsRepository(
     private val analyticsRepository: AnalyticsRepository,
-    private val dbAnalyticsRepository: DBAnalyticsRepository // If it's a repository instance
+    private val dbAnalyticsRepository: DBAnalyticsRepository //If it's a repository instance
 ) : GraphicsRepository {
 
     init {
