@@ -130,7 +130,6 @@ class DBSalesRepository (
             SalesDetailsTable.deleteWhere {
                 salesId eq existingSale.id
             }
-
             // Insert new sale details and update stock
             sale.products.forEach { (productId, quantity) ->
                 val product = ProductDAO.find {

@@ -35,7 +35,7 @@ class DBSalesRepositoryTest {
     private lateinit var saleRepository: DBSalesRepository
     private lateinit var productRepository: DBProductRepository
     private lateinit var storeRepository: DBStoreRepository
-    private lateinit var userRepository: UserRepository
+    private lateinit var userRepository:  UserRepository
 
     private val users = listOf(
         User(
