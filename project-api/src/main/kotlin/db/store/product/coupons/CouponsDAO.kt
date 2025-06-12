@@ -10,7 +10,7 @@ class CouponDAO(id : EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<CouponDAO>(CouponsTable) {
         fun couponDaoToModel(dao: CouponDAO): Coupon {
             return Coupon(
-                couponCode = dao.coupon,
+                couponCode = dao.couponCode,
                 description = dao.description,
                 category = dao.category,
                 createdAt = dao.createdAt.epochSecond,
@@ -31,7 +31,7 @@ class CouponDAO(id : EntityID<Int>) : IntEntity(id) {
 
             return if (wasValid) {
                 Coupon(
-                    couponCode = dao.coupon,
+                    couponCode = dao.couponCode,
                     description = dao.description,
                     category = dao.category,
                     createdAt = dao.createdAt.epochSecond,
@@ -46,7 +46,7 @@ class CouponDAO(id : EntityID<Int>) : IntEntity(id) {
         }
     }
 
-    var coupon by CouponsTable.coupon
+    var couponCode by CouponsTable.couponCode
     var description by CouponsTable.description
     var category by CouponsTable.category
     var createdAt by CouponsTable.createdAt
@@ -56,7 +56,8 @@ class CouponDAO(id : EntityID<Int>) : IntEntity(id) {
     var validFrom by CouponsTable.validFrom
     var validUntil by CouponsTable.validUntil
 
-    // Helper method to check if coupon is currently valid
+    var storeID by CouponsTable.storeID
+
     fun isValid(): Boolean {
         val now = java.time.Instant.now()
         return now >= validFrom && (validUntil == null || now <= validUntil!!)
