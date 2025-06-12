@@ -4,7 +4,7 @@ import mx.unam.fciencias.ids.eq1.model.analytics.*
 import mx.unam.fciencias.ids.eq1.model.analytics.ReportFormat
 
 /**
- * Implementación de repositorio de análisis usando base de datos
+ * Implementación del repositorio de análisis usando base de datos
  */
 class DBAnalyticsRepository : AnalyticsRepository {
 
