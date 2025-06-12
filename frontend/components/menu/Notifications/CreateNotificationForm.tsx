@@ -21,7 +21,6 @@ const CreateNotificationForm: React.FC = () => {
       type
     });
     
-    // Limpiar el formulario
     setTitle("");
     setMessage("");
   };
