@@ -1,6 +1,7 @@
 package mx.unam.fciencias.ids.eq1.service.store.sales
 
 import mx.unam.fciencias.ids.eq1.db.store.sales.PAYMENTMETHOD
+import mx.unam.fciencias.ids.eq1.model.store.product.coupon.Coupon
 import mx.unam.fciencias.ids.eq1.model.store.sales.Sale
 import java.math.BigDecimal
 
@@ -91,4 +92,11 @@ interface SaleService {
     suspend fun updateSale(id: Int, sale: Sale): Boolean
 
     suspend fun generateSalesReports(period: String): Map<String, Any>
+
+
+    suspend fun addSaleWithCoupon(sale: Sale, couponCode: String? = null): Int
+
+    suspend fun applyCouponToSale(sale: Sale, couponCode: String): Sale?
+
+    suspend fun validateCouponForSale(couponCode: String, sale: Sale): Boolean
 }
