@@ -5,22 +5,18 @@ import {
   NavbarItem,
 } from "@heroui/navbar";
 
-import { ThemeSwitch } from "@/components/misc/theme-switch";
 import { Logo } from "@/components/misc/icons";
 import { Button } from "@heroui/button";
 import { siteConfig } from "@/config/site";
 import { link as linkStyles } from "@heroui/theme";
-import NextLink from "next/link";
 import clsx from "clsx";
 import { useRouter } from "next/router";
-import LinksMobile from "./linksMobile";
-import { useState } from "react";
+import { scrollTo } from "@/components/utils/utils";
 
 export const Navbar = () => {
   const router = useRouter();
-  const [content, setContent] = useState<JSX.Element | null>(null);
   return (
-    <NextUINavbar maxWidth="xl" position="sticky">
+    <NextUINavbar maxWidth="xl" position="sticky" className="z-50 top-0">
       <NavbarContent
         className="sm:flex basis-1/5 sm:basis-full"
         justify="start"
@@ -37,16 +33,16 @@ export const Navbar = () => {
         <ul className="hidden lg:flex gap-4 justify-start ml-2">
           {siteConfig.navItems.map((item) => (
             <NavbarItem key={item.href}>
-              <NextLink
+              <button
                 className={clsx(
                   linkStyles({ color: "foreground" }),
-                  "data-[active=true]:text-primary data-[active=true]:font-medium",
+                  "data-[active=true]:text-primary data-[active=true]:font-medium cursor-pointer select-none",
                 )}
                 color="foreground"
-                href={item.href}
+                onClick={() => scrollTo(item.href)}
               >
                 {item.label}
-              </NextLink>
+              </button>
             </NavbarItem>
           ))}
         </ul>

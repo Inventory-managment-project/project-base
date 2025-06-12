@@ -10,10 +10,10 @@ export default function LandingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative flex flex-col h-screen">
+    <div className="relative flex flex-col min-h-[400vh]">
       <Head />
       <Navbar />
-      <main className="mx-auto w-full h-full flex-grow">
+      <main className="mx-auto w-full min-h-screen">
         {children}
       </main>
     </div>
