@@ -10,7 +10,7 @@ import Stores from "./menu/Stores/Stores";
 import Notifications from "./menu/Notifications/Notifications";
 import Analytics from "./menu/Analytics/Analytics";
 import Reports from "./menu/Reports/Reports";
-import { useState, useMemo, useEffect, useLayoutEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSelectedStore } from "@/context/SelectedStoreContext";
 import { NotificationBadge } from "@/components/misc/NotificationBadge";
 
@@ -104,7 +104,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
             disallowEmptySelection
             selectionMode="single"
             selectedKeys={selectedKey}
-            disabledKeys={selectedStoreString == "0" ? ["pdv", "products", "reports", "stats", "notifications"] : []}
+            disabledKeys={selectedStoreString == "0" ? ["pdv", "products", "reports", "stats", "notifications", "suppliers"] : []}
             onSelectionChange={(keys) => {
               const newSelectedKey = new Set<string>(
                 Array.from(keys).map((key) => String(key)),

@@ -5,6 +5,7 @@ import { ArrowRightIcon } from "lucide-react"
 import Link from 'next/link'
 import { ChevronsDown } from "lucide-react"
 import { scrollTo } from '@/components/utils/utils'
+import { title } from "@/components/misc/primitives"
 
 export function HeroSection() {
   const { frame } = useFrame()
@@ -18,14 +19,14 @@ export function HeroSection() {
           initial={{ opacity: 0 }}
           animate={{ opacity: visible ? 1 : 0 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.9, ease: "easeInOut" }}
+          transition={{ duration: 0.7, ease: "easeInOut" }}
           className="z-10 flex flex-col items-center justify-center gap-6 py-16 md:py-24 mx-4 my-8"
         >
           <div className="flex flex-col items-center max-w-xl text-center">
             <span className="text-2xl uppercase tracking-widest font-bold mb-3">
               Bienvenido a
             </span>
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight relative mb-1 text-violet-700">
+            <h1 className={`${title({color: "violet"})} text-3xl md:text-5xl lg:text-6xl font-bold tracking-wider relative mb-1`}>
               DFC
             </h1>
             <span className="text-md font-bold tracking-wide mt-5">
