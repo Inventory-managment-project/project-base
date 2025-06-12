@@ -136,8 +136,8 @@ const Login = () => {
       </CardFooter>
       </div>)}
       {status == 2 && (
-        <CardBody  className="flex items-center">
-          <div className="inline-block max-w-xl text-center justify-center">
+        <CardBody  className="flex-row items-center justify-evenly">
+          <div className="inline-block w-[80%] text-center justify-center">
             <span className="">Ha ocurrido un&nbsp;</span>
             <span className="text-red-600">error.&nbsp;</span>
             <span className="">Intente de nuevo más tarde.&nbsp;</span>
