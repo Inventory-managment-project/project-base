@@ -10,12 +10,12 @@ interface AnalyticsRepository {
     /**
      * Obtiene un análisis completo de ventas para un período específico
      */
-    suspend fun getSalesAnalytics(config: DBAnalyticsRepository): SalesAnalytics
+    suspend fun getSalesAnalytics(config: AnalyticsRepository): SalesAnalytics
 
     /**
      * Obtiene los productos más vendidos en un período
      */
-    suspend fun getBestSellingProducts(config: DBAnalyticsRepository): List<ProductAnalytics>
+    suspend fun getBestSellingProducts(config: AnalyticsRepository): List<ProductAnalytics>
 
     /**
      * Obtiene los productos menos vendidos en un período
@@ -25,22 +25,22 @@ interface AnalyticsRepository {
     /**
      * Obtiene análisis de rentabilidad (productos con más ganancias)
      */
-    suspend fun getProfitAnalysis(config: DBAnalyticsRepository): List<ProductAnalytics>
+    suspend fun getProfitAnalysis(config: AnalyticsRepository): List<ProductAnalytics>
 
     /**
      * Obtiene análisis de pérdidas (productos que generan pérdidas)
      */
-    suspend fun getLossAnalysis(config: DBAnalyticsRepository): List<ProductAnalytics>
+    suspend fun getLossAnalysis(config: AnalyticsRepository): List<ProductAnalytics>
 
     /**
      * Obtiene la tendencia de ventas diarias para un período
      */
-    suspend fun getSalesTrend(config: DBAnalyticsRepository): List<DailySaleData>
+    suspend fun getSalesTrend(config: AnalyticsRepository): List<DailySaleData>
 
     /**
      * Obtiene el rendimiento de ventas por categoría
      */
-    suspend fun getCategoryPerformance(config: DBAnalyticsRepository): Map<String, Double>
+    suspend fun getCategoryPerformance(config: AnalyticsRepository): Map<String, Double>
 
     /**
      * Exporta un reporte en el formato especificado
