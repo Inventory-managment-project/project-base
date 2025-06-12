@@ -2,7 +2,7 @@ package mx.unam.fciencias.ids.eq1.model.analytics
 
 import mx.unam.fciencias.ids.eq1.db.store.sales.PAYMENTMETHOD
 import java.math.BigDecimal
-
+import java.time.LocalDate
 /**
  * Análisis completo de ventas
  */
