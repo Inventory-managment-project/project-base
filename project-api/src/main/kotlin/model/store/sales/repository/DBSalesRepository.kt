@@ -9,7 +9,7 @@ import mx.unam.fciencias.ids.eq1.db.store.sales.SalesDAO.Companion.salesDaoToMod
 import mx.unam.fciencias.ids.eq1.db.store.sales.SalesDetailsTable
 import mx.unam.fciencias.ids.eq1.db.store.sales.SalesTable
 import mx.unam.fciencias.ids.eq1.db.utils.suspendTransaction
-import mx.unam.fciencias.ids.eq1.model.store.sales.Sales
+import mx.unam.fciencias.ids.eq1.model.store.sales.Sale
 import mx.unam.fciencias.ids.eq1.model.store.sales.repository.SalesRepository
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
@@ -34,18 +34,18 @@ class DBSalesRepository (
     }
 
 
-    override suspend fun getById(id: Int): Sales? = suspendTransaction(database) {
+    override suspend fun getById(id: Int): Sale? = suspendTransaction(database) {
         SalesDAO.find { (SalesTable.storeId eq storeID) and (SalesTable.salesId eq id) }
             .firstOrNull()
             ?.let { salesDaoToModel(it) }
     }
 
-    override suspend fun getAll(): List<Sales> = suspendTransaction(database) {
+    override suspend fun getAll(): List<Sale> = suspendTransaction(database) {
         SalesDAO.find { SalesTable.storeId eq storeID }
             .map { salesDaoToModel(it) }
     }
 
-    override suspend fun add(sale: Sales): Int = suspendTransaction(database) {
+    override suspend fun add(sale: Sale): Int = suspendTransaction(database) {
         try {
             val nextSalesId = (SalesDAO.find { SalesTable.storeId eq storeID }
                 .maxOfOrNull { it.salesId } ?: 0) + 1
@@ -63,7 +63,7 @@ class DBSalesRepository (
                 builder[SalesTable.storeId] = EntityID(storeID, StoreTable)
                 builder[SalesTable.salesId] = nextSalesId
                 builder[SalesTable.total] = calculatedTotal
-                builder[SalesTable.paymentMethod] = when (sale.paymentmethod.lowercase()) {
+                builder[SalesTable.paymentMethod] = when (sale.paymentmethod.name) {
                     "cash" -> PAYMENTMETHOD.CASH
                     "card", "credit card", "debit card", "creditcard", "debitcard" -> PAYMENTMETHOD.CARD
                     else -> PAYMENTMETHOD.CASH // Default fallback
@@ -98,7 +98,7 @@ class DBSalesRepository (
         }
     }
 
-    override suspend fun update(sale: Sales): Boolean = suspendTransaction(database) {
+    override suspend fun update(sale: Sale): Boolean = suspendTransaction(database) {
         try {
             // Find the existing sale
             val existingSale = SalesDAO.find {
@@ -119,7 +119,7 @@ class DBSalesRepository (
                 (SalesTable.storeId eq storeID) and (SalesTable.salesId eq sale.id)
             }) {
                 it[total] = newTotal
-                it[paymentMethod] = when (sale.paymentmethod.lowercase()) {
+                it[paymentMethod] = when (sale.paymentmethod.name) {
                     "cash" -> PAYMENTMETHOD.CASH
                     "card", "credit card", "debit card", "creditcard", "debitcard" -> PAYMENTMETHOD.CARD
                     else -> PAYMENTMETHOD.CASH
@@ -159,11 +159,11 @@ class DBSalesRepository (
         TODO("Not yet implemented")
     }
 
-    override suspend fun getByPaymentMethod(paymentMethod: PAYMENTMETHOD): List<Sales> {
+    override suspend fun getByPaymentMethod(paymentMethod: PAYMENTMETHOD): List<Sale> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getByDateRange(startDate: Long, endDate: Long): List<Sales> {
+    override suspend fun getByDateRange(startDate: Long, endDate: Long): List<Sale> {
         TODO("Not yet implemented")
     }
 
@@ -171,7 +171,7 @@ class DBSalesRepository (
         TODO("Not yet implemented")
     }
 
-    override suspend fun getSalesByProductId(productId: Int): List<Sales> {
+    override suspend fun getSalesByProductId(productId: Int): List<Sale> {
         TODO("Not yet implemented")
     }
 }

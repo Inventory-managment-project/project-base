@@ -5,7 +5,7 @@ import java.time.LocalDate
 /**
  * Período de análisis
  */
-data class AnalyticsPeriod(
+data class wAnalyticsPeriod(
     val startDate: LocalDate,
     val endDate: LocalDate,
     val durationInDays: Long

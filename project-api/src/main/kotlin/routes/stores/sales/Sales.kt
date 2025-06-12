@@ -6,7 +6,7 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import mx.unam.fciencias.ids.eq1.model.store.sales.Sales
+import mx.unam.fciencias.ids.eq1.model.store.sales.Sale
 import mx.unam.fciencias.ids.eq1.routes.getRequestEmailOrRespondBadRequest
 import mx.unam.fciencias.ids.eq1.routes.getStoreIdOrBadRequest
 import mx.unam.fciencias.ids.eq1.routes.verifyUserIsOwner
@@ -87,7 +87,7 @@ fun Route.salesRoutes() {
                     return@post call.respond(HttpStatusCode.NotFound)
                 }
 
-                val sale = call.receive<Sales>()
+                val sale = call.receive<Sale>()
                 val saleService by call.inject<SaleService> { parametersOf(storeId) }
 
                 try {
@@ -142,7 +142,7 @@ fun Route.salesRoutes() {
                     return@put call.respond(HttpStatusCode.Forbidden, "Not authorized to manage this store")
                 }
 
-                val updatedSale = call.receive<Sales>()
+                val updatedSale = call.receive<Sale>()
                 val saleService by call.inject<SaleService> { parametersOf(storeId) }
 
                 val result = saleService.updateSale(updatedSale)

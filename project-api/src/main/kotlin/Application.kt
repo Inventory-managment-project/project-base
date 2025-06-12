@@ -20,16 +20,13 @@ import service.RetailAnalyticsService
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.koin.ksp.generated.module
 import org.koin.ktor.ext.inject
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 import org.slf4j.event.Level
 import io.ktor.server.plugins.statuspages.*
-import io.ktor.serialization.*
 import io.ktor.server.response.*
 import kotlinx.serialization.SerializationException
-import io.ktor.server.plugins.contentnegotiation.*
 
 
 fun main(args: Array<String>) {

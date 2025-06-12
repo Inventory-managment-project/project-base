@@ -1,6 +1,5 @@
 package model.analytics
 
-import GraphicsRepository
 import mx.unam.fciencias.ids.eq1.model.analytics.*
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
@@ -8,12 +7,10 @@ import mx.unam.fciencias.ids.eq1.model.analytics.repository.AnalyticsRepository
 import mx.unam.fciencias.ids.eq1.model.analytics.repository.LetsPlotGraphicsRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import java.math.BigDecimal
 import java.time.LocalDate
-import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
