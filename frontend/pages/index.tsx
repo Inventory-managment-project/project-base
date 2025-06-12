@@ -6,7 +6,7 @@ import LinksMobile from "@/components/navbars/linksMobile";
 import { useEffect } from "react";
 import Lenis from "lenis";
 import ScrollFrameViewer from "@/components/misc/ScrollFrameViewer";
-import { HeroSection, FeaturesSection, ClientsSection } from "@/components/landing";
+import { HeroSection, FeaturesSection, ClientsSection, PricingSection, ContactCTASection } from "@/components/landing";
 
 export default function IndexPage() {
    useEffect(() => {
@@ -33,6 +33,8 @@ export default function IndexPage() {
           <HeroSection/>
           <FeaturesSection />
           <ClientsSection />
+          <PricingSection />
+          <ContactCTASection />
         </div>
       </div>
     </LandingLayout>
