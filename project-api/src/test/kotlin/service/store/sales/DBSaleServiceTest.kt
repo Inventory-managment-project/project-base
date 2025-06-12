@@ -4,10 +4,15 @@ import kotlinx.coroutines.runBlocking
 import model.store.sale.repository.DBSalesRepository
 import mx.unam.fciencias.ids.eq1.db.store.sales.PAYMENTMETHOD
 import mx.unam.fciencias.ids.eq1.model.store.CreateStoreRequest
+import mx.unam.fciencias.ids.eq1.model.store.product.Product
+import mx.unam.fciencias.ids.eq1.model.store.product.coupon.CouponsRepository
 import mx.unam.fciencias.ids.eq1.model.store.product.coupon.CreateCouponRequest
 import mx.unam.fciencias.ids.eq1.model.store.product.coupon.DBCouponsRepository
+import mx.unam.fciencias.ids.eq1.model.store.product.repository.DBProductRepository
+import mx.unam.fciencias.ids.eq1.model.store.product.repository.ProductRepository
 import mx.unam.fciencias.ids.eq1.model.store.repository.DBStoreRepository
 import mx.unam.fciencias.ids.eq1.model.store.sales.Sale
+import mx.unam.fciencias.ids.eq1.model.store.sales.repository.SalesRepository
 import mx.unam.fciencias.ids.eq1.model.user.User
 import mx.unam.fciencias.ids.eq1.model.user.repository.DBUserRepository
 import mx.unam.fciencias.ids.eq1.model.user.repository.UserRepository
@@ -34,6 +39,8 @@ class DBSaleServiceTest {
     private lateinit var storeRepository: DBStoreRepository
     private lateinit var userRepository: UserRepository
 
+    private lateinit var productRepository: DBProductRepository
+
     private val storeId = 1
     private val dbName = "test-sales-service-${UUID.randomUUID()}"
 
@@ -44,6 +51,34 @@ class DBSaleServiceTest {
         hashedPassword = "testPassword",
         salt = "salt",
         createdAt = Instant.now().epochSecond
+    )
+
+    private val testProduct1 = Product(
+        id = 1,
+        name = "Test Product 1",
+        description = "Description for product 1",
+        price = BigDecimal("50.00"),
+        barcode = "111111111",
+        wholesalePrice = BigDecimal("40.00"),
+        retailPrice = BigDecimal("50.00"),
+        createdAt = Instant.now().epochSecond,
+        stock = BigDecimal("100"),
+        minAllowStock = 10,
+        storeId = storeId
+    )
+
+    private val testProduct2 = Product(
+        id = 2,
+        name = "Test Product 2",
+        description = "Description for product 2",
+        price = BigDecimal("25.00"),
+        barcode = "222222222",
+        wholesalePrice = BigDecimal("20.00"),
+        retailPrice = BigDecimal("25.00"),
+        createdAt = Instant.now().epochSecond,
+        stock = BigDecimal("50"),
+        minAllowStock = 5,
+        storeId = storeId
     )
 
     private val testStore = CreateStoreRequest(
@@ -74,24 +109,31 @@ class DBSaleServiceTest {
         storeRepository = DBStoreRepository(database)
         salesRepository = DBSalesRepository(database, storeId)
         couponsRepository = DBCouponsRepository(database, storeId)
-        saleService = DBSaleService(storeId)
+        productRepository = DBProductRepository(database, storeId)
 
-        // Setup test data
+
         runBlocking {
             userRepository.add(testUser)
             storeRepository.add(testStore, testUser)
+            productRepository.add(testProduct1)
+            productRepository.add(testProduct2)
         }
 
         startKoin {
             modules(
                 module {
+                    single { database }
                     single { salesRepository }
                     single { couponsRepository }
-                    factory { (_: Int) -> salesRepository }
-                    factory { (_: Int) -> couponsRepository }
+                    factory<ProductRepository> { (storeId: Int) -> DBProductRepository(get(), storeId) }
+                    factory<SalesRepository> { (storeId: Int) -> DBSalesRepository(get(), storeId) }
+                    factory<CouponsRepository> { (storeId: Int) -> DBCouponsRepository(get(), storeId)  }
+
                 }
             )
         }
+
+        saleService = DBSaleService(storeId)
     }
 
     @AfterEach
@@ -114,7 +156,6 @@ class DBSaleServiceTest {
 
     @Test
     fun `test add sale with percentage coupon`() = runBlocking {
-        // Create a percentage coupon
         val couponRequest = CreateCouponRequest(
             couponCode = "SAVE20",
             description = "20% off all items",
@@ -185,7 +226,6 @@ class DBSaleServiceTest {
 
         val retrievedSale = saleService.getSaleById(saleId)
         assertNotNull(retrievedSale)
-        // Should be original sale without discount since coupon is expired
         assertEquals(testSale.total, retrievedSale.total)
     }
 
@@ -204,7 +244,6 @@ class DBSaleServiceTest {
 
     @Test
     fun `test get applicable coupons for sale`() = runBlocking {
-        // Add various coupons
         val generalCoupon = CreateCouponRequest(
             couponCode = "GENERAL",
             description = "General coupon",
@@ -215,7 +254,7 @@ class DBSaleServiceTest {
             couponCode = "PRODUCT_SPECIFIC",
             description = "Product specific coupon",
             discount = BigDecimal("15.00"),
-            prodId = 1 // Assuming product ID 1 is in our test sale
+            prodId = 1
         )
 
         val expiredCoupon = CreateCouponRequest(
@@ -232,7 +271,6 @@ class DBSaleServiceTest {
 
         val applicableCoupons = saleService.getApplicableCoupons(testSale)
 
-        // Should only get valid coupons (general and product-specific for product 1)
         assertEquals(2, applicableCoupons.size)
         assertTrue(applicableCoupons.any { it.couponCode == "GENERAL" })
         assertTrue(applicableCoupons.any { it.couponCode == "PRODUCT_SPECIFIC" })
@@ -304,7 +342,6 @@ class DBSaleServiceTest {
         val discountedSale = saleService.applyCouponToSale(testSale, "AMOUNT_TEST")
         assertNotNull(discountedSale)
 
-        val expectedDiscount = BigDecimal("30.00")
         val expectedTotal = BigDecimal("70.00")
 
         assertEquals(expectedTotal, discountedSale.total)
@@ -327,7 +364,6 @@ class DBSaleServiceTest {
 
     @Test
     fun `test basic sale service operations`() = runBlocking {
-        // Test basic operations still work
         val saleId = saleService.addSale(testSale)
         assertTrue(saleId > 0)
 

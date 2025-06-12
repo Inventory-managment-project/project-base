@@ -51,11 +51,7 @@ class DBSalesRepository (
                 builder[storeId] = EntityID(storeID, StoreTable)
                 builder[SalesDetailsTable.salesId] = (SalesDAO.find { storeId eq storeID }
                     .maxOfOrNull { it.salesId } ?: 0) + 1
-                builder[total] = sale.products.fold(BigDecimal(0.0)) { acc, pair ->
-                    acc + (ProductDAO.find { (ProductTable.productId eq pair.first) and (ProductTable.storeId eq storeID) }
-                        .firstOrNull()
-                        ?.prices?.firstOrNull()?.retailPrice ?: BigDecimal(0.0))
-                }
+                builder[total] = sale.total
                 builder[paymentMethod] = sale.paymentmethod
             }
             sale.products.forEach { product ->
