@@ -1,5 +1,5 @@
 import { Listbox, ListboxItem, ListboxSection } from "@heroui/listbox";
-import { Package, ChartBar, FileStack, Mail, Settings, ChevronRight, Home, ReceiptText } from "lucide-react";
+import { PackageSearch, ChartBar, FileStack, Mail, Settings, ChevronRight, Home, Container, ShoppingCart } from "lucide-react";
 import { IconWrapper } from "@/components/misc/IconWrapper";
 import { Icon } from "@/components/misc/Icon";
 import Logout from "./menu/Logout";
@@ -7,7 +7,7 @@ import Setting from "./menu/Settings";
 import Products from "./menu/Products/Products";
 import POS from "./menu/POS/POS"
 import Stores from "./menu/Stores/Stores";
-import Notifications from "./menu/Notifications";
+import Notifications from "./menu/Notifications/Notifications";
 import Analytics from "./menu/Analytics/Analytics";
 import { useState, useMemo, useEffect, useLayoutEffect } from "react";
 import { useSelectedStore } from "@/context/SelectedStoreContext";
@@ -128,7 +128,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
                 endContent={<ChevronRight />}
                 startContent={
                   <IconWrapper className="bg-warning/10 text-warning">
-                    <ReceiptText />
+                    <ShoppingCart />
                   </IconWrapper>
                 }
               >
@@ -150,11 +150,22 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
                 endContent={<ChevronRight />}
                 startContent={
                   <IconWrapper className="bg-success/10 text-success">
-                    <Package />
+                    <PackageSearch />
                   </IconWrapper>
                 }
               >
                 Productos
+              </ListboxItem>
+              <ListboxItem
+                key="suppliers"
+                endContent={<ChevronRight />}
+                startContent={
+                  <IconWrapper className="bg-indigo-500/10 text-indigo-500">
+                    <Container />
+                  </IconWrapper>
+                }
+              >
+                Proveedores
               </ListboxItem>
               <ListboxItem
                 key="reports"
