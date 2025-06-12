@@ -27,6 +27,12 @@ import org.slf4j.event.Level
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 import kotlinx.serialization.SerializationException
+import mx.unam.fciencias.ids.eq1.db.store.product.ProductPriceTable
+import mx.unam.fciencias.ids.eq1.db.store.product.ProductSupplierTable
+import mx.unam.fciencias.ids.eq1.db.store.product.coupons.CouponsTable
+import mx.unam.fciencias.ids.eq1.db.store.product.supplier.SupplierTable
+import mx.unam.fciencias.ids.eq1.db.store.sales.SalesTable
+import org.koin.ksp.generated.module
 import org.koin.ksp.generated.mx_unam_fciencias_ids_eq1_di_StoreModule
 import org.koin.ksp.generated.mx_unam_fciencias_ids_eq1_di_UserModule
 
@@ -66,8 +72,8 @@ fun Application.module() {
     install(Koin) {
         slf4jLogger()
         modules(
-            mx_unam_fciencias_ids_eq1_di_UserModule,
-            mx_unam_fciencias_ids_eq1_di_StoreModule,
+            UserModule().module,
+            StoreModule().module,
             DatabaseModule().module,
             AppModule(environment).module,
             SalesModule().module,
@@ -103,7 +109,12 @@ fun Application.module() {
         SchemaUtils.create(
             UserTable,
             StoreTable,
-            ProductTable
+            ProductTable,
+            SalesTable,
+            ProductPriceTable,
+            SupplierTable,
+            ProductSupplierTable,
+            CouponsTable
         )
     }
 
