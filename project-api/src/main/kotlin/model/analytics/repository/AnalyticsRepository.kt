@@ -4,7 +4,7 @@ import mx.unam.fciencias.ids.eq1.model.analytics.*
 import mx.unam.fciencias.ids.eq1.model.analytics.ReportFormat
 
 /**
- * Repositorio para obtener análisis basados en datos de ventas
+ * Repositorio para obtener análisis basados en datos de  ventas
  */
 interface AnalyticsRepository {
     /**

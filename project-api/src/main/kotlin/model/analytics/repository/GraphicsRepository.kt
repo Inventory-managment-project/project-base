@@ -4,7 +4,7 @@ import mx.unam.fciencias.ids.eq1.model.analytics.*
 import mx.unam.fciencias.ids.eq1.model.analytics.ChartType
 
 /**
- * Repositorio para generar gráficos usando lets-plot
+ * Repositorio para generar gráficos usando  lets-plot
  */
 interface GraphicsRepository {
     /**

@@ -40,7 +40,7 @@ class LetsPlotGraphicsRepository(
 
         val plot = letsPlot(data) +
                 geomBar(stat = Stat.identity, color = "steelblue", fill = "lightblue") {
-                    // Use proper aesthetic mappings
+                    // Use proper aesthetic mappingss
                     this.x = "product"
                     this.y = "quantity"
                 } +
