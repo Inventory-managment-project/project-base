@@ -9,6 +9,7 @@ import POS from "./menu/POS/POS"
 import Stores from "./menu/Stores/Stores";
 import Notifications from "./menu/Notifications";
 import Analytics from "./menu/Analytics/Analytics";
+import Reports from "./menu/Reports/Reports";
 import { useState, useMemo, useEffect, useLayoutEffect } from "react";
 import { useSelectedStore } from "@/context/SelectedStoreContext";
 import { NotificationBadge } from "@/components/misc/NotificationBadge";
@@ -66,6 +67,11 @@ const SideMenu: React.FC<SideMenuProps> = ({ setContent }) => {
       case "stats":
         setContent(
           <Analytics />
+        );
+        break;
+      case "reports":
+        setContent(
+          <Reports />
         );
         break;
       case "settings":
