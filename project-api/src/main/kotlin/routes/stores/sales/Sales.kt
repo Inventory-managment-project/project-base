@@ -6,7 +6,7 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import mx.unam.fciencias.ids.eq1.model.store.sales.Sale
+import mx.unam.fciencias.ids.eq1.model.store.sales.Sales
 import mx.unam.fciencias.ids.eq1.routes.getRequestEmailOrRespondBadRequest
 import mx.unam.fciencias.ids.eq1.routes.getStoreIdOrBadRequest
 import mx.unam.fciencias.ids.eq1.routes.verifyUserIsOwner
@@ -26,7 +26,7 @@ import org.koin.ktor.ext.inject
  * **Create Sale**
  * - URL: `/{storeId}/sales`
  * - Method: `POST`
- * - Request Body: JSON [Sale]. ID will be ignored when adding the sale to the DB and total recalculated.
+ * - Request Body: JSON [Sales]. ID will be ignored when adding the sale to the DB and total recalculated.
  * - Response:
  *     - 201 Created: SaleId
  *     - 404 Not Found: If the store or user is unauthorized.
@@ -87,7 +87,7 @@ fun Route.salesRoutes() {
                     return@post call.respond(HttpStatusCode.NotFound)
                 }
 
-                val sale = call.receive<Sale>()
+                val sale = call.receive<Sales>()
                 val saleService by call.inject<SaleService> { parametersOf(storeId) }
 
                 try {
@@ -142,7 +142,7 @@ fun Route.salesRoutes() {
                     return@put call.respond(HttpStatusCode.Forbidden, "Not authorized to manage this store")
                 }
 
-                val updatedSale = call.receive<Sale>()
+                val updatedSale = call.receive<Sales>()
                 val saleService by call.inject<SaleService> { parametersOf(storeId) }
 
                 val result = saleService.updateSale(updatedSale)
