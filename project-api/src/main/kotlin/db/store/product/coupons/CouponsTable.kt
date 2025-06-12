@@ -13,7 +13,7 @@ object CouponsTable : IntIdTable("coupons") {
     val description = varchar("description", 255).nullable()
     val category = varchar("category", 255).nullable()
     val createdAt = timestamp("createdAt").defaultExpression(CurrentTimestamp)
-    val discount = decimal("stock", 4, 2).nullable()
+    val discount = decimal("", 4, 2).nullable()
     val discountAmount = decimal("stock", 4, 2).nullable()
     val aplicableProduct = reference("id_product", ProductTable).nullable()
     val validFrom = timestamp("validFrom").defaultExpression(CurrentTimestamp)

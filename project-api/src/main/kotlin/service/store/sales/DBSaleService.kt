@@ -1,6 +1,7 @@
 package mx.unam.fciencias.ids.eq1.service.store.sales
 
 import mx.unam.fciencias.ids.eq1.db.store.sales.PAYMENTMETHOD
+import mx.unam.fciencias.ids.eq1.model.store.product.coupon.CouponsRepository
 import mx.unam.fciencias.ids.eq1.model.store.sales.Sale
 import mx.unam.fciencias.ids.eq1.model.store.sales.repository.SalesRepository
 import org.koin.core.annotation.Factory
@@ -18,6 +19,7 @@ import java.math.BigDecimal
 class DBSaleService(storeId: Int) : SaleService, KoinComponent {
 
     private val salesRepository: SalesRepository by inject {  parametersOf(storeId) }
+    private val couponsRepository : CouponsRepository by inject {  parametersOf(storeId) }
 
     override suspend fun getSaleById(id: Int): Sale? {
         return salesRepository.getById(id)
