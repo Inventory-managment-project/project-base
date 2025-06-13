@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import Lenis from "lenis";
 import ScrollFrameViewer from "@/components/misc/ScrollFrameViewer";
 import { HeroSection, FeaturesSection, ClientsSection, PricingSection, ContactCTASection } from "@/components/landing";
+import PrefetchImages from "@/components/utils/PrefetchImages";
 
 export default function IndexPage() {
    useEffect(() => {
@@ -24,6 +25,7 @@ export default function IndexPage() {
 
   return (
     <LandingLayout>
+      <PrefetchImages />
       <ScrollFrameViewer />
       <div className="flex lg:hidden">
         <LinksMobile />
